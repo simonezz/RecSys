@@ -2,8 +2,6 @@ import time
 import math
 from sklearn.preprocessing import normalize
 import numpy as np
-
-from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
 # Bulk feature vectors to Elastic Search.
@@ -30,18 +28,3 @@ def data_bulk():
         bulk(es, rows)
         print(bs,"개의 데이터를 넣는데 소요된 시간: ", k, time.time() - s)
 
-
-if __name__=="__main__":
-
-    es = Elasticsearch(hosts=['localhost:9200'])
-
-    INDEX_FILE = "index.json"  # mapping file
-    INDEX_NAME = 'test'  # elasticsearch index
-
-    dim = 1280 # feature vector dimension
-    bs = 10 # batch number
-
-    data_bulk()
-
-    es.indices.refresh(index=INDEX_NAME)
-    print(es.cat.indices(v=True))

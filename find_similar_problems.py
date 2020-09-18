@@ -1,15 +1,8 @@
-import os
 import time
-import math
-import random
-import json
-from sklearn.preprocessing import normalize
-import faiss
-
 import matplotlib.pyplot as plt
 from PIL import Image
 import os
-
+import numpy as np
 '''
 
 Using Cosine similarity in Elastic Search,
@@ -55,6 +48,8 @@ def plotSimilarImages(similarNames, similarValues, numCol):
 
 def handle_query(query): #input query = 문제 id
 
+    # fvecs = np.memmap(fvec_file, dtype='float32', mode='r').view('float32').reshape(-1, dim)
+
     SEARCH_SIZE = 4
 
     embedding_start = time.time()
@@ -96,9 +91,3 @@ def handle_query(query): #input query = 문제 id
         similarNames.append("test"+ hit["_source"]["Id"] +".png")
         similarValues.append(hit["_score"])
     plotSimilarImages(similarNames, similarValues, SEARCH_SIZE)
-
-
-# query_list : a list of problem Ids
-if __name__=="__main__":
-    for ID in query_list:
-        handle_query(ID)

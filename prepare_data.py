@@ -1,8 +1,12 @@
 # Mysql로부터 문제에 대한 정보를 불러온다. (ex : unitCode, problemLevel...)
 import pandas as pd
 import pymysql
-import os
 import numpy as np
+import tensorflow as tf
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+import tensorflow.keras.layers as layers
+from tensorflow.keras.models import Model
+import struct
 
 '''
 
@@ -16,6 +20,7 @@ Result : Save feature vectors of problems of same unitCode, problemLevel with In
 # Get input data information(unitCode, problemLevel) from MySQL
 # You can find MySQL host, password info from Freewheelin notion -> Engineering wiki -> Credentials
 def get_info(ID):
+
     prob_db = pymysql.connect(
         user='****',
         passwd='*****',
@@ -39,7 +44,16 @@ def get_info(ID):
 # Get dataframe of problems with same unitCode, problemLevel with input ID.
 def get_cand(unit_code, problem_level):
 
+    prob_db = pymysql.connect(
+        user='****',
+        passwd='*****',
+        host='*****',
+        db='iclass',
+        charset='utf8'
+    )
     sql = "SELECT * FROM iclass.Table_middle_problems where unitCode = "+ str(unit_code) + " and problemLevel = "+ str(problem_level)
+
+    curs = prob_db.cursor(pymysql.cursors.DictCursor)  # dataframe형태로 사용
     curs.execute(sql)
     result = curs.fetchall()
     result_df = pd.DataFrame(result)
@@ -80,16 +94,3 @@ def extract_feature(result_df, batch_size, input_shape):
             fmt = f'{np.prod(fvecs.shape)}f'
             f.write(struct.pack(fmt, *(fvecs.flatten())))
 
-
-if __name__ == '__main__':
-
-    ID = input("Enter ID: ")
-    unit_code, problem_level = get_probData(ID)
-    df = get_cand(unit_code, problem_level)
-
-    batch_size = 100
-    input_shape = (224, 224, 3)
-    input_dir = 'originalImages' # a directory which has image files.
-    fvec_file = 'fvecs_4.bin' # a file to save feature vectors.
-
-    extract_feature(df, batch_size, input_shape) # Save feature vectors in fvec_file.
