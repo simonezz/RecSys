@@ -19,7 +19,10 @@ if __name__ == "__main__":
     es = Elasticsearch(hosts=['localhost:9200'])
 
     ID = input("Enter ID: ")  # Enter an ID that you want to find similar problems with.
-    unit_code, problem_level = get_info(ID, prob_db)  # Get information of query ID.
+    unit_code, problem_level, isHide = get_info(ID, prob_db)  # Get information of query ID.
+    if int(isHide) == 1:
+        raise Exception("예외 발생: 숨겨진 문제입니다.")
+
     df = get_cand(unit_code, problem_level, prob_db)  # Dataframe of same unitCode, problemLevel problems.
 
     batch_size = 100

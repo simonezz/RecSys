@@ -21,22 +21,23 @@ def get_info(ID, prob_db):
 
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
 
-    sql = "SELECT unitCode, problemLevel FROM iclass.Table_middle_problems where ID = " + str(ID)
+    sql = "SELECT unitCode, problemLevel, isHide FROM iclass.Table_middle_problems where ID = " + str(ID)
 
     curs.execute(sql)
     tmp = curs.fetchall()
     tmp_df = pd.DataFrame(tmp)
 
+
     unit_code = tmp_df.loc[0, 'unitCode']
     problem_level = tmp_df.loc[0, 'problemLevel']
-
-    return unit_code, problem_level
+    isHide = tmp_df.loc[0, 'isHide']
+    return unit_code, problem_level, isHide
 
 # Get dataframe of problems with same unitCode, problemLevel with input ID.
 def get_cand(unit_code, problem_level, prob_db):
 
 
-    sql = "SELECT * FROM iclass.Table_middle_problems where unitCode = "+ str(unit_code) + " and problemLevel = "+ str(problem_level)
+    sql = "SELECT * FROM iclass.Table_middle_problems where isHide = 0 and unitCode = "+ str(unit_code) + " and problemLevel = "+ str(problem_level)
 
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # dataframe형태로 사용
     curs.execute(sql)
