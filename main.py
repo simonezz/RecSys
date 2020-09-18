@@ -9,10 +9,10 @@ import time
 if __name__ == "__main__":
 
     prob_db = pymysql.connect(
-        user='real',
-        passwd='vmfl515!dnlf',
-        host='sorinegi-cluster.cluster-ro-ce1us4oyptfa.ap-northeast-2.rds.amazonaws.com',
-        db='iclass',
+        user='****',
+        passwd='****',
+        host='****',
+        db='*****',
         charset='utf8'
     )
     dim = 1280
