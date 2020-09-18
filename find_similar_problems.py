@@ -80,8 +80,7 @@ def handle_query(query, fvecs, result_df, es, INDEX_NAME): #input query = 문제
     search_time = time.time() - search_start
 
     print()
-    print("{} total hits.".format(response["hits"]["total"]["value"]))
-    # print("embedding time: {:.2f} ms".format(embedding_time * 1000))
+
     print("search time: {:.2f} ms".format(search_time * 1000))
     similar_names = []
     similar_values = []

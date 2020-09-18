@@ -36,7 +36,7 @@ if __name__ == "__main__":
     INDEX_NAME = 'test'
     INDEX_FILE = 'index.json'
 
-    # bs = 10
+
     data_bulk(es, df, INDEX_FILE, INDEX_NAME, fvec_file)
 
     fvecs = np.memmap(fvec_file, dtype='float32', mode='r').view('float32').reshape(-1, dim)

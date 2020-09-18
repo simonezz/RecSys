@@ -24,7 +24,6 @@ def data_bulk(es, result_df, INDEX_FILE, INDEX_NAME, fvec_file):
         rows = [{'_index': INDEX_NAME,
                  'Id': f'{list(result_df.index)[i]}', 'fvec': list(normalize(fvecs[i:i+1])[0].tolist())}
                 for i in range(k * bs, min((k + 1) * bs, fvecs.shape[0]))]
-
         s = time.time()
         bulk(es, rows)
         print(k, time.time() - s)

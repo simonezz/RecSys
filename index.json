@@ -10,7 +10,6 @@
     },
     "properties": {
       "Id": {"type": "keyword"},
-      
       "fvec": {"type": "dense_vector","dims": 1280}
     }
   }

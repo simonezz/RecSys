@@ -27,7 +27,6 @@ def get_info(ID, prob_db):
     tmp = curs.fetchall()
     tmp_df = pd.DataFrame(tmp)
 
-    # print(tmp_df)
     unit_code = tmp_df.loc[0, 'unitCode']
     problem_level = tmp_df.loc[0, 'problemLevel']
 
