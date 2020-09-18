@@ -10,7 +10,7 @@ find similar images with input ID and plot images.
 
 '''
 
-inputDir = 'originalImages'
+inputDir = '/home/master/source/project/Recommender_SH/originalImages'
 
 
 def setAxes(ax, image, query=False, **kwargs):
@@ -46,23 +46,23 @@ def plotSimilarImages(similarNames, similarValues, numCol):
     plt.show()
 
 
-def handle_query(query): #input query = 문제 id
+def handle_query(query, fvecs, result_df, es, INDEX_NAME): #input query = 문제 id
 
     # fvecs = np.memmap(fvec_file, dtype='float32', mode='r').view('float32').reshape(-1, dim)
 
     SEARCH_SIZE = 4
 
-    embedding_start = time.time()
+    # embedding_start = time.time()
 
     query_vector = fvecs[result_df.loc[int(query),'index']]
 
-    embedding_time = time.time() - embedding_start # 시간 측정
+    # embedding_time = time.time() - embedding_start # 시간 측정
 
     script_query = {
         "script_score": {
             "query": {"match_all": {}},
             "script": {
-                "source": "cosineSimilarity(params.query_vector, doc['fvec']) + 1.0",
+                "source": "cosineSimilarity(params.query_vector, 'fvec') + 1.0",
                 "params": {"query_vector": query_vector}
             }
         }
@@ -72,22 +72,22 @@ def handle_query(query): #input query = 문제 id
     response = es.search(
         index=INDEX_NAME,
         body={
-            "size": SEARCH_SIZE, #유사한 벡터 몇개 찾을건지
+            "size": SEARCH_SIZE,  # 유사한 벡터 몇 개 찾을건지
             "query": script_query,
-            "_source": {"includes": ["Id", "fvec"]} #일치하는 아이디
+            "_source": {"includes": ["Id", "fvec"]}  # 일치하는 아이디
         }
     )
     search_time = time.time() - search_start
 
     print()
     print("{} total hits.".format(response["hits"]["total"]["value"]))
-    print("embedding time: {:.2f} ms".format(embedding_time * 1000))
+    # print("embedding time: {:.2f} ms".format(embedding_time * 1000))
     print("search time: {:.2f} ms".format(search_time * 1000))
-    similarNames = []
-    similarValues = []
+    similar_names = []
+    similar_values = []
     for hit in response["hits"]["hits"]:
         print("id: {}, score: {}".format(hit["_source"]["Id"], hit["_score"]))
 #         plot_images(hit["_source"]["Id"])
-        similarNames.append("test"+ hit["_source"]["Id"] +".png")
-        similarValues.append(hit["_score"])
-    plotSimilarImages(similarNames, similarValues, SEARCH_SIZE)
+        similar_names.append("test" + hit["_source"]["Id"] + ".png")
+        similar_values.append(hit["_score"])
+    plotSimilarImages(similar_names, similar_values, SEARCH_SIZE)

@@ -15,19 +15,10 @@ Input : problem ID
 Result : Save feature vectors of problems of same unitCode, problemLevel with Input ID
 
 '''
-
-
 # Get input data information(unitCode, problemLevel) from MySQL
 # You can find MySQL host, password info from Freewheelin notion -> Engineering wiki -> Credentials
-def get_info(ID):
+def get_info(ID, prob_db):
 
-    prob_db = pymysql.connect(
-        user='****',
-        passwd='*****',
-        host='*****',
-        db='iclass',
-        charset='utf8'
-    )
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
 
     sql = "SELECT unitCode, problemLevel FROM iclass.Table_middle_problems where ID = " + str(ID)
@@ -36,21 +27,16 @@ def get_info(ID):
     tmp = curs.fetchall()
     tmp_df = pd.DataFrame(tmp)
 
+    # print(tmp_df)
     unit_code = tmp_df.loc[0, 'unitCode']
     problem_level = tmp_df.loc[0, 'problemLevel']
 
     return unit_code, problem_level
 
 # Get dataframe of problems with same unitCode, problemLevel with input ID.
-def get_cand(unit_code, problem_level):
+def get_cand(unit_code, problem_level, prob_db):
 
-    prob_db = pymysql.connect(
-        user='****',
-        passwd='*****',
-        host='*****',
-        db='iclass',
-        charset='utf8'
-    )
+
     sql = "SELECT * FROM iclass.Table_middle_problems where unitCode = "+ str(unit_code) + " and problemLevel = "+ str(problem_level)
 
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # dataframe형태로 사용
@@ -75,7 +61,7 @@ def preprocess(img_path, input_shape):
     return img
 
 # Put images into pre-trained MobileNet to extract feature vectors
-def extract_feature(result_df, batch_size, input_shape):
+def extract_feature(result_df, batch_size, input_shape, input_dir, fvec_file):
 
     base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
                                              include_top=False,
