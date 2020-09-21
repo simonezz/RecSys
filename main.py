@@ -4,7 +4,7 @@ from prepare_data import *
 from bulk_feature_vectors import *
 import general_utils as g_utils
 
-class SimilarSearch:
+class RecommenderSystem:
 
     """
     Initialization
@@ -21,10 +21,6 @@ class SimilarSearch:
         self.input_shape = ini['PARAMS']['input_shape']
         self.input_dir = ini['PARAMS']['input_dir']
 
-        # Set ElasticSearch
-        self.INDEX_NAME = ini['ElasticSearch']['INDEX_NAME']
-        self.INDEX_FILE = ini['ElasticSearch']['INDEX_FILE']
-
         # Connect to MySQL
         self.user = ini['MySQL']['user']
         self.passwd = ini['MySQL']['passwd']
@@ -35,22 +31,31 @@ class SimilarSearch:
 
         self.prob_db = pymysql.connect(user=self.user, passwd=self.passwd, host=self.host, db=self.db, charset=self.charset)
 
-        self.es_host = ini['ElasticSearch']['ESHOST']
 
     def run(self):
-        es = Elasticsearch(hosts=[self.es_host])
+
         ID = input("Enter ID: ")
         df = get_similar_df(ID, self.prob_db)
 
         fvecs = extract_feature(df, int(self.batch_size), eval(self.input_shape), self.input_dir)  # save feature vectors to fvecs
 
-        data_bulk(es, df, self.INDEX_FILE, self.INDEX_NAME, fvecs)
-
-        handle_query(ID, fvecs, df, es, self.INDEX_NAME)
+        return fvecs, df, ID
+        # data_bulk(es, df, self.INDEX_FILE, self.INDEX_NAME, fvecs)
+        #
+        # handle_query(ID, fvecs, df, es, self.INDEX_NAME)
 
 INI_FILE = './main.ini'
 
+def main():
+    reco_system = RecommenderSystem()
+    f_vectors, cand_df, ID = reco_system.run()
+
+    es = Elasticsearch(hosts=['localhost:9200'])
+    data_bulk(es, cand_df, 'index.json', 'test', f_vectors)
+    handle_query(ID, f_vectors, cand_df, es, 'test')
+
 if __name__ == "__main__":
 
-    similarsearch = SimilarSearch()
-    similarsearch.run()
+    main()
+
+
