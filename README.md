@@ -10,6 +10,8 @@ Elasticsearch를 이용하여 cosine 유사도가 높은 문제가 k개 나오�
   2. bulk_feature_vectors.py : Elasticsearch에 feature vectors들을 색인화함. 
 
   3. find_similar_problems.py : Elasticsearch의 cosine similarity를 이용하여 유사한 벡터 k개의 ID return.
+  
+  4. general_utils.py : 이미지 관련 함수들 모음 (여기서 ini파일 파싱하는 함수 사용)
 
 ## Test1 (로컬 테스트용)
   - Input : 문제 ID
