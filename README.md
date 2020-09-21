@@ -13,7 +13,7 @@ Elasticsearch를 이용하여 cosine 유사도가 높은 문제가 k개 나오�
 
 ## Test1 (로컬 테스트용)
   - Input : 문제 ID
-  - Output : Input문제와 이미지상으로 유사한 문제 k개 (k는 파라미터)
+  - Output : Input문제와 이미지상으로 유사한 문제 k개의 ID (k는 파라미터)
 
 
   ### Environment setup
