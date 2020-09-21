@@ -26,7 +26,7 @@ Elasticsearch를 이용하여 cosine 유사도가 높은 문제가 k개 나오�
 
   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
-  $ python system/main.py
+  $ python Test1/system/main.py
   ```
   
 ## Test2
