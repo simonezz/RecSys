@@ -40,9 +40,6 @@ class RecommenderSystem:
         fvecs = extract_feature(df, int(self.batch_size), eval(self.input_shape), self.input_dir)  # save feature vectors to fvecs
 
         return fvecs, df, ID
-        # data_bulk(es, df, self.INDEX_FILE, self.INDEX_NAME, fvecs)
-        #
-        # handle_query(ID, fvecs, df, es, self.INDEX_NAME)
 
 INI_FILE = './main.ini'
 
