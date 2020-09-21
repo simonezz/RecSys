@@ -8,5 +8,3 @@ Pillow
 matplotlib
 os
 scikit-learn
-
-
