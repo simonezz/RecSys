@@ -1,8 +1,9 @@
 from elasticsearch import Elasticsearch
-from find_similar_problems import *
-from prepare_data import *
-from bulk_feature_vectors import *
-import general_utils as g_utils
+from utils.find_similar_problems import *
+from utils.prepare_data import *
+from utils.bulk_feature_vectors import *
+from utils import general_utils as g_utils
+
 
 class RecommenderSystem:
 
@@ -41,14 +42,14 @@ class RecommenderSystem:
 
         return fvecs, df, ID
 
-INI_FILE = './main.ini'
+INI_FILE = 'main.ini'
 
 def main():
     reco_system = RecommenderSystem()
     f_vectors, cand_df, ID = reco_system.run()
 
     es = Elasticsearch(hosts=['localhost:9200'])
-    data_bulk(es, cand_df, 'index.json', 'test', f_vectors)
+    data_bulk(es, cand_df, '../utils/index.json', 'test', f_vectors)
     handle_query(ID, f_vectors, cand_df, es, 'test')
 
 if __name__ == "__main__":

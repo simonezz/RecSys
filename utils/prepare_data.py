@@ -5,11 +5,9 @@ import tensorflow as tf
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 import tensorflow.keras.layers as layers
 from tensorflow.keras.models import Model
-import struct
 import time
 import math
 from sklearn.preprocessing import normalize
-import numpy as np
 from elasticsearch.helpers import bulk
 '''
 

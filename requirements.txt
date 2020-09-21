@@ -1,0 +1,12 @@
+elasticsearch>=7.3
+pymysql
+tensorflow
+pandas
+time
+math
+Pillow
+matplotlib
+os
+scikit-learn
+
+

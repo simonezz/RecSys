@@ -2,7 +2,7 @@ import time
 import matplotlib.pyplot as plt
 from PIL import Image
 import os
-import numpy as np
+
 '''
 
 Using Cosine similarity in Elastic Search,

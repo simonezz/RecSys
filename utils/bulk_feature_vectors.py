@@ -1,7 +1,6 @@
 import time
 import math
 from sklearn.preprocessing import normalize
-import numpy as np
 from elasticsearch.helpers import bulk
 
 # Bulk feature vectors to Elastic Search.
