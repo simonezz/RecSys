@@ -9,3 +9,20 @@ Elasticsearch를 이용하여 cosine 유사도가 높은 문제가 k개 나오�
 2. bulk_feature_vectors.py : Elasticsearch에 fvec_file에 있는 벡터들을 색인화함. 
 
 3. find_similar_problems.py : Elasticsearch의 cosine similarity를 이용하여 유사한 벡터 k개를 가져와 plotting.
+
+
+# Recommender-System
+Find Similar math problems with a query problem.
+
+## Environment setup
+
+1. `conda create -n RecoSys python=3.7` : conda 환경 생성
+2. `source activate RecoSys` : conda 환경 활성화
+3. `pip install -r requirements.txt` : python packages 설치
+
+## Run
+
+```
+$ conda activate ${CONDA_VIRTUAL_ENV}
+$ python system/main.py
+```
