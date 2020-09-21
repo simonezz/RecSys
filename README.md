@@ -13,7 +13,7 @@ Elasticsearch를 이용하여 cosine 유사도가 높은 문제가 k개 나오�
   
   4. general_utils.py : 이미지 관련 함수들 모음 (여기서 ini파일 파싱하는 함수 사용)
 
-## Test1 (로컬 테스트용)
+## Test1 (부분 테스트용)
   - Input : 문제 ID
   - Output : Input문제와 이미지상으로 유사한 문제 k개의 ID (k는 파라미터)
 
@@ -32,3 +32,8 @@ Elasticsearch를 이용하여 cosine 유사도가 높은 문제가 k개 나오�
   ```
   
 ## Test2
+
+모든 문제 feature vector화 후 ID, unitCode, problemLevel과 함께 Elastic Search에 색인화.
+
+  - Input : 문제 ID
+  - Output : Input문제와 이미지상으로 유사한 문제 k개의 ID (k는 파라미터)
