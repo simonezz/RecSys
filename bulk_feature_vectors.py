@@ -5,10 +5,11 @@ import numpy as np
 from elasticsearch.helpers import bulk
 
 # Bulk feature vectors to Elastic Search.
-def data_bulk(es, result_df, INDEX_FILE, INDEX_NAME, fvec_file):
+def data_bulk(es, result_df, INDEX_FILE, INDEX_NAME, fvecs):
 
-    dim = 1280
     bs = 10
+    nloop = math.ceil(fvecs.shape[0] / bs)
+
     # Index 생성
     es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
 
@@ -16,9 +17,6 @@ def data_bulk(es, result_df, INDEX_FILE, INDEX_NAME, fvec_file):
         source = index_file.read().strip()
         es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
 
-    fvecs = np.memmap(fvec_file, dtype='float32', mode='r').view('float32').reshape(-1, dim)
-
-    nloop = math.ceil(fvecs.shape[0] / bs)
     for k in range(nloop):
 
         rows = [{'_index': INDEX_NAME,

@@ -25,10 +25,9 @@ def setAxes(ax, image, query=False, **kwargs):
 
 def plotSimilarImages(similarNames, similarValues, numCol):
     numRow = 1
-    #     simImages, simValues = getSimilarImages(image, similarNames, similarValues)
     fig = plt.figure(figsize=(10, 20))
 
-    # now plot the  most simliar images
+    # now plot the  most similar images
     for j in range(0, numCol * numRow):
         ax = []
         if j == 0:
@@ -48,15 +47,8 @@ def plotSimilarImages(similarNames, similarValues, numCol):
 
 def handle_query(query, fvecs, result_df, es, INDEX_NAME): #input query = 문제 id
 
-    # fvecs = np.memmap(fvec_file, dtype='float32', mode='r').view('float32').reshape(-1, dim)
-
     SEARCH_SIZE = 4
-
-    # embedding_start = time.time()
-
     query_vector = fvecs[result_df.loc[int(query),'index']]
-
-    # embedding_time = time.time() - embedding_start # 시간 측정
 
     script_query = {
         "script_score": {
@@ -86,7 +78,6 @@ def handle_query(query, fvecs, result_df, es, INDEX_NAME): #input query = 문제
     similar_values = []
     for hit in response["hits"]["hits"]:
         print("id: {}, score: {}".format(hit["_source"]["Id"], hit["_score"]))
-#         plot_images(hit["_source"]["Id"])
         similar_names.append("test" + hit["_source"]["Id"] + ".png")
         similar_values.append(hit["_score"])
     plotSimilarImages(similar_names, similar_values, SEARCH_SIZE)

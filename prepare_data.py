@@ -1,23 +1,26 @@
 # Mysql로부터 문제에 대한 정보를 불러온다. (ex : unitCode, problemLevel...)
 import pandas as pd
 import pymysql
-import numpy as np
 import tensorflow as tf
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 import tensorflow.keras.layers as layers
 from tensorflow.keras.models import Model
 import struct
-
+import time
+import math
+from sklearn.preprocessing import normalize
+import numpy as np
+from elasticsearch.helpers import bulk
 '''
 
 Input : problem ID
 
-Result : Save feature vectors of problems of same unitCode, problemLevel with Input ID
+Result : Put feature vectors of problems of same unitCode, problemLevel with Input ID into ElasticSearch
 
 '''
 # Get input data information(unitCode, problemLevel) from MySQL
 # You can find MySQL host, password info from Freewheelin notion -> Engineering wiki -> Credentials
-def get_info(ID, prob_db):
+def get_similar_df(ID, prob_db):
 
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
 
@@ -31,12 +34,11 @@ def get_info(ID, prob_db):
     unit_code = tmp_df.loc[0, 'unitCode']
     problem_level = tmp_df.loc[0, 'problemLevel']
     isHide = tmp_df.loc[0, 'isHide']
-    return unit_code, problem_level, isHide
+
+    if int(isHide) == 1:
+        raise Exception("예외 발생: 숨겨진 문제입니다.")
 
 # Get dataframe of problems with same unitCode, problemLevel with input ID.
-def get_cand(unit_code, problem_level, prob_db):
-
-
     sql = "SELECT * FROM iclass.Table_middle_problems where isHide = 0 and unitCode = "+ str(unit_code) + " and problemLevel = "+ str(problem_level)
 
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # dataframe형태로 사용
@@ -61,7 +63,7 @@ def preprocess(img_path, input_shape):
     return img
 
 # Put images into pre-trained MobileNet to extract feature vectors
-def extract_feature(result_df, batch_size, input_shape, input_dir, fvec_file):
+def extract_feature(result_df, batch_size, input_shape, input_dir):
 
     base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
                                              include_top=False,
@@ -73,10 +75,44 @@ def extract_feature(result_df, batch_size, input_shape, input_dir, fvec_file):
     list_ds = tf.data.Dataset.from_tensor_slices(fnames)
     ds = list_ds.map(lambda x: preprocess(x, input_shape), num_parallel_calls=-1)
     dataset = ds.batch(batch_size).prefetch(-1)
+    #
+    # with open(fvec_file, 'wb') as f:
+    #     for batch in dataset:
+    #         fvecs = model.predict(batch)
+    #         fmt = f'{np.prod(fvecs.shape)}f'
+    #         f.write(struct.pack(fmt, *(fvecs.flatten())))
+    for batch in dataset:
+        fvecs = model.predict(batch)
 
-    with open(fvec_file, 'wb') as f:
-        for batch in dataset:
-            fvecs = model.predict(batch)
-            fmt = f'{np.prod(fvecs.shape)}f'
-            f.write(struct.pack(fmt, *(fvecs.flatten())))
+    return fvecs
+
+
+# Bulk feature vectors to Elastic Search.
+def data_bulk(es, result_df, INDEX_FILE, INDEX_NAME, fvecs):
+
+    dim = 1280
+    bs = 10
+    # Index 생성
+    es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
+
+    with open(INDEX_FILE) as index_file:
+        source = index_file.read().strip()
+        es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
+
+    # fvecs = np.memmap(fvec_file, dtype='float32', mode='r').view('float32').reshape(-1, dim)
+
+    nloop = math.ceil(fvecs.shape[0] / bs)
+    for k in range(nloop):
+
+        rows = [{'_index': INDEX_NAME,
+                 'Id': f'{list(result_df.index)[i]}', 'fvec': list(normalize(fvecs[i:i+1])[0].tolist())}
+                for i in range(k * bs, min((k + 1) * bs, fvecs.shape[0]))]
+        s = time.time()
+        bulk(es, rows)
+        print(k, time.time() - s)
+
+    es.indices.refresh(index=INDEX_NAME)
+    print(es.cat.indices(v=True))
+
+
 

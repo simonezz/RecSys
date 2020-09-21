@@ -1,49 +1,56 @@
 from elasticsearch import Elasticsearch
-import numpy as np
-
 from find_similar_problems import *
 from prepare_data import *
 from bulk_feature_vectors import *
-import time
+import general_utils as g_utils
+
+class SimilarSearch:
+
+    """
+    Initialization
+    """
+
+    def __init__(self):
+
+        self.ini_file = INI_FILE
+        ini = g_utils.get_ini_parameters(self.ini_file)
+
+        # Set parameters
+        self.dim = ini['PARAMS']['dim']
+        self.batch_size = ini['PARAMS']['batch_size']
+        self.input_shape = ini['PARAMS']['input_shape']
+        self.input_dir = ini['PARAMS']['input_dir']
+
+        # Set ElasticSearch
+        self.INDEX_NAME = ini['ElasticSearch']['INDEX_NAME']
+        self.INDEX_FILE = ini['ElasticSearch']['INDEX_FILE']
+
+        # Connect to MySQL
+        self.user = ini['MySQL']['user']
+        self.passwd = ini['MySQL']['passwd']
+        self.host = ini['MySQL']['host']
+        self.db = ini['MySQL']['db']
+        self.charset = ini['MySQL']['charset']
+
+
+        self.prob_db = pymysql.connect(user=self.user, passwd=self.passwd, host=self.host, db=self.db, charset=self.charset)
+
+        self.es_host = ini['ElasticSearch']['ESHOST']
+
+    def run(self):
+        es = Elasticsearch(hosts=[self.es_host])
+        ID = input("Enter ID: ")
+        df = get_similar_df(ID, self.prob_db)
+
+        fvecs = extract_feature(df, int(self.batch_size), eval(self.input_shape), self.input_dir)  # save feature vectors to fvecs
+
+        data_bulk(es, df, self.INDEX_FILE, self.INDEX_NAME, fvecs)
+
+        handle_query(ID, fvecs, df, es, self.INDEX_NAME)
+
+INI_FILE = './main.ini'
 
 if __name__ == "__main__":
 
-    prob_db = pymysql.connect(
-        user='****',
-        passwd='****',
-        host='****',
-        db='*****',
-        charset='utf8'
-    )
-    dim = 1280
-    es = Elasticsearch(hosts=['localhost:9200'])
-
-    ID = input("Enter ID: ")  # Enter an ID that you want to find similar problems with.
-    unit_code, problem_level, isHide = get_info(ID, prob_db)  # Get information of query ID.
-    if int(isHide) == 1:
-        raise Exception("예외 발생: 숨겨진 문제입니다.")
-
-    df = get_cand(unit_code, problem_level, prob_db)  # Dataframe of same unitCode, problemLevel problems.
-
-    batch_size = 100
-    input_shape = (224, 224, 3)
-    input_dir = '/home/master/source/project/Recommender_SH/originalImages'  # directory which has image files.
-    fvec_file = 'fvecs.bin'  # a file to save feature vectors.
-
-    tmp = "/home/master/source/project/Recommender_SH/test_sh"+str(fvec_file)
-    if os.path.isfile(tmp):
-        os.remove(tmp)  # 이미 있으면 제거
-
-    extract_feature(df, batch_size, input_shape, input_dir, fvec_file)  # save feature vectors to fvec_file.
-
-    INDEX_NAME = 'test'
-    INDEX_FILE = 'index.json'
-
-
-    data_bulk(es, df, INDEX_FILE, INDEX_NAME, fvec_file)
-
-    fvecs = np.memmap(fvec_file, dtype='float32', mode='r').view('float32').reshape(-1, dim)
-
-
-
-    handle_query(ID, fvecs, df, es, INDEX_NAME)
+    similarsearch = SimilarSearch()
+    similarsearch.run()
