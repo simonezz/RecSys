@@ -95,3 +95,21 @@ def bulk_batchwise(df, INDEX_FILE, INDEX_NAME):
 
     es.indices.refresh(index=INDEX_NAME)
     print(es.cat.indices(v=True))
+
+if __name__=="__main__":
+
+    prob_db = pymysql.connect(
+        user='real',
+        passwd='vmfl515!dnlf',
+        host='sorinegi-cluster.cluster-ro-ce1us4oyptfa.ap-northeast-2.rds.amazonaws.com',
+        db='iclass',
+        charset='utf8'
+    )
+    df = get_all_info(prob_db)
+
+    INDEX_FILE = '../Test2/system/index2.json'
+    INDEX_NAME = 'AllImages'
+
+    bulk_batchwise(df, INDEX_FILE=, INDEX_NAME=)
+
+    print("Success!")
