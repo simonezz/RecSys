@@ -27,7 +27,7 @@ def get_all_info(prob_db):
 
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
 
-    sql = "SELECT ID, unitCode, problemLevel, isHide FROM iclass.Table_middle_problems where isHide=0"
+    sql = "SELECT ID, unitCode, problemLevel, problemURL FROM iclass.Table_middle_problems where isHide=0"
 
     curs.execute(sql)
     df = pd.DataFrame(curs.fetchall())
@@ -83,10 +83,13 @@ def all_data_bulk(es, result_df, INDEX_FILE, INDEX_NAME, fvec_file):
 
     nloop = math.ceil(fvecs.shape[0] / bs)
     for k in tqdm(range(nloop)):
-
-        rows = [{'_index': INDEX_NAME,
-                 'Id': f'{list(result_df.index)[i]}', 'fvec': list(normalize(fvecs[i:i+1])[0].tolist())}
-                for i in range(k * bs, min((k + 1) * bs, fvecs.shape[0]))]
+        rows = []
+        for i in range(k * bs, min((k + 1) * bs, fvecs.shape[0])):
+            try:
+                rows.append({'_index': INDEX_NAME,
+                 'Id': f'{list(result_df.index)[i]}', 'fvec': list(normalize(fvecs[i:i+1])[0].tolist())})
+            except:
+                pass
         s = time.time()
         bulk(es, rows)
         print(k, time.time() - s)
@@ -112,9 +115,9 @@ if __name__=="__main__":
         charset='utf8'
     )
     df = get_all_info(prob_db)
-
+    print("Get information successfully!")
     extract_feature(df, batch_size, input_shape, input_dir, fvec_file)
-
+    print("Save Feature Vectors to ", fvec_file, "...")
     all_data_bulk(es, df, INDEX_FILE, INDEX_NAME, fvec_file)
 
 
