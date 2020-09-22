@@ -28,37 +28,31 @@ def get_all_info(prob_db):
 
     return df
 
-def preprocess(img_path, input_shape):
-    img = tf.io.read_file(img_path)
-    img = tf.image.decode_jpeg(img, channels=input_shape[2])
+
+def preprocess(img_content, input_shape):
+    #     img = tf.io.read_file(img_path)
+    img = tf.image.decode_jpeg(img_content, channels=3, name="jpeg_reader")
     img = tf.image.resize(img, input_shape[:2])
     img = preprocess_input(img)
     return img
 
-# url -> Image -> feature vector
-def get_fvec(url, input_dir):
+
+def get_fvec(url):
+    url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + url + "p.png"
+    url = url.replace("/math_problems/", "/math_problems/d/")
 
     res = requests.get(url)
-    img = Image.open(io.BytesIO(res.content)).convert('RGB')  # png image to jpg
 
-    input_shape = (224,224,3)
+    input_shape = (224, 224, 3)
     base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
                                              include_top=False,
                                              weights='imagenet')
     base.trainable = False
     model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
+    data = preprocess(res.content, input_shape)
+    print(data.shape)
 
-    # fnames = [input_dir + '/test' + str(Id) + '.png' for Id in list(df.index)]
-    # list_ds = tf.data.Dataset.from_tensor_slices(fnames)
-    # ds = list_ds.map(lambda x: preprocess(x, input_shape), num_parallel_calls=-1)
-    data = preprocess(img, input_shape)
-    # dataset = ds.batch(batch_size).prefetch(-1)
-    #
-    # for batch in dataset:
-    #     fvecs = model.predict(batch)
     return model.predict(data)
-
-
 
 
 # batch별로 image->feature vectors -> elasticsearch
@@ -106,7 +100,7 @@ if __name__=="__main__":
     df = get_all_info(prob_db)
 
     INDEX_FILE = '../Test2/system/index2.json'
-    INDEX_NAME = 'AllImages'
+    INDEX_NAME = 'all_images'
 
     bulk_batchwise(df, INDEX_FILE, INDEX_NAME)
 
