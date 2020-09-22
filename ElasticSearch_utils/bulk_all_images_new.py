@@ -80,11 +80,11 @@ def bulk_batchwise(df, INDEX_FILE, INDEX_NAME):
 
         rows = []
 
-        for i in range(k * bs, min((k + 1) * bs, fvecs.shape[0])):
+        for i in range(k * bs, min((k + 1) * bs, df.shape[0])):
 
             try:
                 fvecs = get_fvec(df.loc[i,'problemURL'])
-                rows.append({'_index': INDEX_NAME, 'Id': f'{df.loc[i,'ID']}', 'fvec': list(normalize(fvecs)[0].tolist()), 'unitCode':f'{df.loc[i,'unitCode']}', 'problemLevel':f'{df.loc[i,'problemLevel']'})
+                rows.append({'_index': INDEX_NAME, 'Id': df.loc[i,'ID'], 'fvec': list(normalize(fvecs)[0].tolist()), 'unitCode': df.loc[i,'unitCode'], 'problemLevel':df.loc[i,'problemLevel']})
             except:
                 pass
         s = time.time()
@@ -108,6 +108,6 @@ if __name__=="__main__":
     INDEX_FILE = '../Test2/system/index2.json'
     INDEX_NAME = 'AllImages'
 
-    bulk_batchwise(df, INDEX_FILE=, INDEX_NAME=)
+    bulk_batchwise(df, INDEX_FILE, INDEX_NAME)
 
     print("Success!")
