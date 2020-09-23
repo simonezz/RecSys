@@ -12,6 +12,10 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
   3. find_similar_problems.py : Elasticsearch의 cosine similarity를 이용하여 유사한 벡터 k개의 ID return.
   
   4. general_utils.py : 이미지 관련 함수들 모음 (여기서 ini파일 파싱하는 함수 사용)
+  
+  [ElasticSearch_utils]
+  
+  1. bulk_all_images_new.py : 현재(2020/09/23)가지고 있는 문제(약 40만개)를 다 ElasticSearch에 넣는 코드(시간 소모 매우 큼)
 
 ## Test1 (부분 테스트용)
   - Input : 문제 ID
@@ -32,8 +36,6 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
   ```
   
 ## Test2
-
-모든 문제 feature vector화 후 ID, unitCode, problemLevel과 함께 Elastic Search에 색인화.
 
   - Input : 문제 ID
   - Output : Input문제와 이미지상으로 유사한 문제 k개의 ID (k는 파라미터)
