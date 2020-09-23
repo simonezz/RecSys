@@ -40,6 +40,8 @@ def preprocess_url(res, input_shape):
 # batch별로 데이터 elasticsearch에 넣음
 def bulk_batchwise(es, part_df, INDEX_NAME, INDEX_FILE):
 
+    batch_size = 100
+
     part_df.set_index("ID", inplace=True)
 
     input_shape = (224, 224, 3)
@@ -60,7 +62,7 @@ def bulk_batchwise(es, part_df, INDEX_NAME, INDEX_FILE):
             id_list.append(i)
             res_list.append(res)
         except:
-            print("ID : ", i, "의 url이 유효하지 않습니다.")
+            print(f'ID : {i} 의 url이 유효하지 않습니다.')
             pass
 
     list_ds = tf.data.Dataset.from_tensor_slices(res_list)
@@ -72,7 +74,7 @@ def bulk_batchwise(es, part_df, INDEX_NAME, INDEX_FILE):
         fvecs = model.predict(batch)
 
     bulk(es, [{'_index': INDEX_NAME,
-                 'Id': f'{id_list[i]}', 'fvec': list(normalize(fvecs[i:i+1])[0].tolist()), 'unitCode' : f'{part_df.loc[id_list[i],'unitCode'}', 'problemLevel' : f'{part_df.loc[id_list[i],'problemLevel'}'}
+                 'Id': id_list[i], 'fvec': list(normalize(fvecs[i:i+1])[0].tolist()), 'unitCode' : part_df.loc[id_list[i],'unitCode'], 'problemLevel' : part_df.loc[id_list[i],'problemLevel']}
                 for i in range(len(id_list))])
 
     return
