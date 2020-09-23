@@ -11,7 +11,7 @@ import math
 from sklearn.preprocessing import normalize
 from elasticsearch.helpers import bulk
 from elasticsearch import Elasticsearch
-import tqdm
+from tqdm import tqdm
 import requests, io
 from PIL import Image
 
@@ -29,46 +29,46 @@ def get_all_info(prob_db):
     return df
 
 
-def preprocess_url(res, input_shape):
+def preprocess_from_url(content, input_shape):
 
-    img = tf.image.decode_jpeg(res.content, channels=3, name="jpeg_reader")
+    img = tf.io.decode_png(content, channels=3, name="jpeg_reader")
     img = tf.image.resize(img, input_shape[:2])
     img = preprocess_input(img)
 
     return img
 
 # batch별로 데이터 elasticsearch에 넣음
-def bulk_batchwise(es, part_df, INDEX_NAME, INDEX_FILE):
+def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
 
     batch_size = 100
 
     part_df.set_index("ID", inplace=True)
 
-    input_shape = (224, 224, 3)
-    base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
-                                             include_top=False,
-                                             weights='imagenet')
-    base.trainable = False
-    model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
+    # input_shape = (224, 224, 3)
+    # base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
+    #                                          include_top=False,
+    #                                          weights='imagenet')
+    # base.trainable = False
+    # model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
 
 
     id_list = []
-    res_list = []
+    img_list = []
     for i in list(part_df.index):
         url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i,'problemURL'] + "p.png"
         url = url.replace("/math_problems/", "/math_problems/d/")
         try:
             res = requests.get(url)
             id_list.append(i)
-            res_list.append(res)
+            img_list.append(preprocess_from_url(res.content,input_shape))
         except:
             print(f'ID : {i} 의 url이 유효하지 않습니다.')
             pass
 
-    list_ds = tf.data.Dataset.from_tensor_slices(res_list)
-    ds = list_ds.map(lambda x: preprocess_url(x, input_shape), num_parallel_calls=-1)
+    list_ds = tf.data.Dataset.from_tensor_slices(img_list)
+    # ds = list_ds.map(lambda x: preprocess_from_url(x, input_shape), num_parallel_calls=-1)
 
-    dataset = ds.batch(batch_size).prefetch(-1)
+    dataset = list_ds.batch(batch_size).prefetch(-1)
 
     for batch in dataset:
         fvecs = model.predict(batch)
@@ -89,15 +89,25 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME):
     # Index 생성
     es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
 
+
+# mappings 정의
     with open(INDEX_FILE) as index_file:
         source = index_file.read().strip()
         es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
     print("Elasticsearch Index :", INDEX_NAME, "created!")
     nloop = math.ceil(df.shape[0] / bs)
 
+    input_shape = (224, 224, 3)
+    base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
+                                             include_top=False,
+                                             weights='imagenet')
+    base.trainable = False
+
+    model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
+
     for k in tqdm(range(nloop)):
 
-        bulk_batchwise(es, df.loc[k*bs:min((k+1)*bs, df.shape[0])],INDEX_NAME, INDEX_FILE)
+        bulk_batchwise(es, df.loc[k*bs:min((k+1)*bs, df.shape[0])],INDEX_NAME, model, input_shape)
 
     es.indices.refresh(index=INDEX_NAME)
     print(es.cat.indices(v=True))
@@ -116,6 +126,9 @@ if __name__=="__main__":
     INDEX_FILE = '../Test2/system/index2.json'
     INDEX_NAME = 'all_images'
 
+    bulk_start = time.time()
+
     bulk_all(df, INDEX_FILE, INDEX_NAME)
 
+    print("전체 데이터 bulk 소요시간: ", time.time()-bulk_start)
     print("Success!")
