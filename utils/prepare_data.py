@@ -37,7 +37,7 @@ def get_similar_df(ID, prob_db):
         raise Exception("예외 발생: 숨겨진 문제입니다.")
 
 # Get dataframe of problems with same unitCode, problemLevel with input ID.
-    sql = "SELECT * FROM iclass.Table_middle_problems where isHide = 0 and unitCode = "+ str(unit_code) + " and problemLevel = "+ str(problem_level)
+    sql = "SELECT ID, unitCode, problemLevel, isHide FROM iclass.Table_middle_problems where isHide = 0 and unitCode = "+ str(unit_code) + " and problemLevel = "+ str(problem_level)
 
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # dataframe형태로 사용
     curs.execute(sql)
@@ -73,12 +73,7 @@ def extract_feature(result_df, batch_size, input_shape, input_dir):
     list_ds = tf.data.Dataset.from_tensor_slices(fnames)
     ds = list_ds.map(lambda x: preprocess(x, input_shape), num_parallel_calls=-1)
     dataset = ds.batch(batch_size).prefetch(-1)
-    #
-    # with open(fvec_file, 'wb') as f:
-    #     for batch in dataset:
-    #         fvecs = model.predict(batch)
-    #         fmt = f'{np.prod(fvecs.shape)}f'
-    #         f.write(struct.pack(fmt, *(fvecs.flatten())))
+
     for batch in dataset:
         fvecs = model.predict(batch)
 

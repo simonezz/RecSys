@@ -44,14 +44,6 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
 
     part_df.set_index("ID", inplace=True)
 
-    # input_shape = (224, 224, 3)
-    # base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
-    #                                          include_top=False,
-    #                                          weights='imagenet')
-    # base.trainable = False
-    # model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
-
-
     id_list = []
     img_list = []
     for i in list(part_df.index):
@@ -59,8 +51,9 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
         url = url.replace("/math_problems/", "/math_problems/d/")
         try:
             res = requests.get(url)
-            id_list.append(i)
+
             img_list.append(preprocess_from_url(res.content,input_shape))
+            id_list.append(i)
         except:
             print(f'ID : {i} 의 url이 유효하지 않습니다.')
             pass
