@@ -80,14 +80,14 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME):
     dim = 1280
     bs = 10
     # Index 생성
-    es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
-
-
-# mappings 정의
-    with open(INDEX_FILE) as index_file:
-        source = index_file.read().strip()
-        es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
-    print("Elasticsearch Index :", INDEX_NAME, "created!")
+#     es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
+#
+#
+# # mappings 정의
+#     with open(INDEX_FILE) as index_file:
+#         source = index_file.read().strip()
+#         es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
+#     print("Elasticsearch Index :", INDEX_NAME, "created!")
     nloop = math.ceil(df.shape[0] / bs)
 
     input_shape = (224, 224, 3)
@@ -98,6 +98,7 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME):
 
     model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
 
+    # for k in tqdm(range(33521)):
     for k in tqdm(range(nloop)):
 
         bulk_batchwise(es, df.loc[k*bs:min((k+1)*bs, df.shape[0])],INDEX_NAME, model, input_shape)
