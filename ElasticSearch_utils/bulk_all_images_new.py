@@ -12,8 +12,7 @@ from sklearn.preprocessing import normalize
 from elasticsearch.helpers import bulk
 from elasticsearch import Elasticsearch
 from tqdm import tqdm
-import requests, io
-from PIL import Image
+import requests
 
 # data 불러옴
 def get_all_info(prob_db):
