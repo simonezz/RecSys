@@ -116,7 +116,7 @@ if __name__=="__main__":
     )
     df = get_all_info(prob_db)
 
-    INDEX_FILE = '../Test2/system/index2.json'
+    INDEX_FILE = '../Test2/system/mapping2.json'
     INDEX_NAME = 'all_images'
 
     bulk_start = time.time()
