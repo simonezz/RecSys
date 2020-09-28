@@ -12,7 +12,7 @@ find similar images with input ID and plot images.
 
 inputDir = '/home/master/source/project/Recommender_SH/originalImages'
 
-def handle_query(query, fvecs, result_df, es, INDEX_NAME): #input query = 문제 id
+def handle_query(query, fvecs, result_df, es, INDEX_NAME, id_list): #input query = 문제 id
 
     SEARCH_SIZE = 4
     query_vector = fvecs[result_df.loc[int(query),'index']]

@@ -1,4 +1,3 @@
-# Mysql로부터 문제에 대한 정보를 불러온다. (ex : unitCode, problemLevel...)
 import pandas as pd
 import pymysql
 import tensorflow as tf
@@ -9,6 +8,9 @@ import time
 import math
 from sklearn.preprocessing import normalize
 from elasticsearch.helpers import bulk
+from elasticsearch import Elasticsearch
+from tqdm import tqdm
+import requests, io
 '''
 
 Input : problem ID
@@ -37,7 +39,7 @@ def get_similar_df(ID, prob_db):
         raise Exception("예외 발생: 숨겨진 문제입니다.")
 
 # Get dataframe of problems with same unitCode, problemLevel with input ID.
-    sql = "SELECT ID, unitCode, problemLevel, isHide FROM iclass.Table_middle_problems where isHide = 0 and unitCode = "+ str(unit_code) + " and problemLevel = "+ str(problem_level)
+    sql = "SELECT ID, unitCode, problemLevel, isHide, problemURL FROM iclass.Table_middle_problems where isHide = 0 and unitCode = "+ str(unit_code) + " and problemLevel = "+ str(problem_level)
 
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # dataframe형태로 사용
     curs.execute(sql)
@@ -53,17 +55,16 @@ def get_similar_df(ID, prob_db):
 tf.compat.v1.enable_eager_execution()
 
 # Preprocess problem images to put them into MobileNet
-def preprocess(img_path, input_shape):
+def preprocess_from_url(content, input_shape):
 
-    img = tf.io.read_file(img_path)
-    img = tf.image.decode_jpeg(img, channels=input_shape[2])
+    img = tf.io.decode_png(content, channels=3, name="jpeg_reader")
     img = tf.image.resize(img, input_shape[:2])
     img = preprocess_input(img)
 
     return img
 
 # Put images into pre-trained MobileNet to extract feature vectors
-def extract_feature(part_df, batch_size, input_shape):
+def extract_feature_url(part_df, batch_size, input_shape):
 
     base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
                                              include_top=False,
@@ -76,13 +77,13 @@ def extract_feature(part_df, batch_size, input_shape):
     for i in list(part_df.index):
         url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i,'problemURL'] + "p.png"
         url = url.replace("/math_problems/", "/math_problems/d/")
-        try:
-            res = requests.get(url)
 
-            img_list.append(preprocess_from_url(res.content,input_shape))
+        try:
+            img_list.append(preprocess_from_url(requests.get(url).content, input_shape))
             id_list.append(i)
+
         except:
-            print(f'ID : {i} 의 url이 유효하지 않습니다.')
+            print(f'ID : {i} 의 url({url}이 유효하지 않습니다.')
             pass
 
     list_ds = tf.data.Dataset.from_tensor_slices(img_list)
@@ -92,15 +93,8 @@ def extract_feature(part_df, batch_size, input_shape):
 
     for batch in dataset:
         fvecs = model.predict(batch)
-    # fnames = [input_dir +'/test'+str(Id)+'.png' for Id in list(result_df.index)]
-    # list_ds = tf.data.Dataset.from_tensor_slices(fnames)
-    # ds = list_ds.map(lambda x: preprocess(x, input_shape), num_parallel_calls=-1)
-    # dataset = ds.batch(batch_size).prefetch(-1)
-    #
-    # for batch in dataset:
-    #     fvecs = model.predict(batch)
 
-    return fvecs
+    return fvecs, id_list
 
 
 # Bulk feature vectors to Elastic Search.
