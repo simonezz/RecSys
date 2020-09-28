@@ -40,14 +40,15 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
 
 44만개정도의 데이터를 다 넣은 후 유사문제 검색, 문제 추가, 문제 업뎃 관련 코드
 
-  1. Search.py : 문제 ID를 넣으면 유사 문제 ID들을 output으로 함.
+  1. Get.py : 문제 ID를 넣으면 유사 문제 ID들을 output으로 함.
   
   #### Run
 
   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
-  $ python Test2/system/Search.py
+  $ python Test2/system/Get.py
   ```
-  2. Add.py : 새로운 문제를 넣는 코드 (문제의 ID, unitCode, problemLevel, feature vector를 Elasticsearch에 추가)
+  2. Index.py : 새로운 문제를 넣는 코드 (문제의 ID, unitCode, problemLevel, feature vector를 Elasticsearch에 추가)
   3. Update.py : 기존의 문제를 업데이트하는 코드 (문제의 ID, unitCode, problemLevel, feature vector를 Elasticsearch에 업데이트)
   (MySQL의 Datetime_update로 식별)
+  

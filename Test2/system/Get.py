@@ -84,7 +84,7 @@ class RecommenderSystem:
 
         return ID_list
 
-INI_FILE = 'Search.ini'
+INI_FILE = 'Get.ini'
 
 def main():
 
