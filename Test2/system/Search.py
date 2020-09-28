@@ -35,6 +35,8 @@ class RecommenderSystem:
                 "query": {"match": {"Id": ID}}
             }
         )
+        if len(res['hits']['hits'])==0: #해당 ID가 Elasticsearch에 없다면,
+            raise Exception("해당 ID가 Elasticsearch에 없습니다!")
         for s in res['hits']['hits']:
             fvec = s['_source']['fvec']
             unitCode = s['_source']['unitCode']
@@ -75,6 +77,8 @@ class RecommenderSystem:
             print("ID: ", s['_source']['Id'])
             print("unitCode: ", s['_source']['unitCode'])
             print("problemLevel: ", s['_source']['problemLevel'])
+            print("score: ", s['_score'])
+            print('---------------------')
             if s['_score']<2:
                 ID_list.append(s['_source']['Id'])
 
@@ -86,7 +90,7 @@ def main():
 
     reco_system = RecommenderSystem()
 
-    reco_system.run()
+    print("similar ID List: ", reco_system.run())
 
 
 if __name__ == "__main__":
