@@ -27,7 +27,7 @@ class RecommenderSystem:
 
         SEARCH_SIZE = int(self.search_size)
 
-
+        search_info_time = time.time()
         # 해당 아이디의 unitCode, problemLevel 찾기
         res = es.search(
             index=self.index_name,
@@ -41,7 +41,7 @@ class RecommenderSystem:
             fvec = s['_source']['fvec']
             unitCode = s['_source']['unitCode']
             problemLevel = s['_source']['problemLevel']
-
+        print(f"문제 정보를 찾는데 걸리는 시간 : {(time.time()-search_info_time)} ms입니다.")
 
         # 위에서 구한 unitCode, problemLevel의 문제들 중 코사인 유사도 구하기
 
@@ -68,8 +68,8 @@ class RecommenderSystem:
                 "_source": {"includes": ["Id", 'unitCode', 'problemLevel']}  # 일치하는 아이디
             }
         )
-        search_time = time.time() - search_start
-        print(search_time * 1000, "ms")
+
+        print(f"유사 문제를 찾는데 걸리는 시간은 {(time.time() - search_start) * 1000} ms 입니다.")
 
         ID_list = []
         for s in response['hits']['hits']:

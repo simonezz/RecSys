@@ -1,8 +1,7 @@
 import sys
 from elasticsearch import Elasticsearch
 sys.path.insert(0, '../../utils')
-import general_utils as g_utils
-import time
+
 
 # 특정 날짜를 포함한 이후로 새로 추가된 문제 데이터를 Elasticsearch에 넣기(색인화)
 
@@ -133,5 +132,6 @@ if __name__=="__main__":
 
     bulk_all(df, INDEX_FILE, INDEX_NAME)
 
-    print("데이터 bulk 소요시간: ", time.time()-bulk_start)
+    # print("데이터 bulk 소요시간: ", time.time()-bulk_start)
+    print(f'총 데이터 {df.shape[0]}개 bulk 소요시간은 {time.time()-bulk_start}')
     print("Success!")
