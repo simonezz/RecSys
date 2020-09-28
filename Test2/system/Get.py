@@ -79,8 +79,14 @@ class RecommenderSystem:
             print("problemLevel: ", s['_source']['problemLevel'])
             print("score: ", s['_score'])
             print('---------------------')
-            if s['_score']<2:
-                ID_list.append(s['_source']['Id'])
+            if s['_score'] < 2:
+                try:
+                    if s['_source']['Id']==ID_list[-1]: #중복
+                        pass
+                    else:
+                        ID_list.append(s['_source']['Id'])
+                except:
+                    ID_list.append(s['_source']['Id'])
 
         return ID_list
 

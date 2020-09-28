@@ -52,6 +52,17 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
     id_list = []
     img_list = []
     for i in list(part_df.index):
+
+        res = es.search(
+            index='all_images',
+            body={
+                "query": {"match": {"Id": i}}
+            }
+        )
+
+        if res['hits']['hits'] > 0: #이미 Elasticsearch에 있다면,
+
+
         url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i,'problemURL'] + "p.png"
         url = url.replace("/math_problems/", "/math_problems/d/")
         try:
