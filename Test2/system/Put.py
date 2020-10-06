@@ -55,7 +55,7 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
         res = es.search(
             index='all_images',
             body={
-                "query": {"match": {"Id": i}}
+                "query": {"match": {"_id": i}}
             }
         )
 
@@ -82,7 +82,7 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
         fvecs = model.predict(batch)
 
     bulk(es, [{'_index': INDEX_NAME,
-                 'Id': id_list[i], 'fvec': list(normalize(fvecs[i:i+1])[0].tolist()), 'unitCode' : part_df.loc[id_list[i],'unitCode'], 'problemLevel' : part_df.loc[id_list[i],'problemLevel']}
+                 '_id': id_list[i], 'fvec': list(normalize(fvecs[i:i+1])[0].tolist()), 'unitCode' : part_df.loc[id_list[i],'unitCode'], 'problemLevel' : part_df.loc[id_list[i],'problemLevel']}
                 for i in range(len(id_list))])
 
     return

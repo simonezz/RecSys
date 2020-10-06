@@ -21,7 +21,7 @@ class RecommenderSystem:
 
     def run(self):
 
-        ID = input("Enter ID: ")
+        ID = int(input("Enter ID: "))
 
         es = Elasticsearch(self.es)
 
@@ -32,9 +32,10 @@ class RecommenderSystem:
         res = es.search(
             index=self.index_name,
             body={
-                "query": {"match": {"Id": ID}}
+                "query": {"match": {"_id": ID}}
             }
         )
+        # print(res)
         if len(res['hits']['hits'])==0: #해당 ID가 Elasticsearch에 없다면,
             raise Exception("해당 ID가 Elasticsearch에 없습니다!")
         for s in res['hits']['hits']:
@@ -65,7 +66,7 @@ class RecommenderSystem:
             body={
                 "size": SEARCH_SIZE,  # 유사한 벡터 몇 개 찾을건지
                 "query": script_query,
-                "_source": {"includes": ["Id", 'unitCode', 'problemLevel']}  # 일치하는 아이디
+                "_source": {"includes": ["_id", 'unitCode', 'problemLevel']}  # 일치하는 아이디
             }
         )
 
@@ -74,19 +75,19 @@ class RecommenderSystem:
         ID_list = []
         for s in response['hits']['hits']:
 
-            print("ID: ", s['_source']['Id'])
+            print("ID: ", s['_id'])
             print("unitCode: ", s['_source']['unitCode'])
             print("problemLevel: ", s['_source']['problemLevel'])
             print("score: ", s['_score'])
             print('---------------------')
             if s['_score'] < 2:
                 try:
-                    if s['_source']['Id']==ID_list[-1]: #중복
+                    if s['_id']==ID_list[-1]: #중복
                         pass
                     else:
-                        ID_list.append(s['_source']['Id'])
+                        ID_list.append(s['_id'])
                 except:
-                    ID_list.append(s['_source']['Id'])
+                    ID_list.append(s['_id'])
 
         return ID_list
 

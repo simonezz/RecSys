@@ -66,7 +66,7 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
         fvecs = model.predict(batch)
 
     bulk(es, [{'_index': INDEX_NAME,
-                 'Id': id_list[i], 'fvec': list(normalize(fvecs[i:i+1])[0].tolist()), 'unitCode' : part_df.loc[id_list[i],'unitCode'], 'problemLevel' : part_df.loc[id_list[i],'problemLevel']}
+                 '_id': id_list[i], 'fvec': list(normalize(fvecs[i:i+1])[0].tolist()), 'unitCode' : part_df.loc[id_list[i],'unitCode'], 'problemLevel' : part_df.loc[id_list[i],'problemLevel']}
                 for i in range(len(id_list))])
 
     return
@@ -82,11 +82,11 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME):
 #     es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
 #
 #
-# # mappings 정의
-#     with open(INDEX_FILE) as index_file:
-#         source = index_file.read().strip()
-#         es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
-#     print("Elasticsearch Index :", INDEX_NAME, "created!")
+# mappings 정의
+    with open(INDEX_FILE) as index_file:
+        source = index_file.read().strip()
+        # es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
+    print("Elasticsearch Index :", INDEX_NAME, "created!")
     nloop = math.ceil(df.shape[0] / bs)
 
     input_shape = (224, 224, 3)
@@ -117,7 +117,7 @@ if __name__=="__main__":
     df = get_all_info(prob_db)
 
     INDEX_FILE = '../Test2/system/mapping2.json'
-    INDEX_NAME = 'all_images'
+    INDEX_NAME = 'all_problems'
 
     bulk_start = time.time()
 
