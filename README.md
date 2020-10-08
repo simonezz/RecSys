@@ -42,7 +42,7 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
 
   1. Get.py : 문제 ID를 넣으면 유사 문제 ID들을 output으로 함.
   
-  #### Run
+ ### Run
 
   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
@@ -58,15 +58,15 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
 파이썬 소켓 서버를 이용하여 client가 문제 ID를 보내면 서버에서 유사 문제 ID들을 돌려보내 줌.
 
 
- ### Environment setup
+### Environment setup
 
   1. `conda create -n RecoSys_server python=3.7` : conda 환경 생성
   2. `source activate RecoSys_server` : conda 환경 활성화
   3. `pip install -r requirements.txt` : python packages 설치
 
-#### Run
+### Run
   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
   $ python Server_Test/server_client.py #server
-  $ python Server_Test/server_client.py -c -id {문제 ID}#client    
+  $ python Server_Test/server_client.py -c -id {문제 ID} #client    
   ```
