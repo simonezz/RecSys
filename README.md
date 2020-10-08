@@ -64,11 +64,9 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
   2. `source activate RecoSys_server` : conda 환경 활성화
   3. `pip install -r requirements.txt` : python packages 설치
 
-1. server_client.py 
 #### Run
   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
   $ python Server_Test/server_client.py #server
-  $ python Server_Test/server_client.py -c -id {문제 ID}#client
-    
+  $ python Server_Test/server_client.py -c -id {문제 ID}#client    
   ```
