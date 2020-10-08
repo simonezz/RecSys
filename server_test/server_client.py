@@ -41,7 +41,7 @@ def client(ID):
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', dest='client', action='store_true')
-    parser.add_argument('-i', dest='ID', type=str)
+    parser.add_argument('-id', dest='ID', type=str)
     result = parser.parse_args()
     return result
 
