@@ -52,3 +52,23 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
   3. Update.py : 기존의 문제를 업데이트하는 코드 (문제의 ID, unitCode, problemLevel, feature vector를 Elasticsearch에 업데이트)
   (MySQL의 Datetime_update로 식별)
   
+
+## Server_Test
+
+파이썬 소켓 서버를 이용하여 client가 문제 ID를 보내면 서버에서 유사 문제 ID들을 돌려보내 줌.
+
+
+ ### Environment setup
+
+  1. `conda create -n RecoSys_server python=3.7` : conda 환경 생성
+  2. `source activate RecoSys_server` : conda 환경 활성화
+  3. `pip install -r requirements.txt` : python packages 설치
+
+1. server_client.py 
+#### Run
+  ```
+  $ conda activate ${CONDA_VIRTUAL_ENV}
+  $ python Server_Test/server_client.py #server
+  $ python Server_Test/server_client.py -c -id {문제 ID}#client
+    
+  ```
