@@ -61,8 +61,6 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
             pass
 
     list_ds = tf.data.Dataset.from_tensor_slices(img_list)
-    # ds = list_ds.map(lambda x: preprocess_from_url(x, input_shape), num_parallel_calls=-1)
-
     dataset = list_ds.batch(batch_size).prefetch(-1)
 
     for batch in dataset:
@@ -97,31 +95,6 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME):
     es.indices.refresh(index=INDEX_NAME)
     print(es.cat.indices(v=True))
 
-
-# if __name__=="__main__":
-#
-#     prob_db = pymysql.connect(
-#         user='real',
-#         passwd='vmfl515!dnlf',
-#         host='sorinegi-cluster.cluster-ro-ce1us4oyptfa.ap-northeast-2.rds.amazonaws.com',
-#         db='iclass',
-#         charset='utf8'
-#     )
-#
-#     DateTime = input("업데이트하고자 하는 시작 날짜 8자리 (ex 20200920) 입력: ")
-#
-#     df = get_all_info(prob_db, DateTime)
-#
-#     INDEX_FILE = '../Test2/system/mapping2.json'
-#     INDEX_NAME = 'all_images'
-#
-#     bulk_start = time.time()
-#
-#     bulk_all(df, INDEX_FILE, INDEX_NAME)
-#
-#     # print("데이터 bulk 소요시간: ", time.time()-bulk_start)
-#     print(f'총 데이터 {df.shape[0]}개 bulk 소요시간은 {time.time()-bulk_start}')
-#     print("Success!")
 def put_data(date_time):
     prob_db = pymysql.connect(
         user='real',

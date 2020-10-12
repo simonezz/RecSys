@@ -9,14 +9,9 @@ def handle_client(client_list, conn, address):
     # json은 key가 string이여야하고, conn.sendall은 바이트형식으로 보내야해서 형식 변환 과정이 있음.
 
     date_time = conn.recv(1024)  # 문제 ID 받음
-    # print(ID)
+
     # date_time이후의 문제들을 elasticsearch에 넣음
     put_server.put_data(date_time.decode('utf-8'))
-
-    # entry = dict(zip(['ID', 'address', 'port', 'IDList'], [ID.decode('utf-8'), address[0], address[1], sim_list]))
-    # client_list[ID.decode('utf-8')] = entry
-    # # print(client_list)
-    # conn.sendall(bytes(json.dumps(client_list), encoding='utf-8'))
     conn.shutdown(socket.SHUT_RDWR)
     conn.close()
 
@@ -36,17 +31,13 @@ def server(client_list):
 
 def client(date_time):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(('127.0.0.1', 5000))
+    s.connect((socket.gethostname(), 5000))
     s.send(date_time.encode())
-    # data = s.recv(1024)
-    # result = json.loads(data)
-    # print(json.dumps(result, indent=4))
-
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('-es', dest='elasticsearch', action='store_true')
-    parser.add_argument('-ind', dest='index', action='store_true')
+    # parser.add_argument('-ind', dest='index', action='store_true')
     parser.add_argument('-c', dest='client', action='store_true')
     parser.add_argument('-d', dest='date_time', type=str)
     result = parser.parse_args()
