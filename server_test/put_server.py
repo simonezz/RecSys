@@ -23,7 +23,7 @@ import requests
 def get_all_info(prob_db, DateTime):
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
 
-    sql = f"SELECT ID, unitCode, problemLevel, problemURL, DateTime_Add FROM iclass.Table_middle_problems where isHide=0 and DateTime_Add >= str_to_date({DateTime},'%Y%m%d')"
+    sql = f"SELECT ID, unitCode, problemLevel, problemURL, DateTime_Add FROM iclass.Table_middle_problems where DateTime_Add >= str_to_date({DateTime},'%Y%m%d')"
 
     curs.execute(sql)
     df = pd.DataFrame(curs.fetchall())
