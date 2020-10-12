@@ -2,7 +2,9 @@ import argparse
 import json
 import socket
 import threading
+
 import Get_server
+
 
 def handle_client(client_list, conn, address):
     #json은 key가 string이여야하고, conn.sendall은 바이트형식으로 보내야해서 형식 변환 과정이 있음.
@@ -22,7 +24,7 @@ def server(client_list):
     print("Starting server...")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind(('127.0.0.1', 5000))
+    s.bind((socket.gethostname(), 5000))
     s.listen(5)
     while True:
         (conn, address) = s.accept()
