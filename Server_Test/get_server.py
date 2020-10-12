@@ -1,10 +1,11 @@
 # 데이터 이미 elasticsearch에 다 들어있다고 가정.
 # 아이디 입력 시 similar 문제 상위 10개 보여주는 것으로 함.
-import sys
-from elasticsearch import Elasticsearch
+import time
+
 # sys.path.insert(0, '../../utils')
 import general_utils as g_utils
-import time
+from elasticsearch import Elasticsearch
+
 
 class RecommenderSystem:
 
@@ -82,7 +83,7 @@ class RecommenderSystem:
             print('---------------------')
             if s['_score'] < 2:
                 try:
-                    if s['_id']==ID_list[-1]: #중복
+                    if s['_id'] == ID_list[-1]:  # 중복
                         pass
                     else:
                         ID_list.append(s['_id'])
@@ -91,10 +92,11 @@ class RecommenderSystem:
 
         return ID_list
 
-INI_FILE = 'Get_server.ini'
+
+INI_FILE = 'get_server.ini'
+
 
 def find_similar_pb(ID):
-
     ("찾고자 하는 ID: ", ID)
     reco_system = RecommenderSystem()
 
