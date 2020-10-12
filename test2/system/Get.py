@@ -1,7 +1,9 @@
 # 데이터 이미 elasticsearch에 다 들어있다고 가정.
 # 아이디 입력 시 similar 문제 상위 10개 보여주는 것으로 함.
 import sys
+
 from elasticsearch import Elasticsearch
+
 sys.path.insert(0, '../../utils')
 import general_utils as g_utils
 import time

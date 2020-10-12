@@ -71,15 +71,15 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
   1. search_server_client.py
   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
-  $ python Server_Test/search_server_client.py #server
-  $ python Server_Test/search_server_client.py -c -id {문제 ID} #client    
+  $ python server_test/search_server_client.py #server
+  $ python server_test/search_server_client.py -c -id {문제 ID} #client    
   ```
 
   2. put_server_client.py
 
   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
-  $ python Server_Test/put_server_client.py #server
-  $ python Server_Test/put_server_client.py -c -d {datetime} #client    
+  $ python server_test/put_server_client.py #server
+  $ python server_test/put_server_client.py -c -d {datetime} #client    
   ```
    
