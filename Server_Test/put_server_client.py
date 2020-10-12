@@ -36,8 +36,6 @@ def client(date_time):
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-es', dest='elasticsearch', action='store_true')
-    # parser.add_argument('-ind', dest='index', action='store_true')
     parser.add_argument('-c', dest='client', action='store_true')
     parser.add_argument('-d', dest='date_time', type=str)
     result = parser.parse_args()
