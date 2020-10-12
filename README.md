@@ -55,8 +55,8 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
 
 ## Server_Test
 
-파이썬 소켓 서버를 이용하여 client가 문제 ID를 보내면 서버에서 유사 문제 ID들을 돌려보내 줌.
-
+1. search_server_client.py : 파이썬 소켓 서버를 이용하여 client가 문제 ID를 보내면 서버에서 유사 문제 ID들을 돌려보내 줌.
+2. put_server_client.py : 파이썬 소켓 서버를 이용하여 client가 datetime(ex. 20201005) 보내면 서버에서 datetime 이후에 DB에 add된 문제들을 Elasticsearch에 색인화.
 
 ### Environment setup
 
@@ -64,9 +64,22 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
   2. `source activate RecoSys_server` : conda 환경 활성화
   3. `pip install -r requirements.txt` : python packages 설치
 
+
+
 ### Run
+
+  1. search_server_client.py
   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
-  $ python Server_Test/server_client.py #server
-  $ python Server_Test/server_client.py -c -id {문제 ID} #client    
+  $ python Server_Test/search_server_client.py #server
+  $ python Server_Test/search_server_client.py -c -id {문제 ID} #client    
   ```
+
+  2. put_server_client.py
+
+  ```
+  $ conda activate ${CONDA_VIRTUAL_ENV}
+  $ python Server_Test/put_server_client.py #server
+  $ python Server_Test/put_server_client.py -c -d {datetime} #client    
+  ```
+   
