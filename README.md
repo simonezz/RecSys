@@ -33,7 +33,7 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
 
   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
-  $ python Test1/system/main.py
+  $ python test1/system/main.py
   ```
   
 ## Test2
@@ -46,7 +46,7 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
 
   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
-  $ python Test2/system/Get.py
+  $ python test2/system/Get.py
   ```
   2. Index.py : 새로운 문제를 넣는 코드 (문제의 ID, unitCode, problemLevel, feature vector를 Elasticsearch에 추가)
   3. Update.py : 기존의 문제를 업데이트하는 코드 (문제의 ID, unitCode, problemLevel, feature vector를 Elasticsearch에 업데이트)
