@@ -107,7 +107,7 @@ def put_data(date_time):
     print(f'{date_time}이후로 추가된 문제를 가져옵니다.')
     df = get_all_info(prob_db, date_time)
 
-    INDEX_FILE = '../Test2/system/mapping2.json'
+    INDEX_FILE = '../test2/system/mapping2.json'
     INDEX_NAME = 'all_images'
 
     bulk_start = time.time()

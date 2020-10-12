@@ -1,30 +1,24 @@
-import sys
-
-sys.path.insert(0, '../../utils')
-
-
-# 특정 날짜를 포함한 이후로 새로 추가된 문제 데이터를 Elasticsearch에 넣기(색인화)
+import math
+import time
 
 import pandas as pd
 import pymysql
-import tensorflow as tf
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
-import tensorflow.keras.layers as layers
-from tensorflow.keras.models import Model
-import time
-import math
-from sklearn.preprocessing import normalize
-from elasticsearch.helpers import bulk
-from elasticsearch import Elasticsearch
-from tqdm import tqdm
 import requests
+import tensorflow as tf
+import tensorflow.keras.layers as layers
+from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
+from sklearn.preprocessing import normalize
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+from tensorflow.keras.models import Model
+from tqdm import tqdm
+
 
 # data 불러옴
-def get_all_info(prob_db, DateTime):
-
+def get_all_info(prob_db):
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
 
-    sql = f"SELECT ID, unitCode, problemLevel, problemURL, DateTime_Add FROM iclass.Table_middle_problems where isHide=0 and DateTime_Add >= str_to_date({DateTime},'%Y%m%d')"
+    sql = "SELECT ID, unitCode, problemLevel, problemURL FROM iclass.Table_middle_problems where isHide=1"
 
     curs.execute(sql)
     df = pd.DataFrame(curs.fetchall())
@@ -83,6 +77,15 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME):
     es = Elasticsearch(hosts=['localhost:9200'])
     dim = 1280
     bs = 10
+    # Index 생성
+#     es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
+#
+#
+# mappings 정의
+    with open(INDEX_FILE) as index_file:
+        source = index_file.read().strip()
+        # es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
+    print("Elasticsearch Index :", INDEX_NAME, "created!")
     nloop = math.ceil(df.shape[0] / bs)
 
     input_shape = (224, 224, 3)
@@ -93,6 +96,7 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME):
 
     model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
 
+    # for k in tqdm(range(33521)):
     for k in tqdm(range(nloop)):
 
         bulk_batchwise(es, df.loc[k*bs:min((k+1)*bs, df.shape[0])],INDEX_NAME, model, input_shape)
@@ -109,18 +113,14 @@ if __name__=="__main__":
         db='iclass',
         charset='utf8'
     )
+    df = get_all_info(prob_db)
 
-    DateTime = input("업데이트하고자 하는 시작 날짜 8자리 (ex 20200920) 입력: ")
-
-    df = get_all_info(prob_db, DateTime)
-
-    INDEX_FILE = '../Test2/system/mapping2.json'
-    INDEX_NAME = 'all_images'
+    INDEX_FILE = '../similar_image_search/test2/system/mapping2.json'
+    INDEX_NAME = 'all_problems'
 
     bulk_start = time.time()
 
     bulk_all(df, INDEX_FILE, INDEX_NAME)
 
-    # print("데이터 bulk 소요시간: ", time.time()-bulk_start)
-    print(f'총 데이터 {df.shape[0]}개 bulk 소요시간은 {time.time()-bulk_start}')
+    print("Hide data bulk 소요시간: ", time.time()-bulk_start)
     print("Success!")
