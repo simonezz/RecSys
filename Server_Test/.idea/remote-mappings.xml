@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteMappingsManager">
+    <list>
+      <list>
+        <remote-mappings server-id="python@65dc77ff-b2db-44e3-aaf6-549422f705a2" />
+        <remote-mappings server-id="python@sftp://master@freewheelin.iptime.org:22/home/master/anaconda3/envs/py37/bin/python3.7">
+          <settings>
+            <list>
+              <mapping local-root="$PROJECT_DIR$" remote-root="/home/master/source/project/Recommender_SH/pycharm_project/server_test" />
+            </list>
+          </settings>
+        </remote-mappings>
+      </list>
+    </list>
+  </component>
+</project>

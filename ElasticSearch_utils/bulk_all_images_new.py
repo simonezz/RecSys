@@ -19,7 +19,7 @@ def get_all_info(prob_db):
 
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
 
-    sql = "SELECT ID, unitCode, problemLevel, problemURL FROM iclass.Table_middle_problems where isHide=0"
+    sql = "SELECT ID, unitCode, problemLevel, problemURL FROM iclass.Table_middle_problems where isHide=1"
 
     curs.execute(sql)
     df = pd.DataFrame(curs.fetchall())
@@ -116,12 +116,12 @@ if __name__=="__main__":
     )
     df = get_all_info(prob_db)
 
-    INDEX_FILE = '../Test2/system/mapping2.json'
+    INDEX_FILE = '../similar_image_search/Test2/system/mapping2.json'
     INDEX_NAME = 'all_problems'
 
     bulk_start = time.time()
 
     bulk_all(df, INDEX_FILE, INDEX_NAME)
 
-    print("전체 데이터 bulk 소요시간: ", time.time()-bulk_start)
+    print("Hide data bulk 소요시간: ", time.time()-bulk_start)
     print("Success!")
