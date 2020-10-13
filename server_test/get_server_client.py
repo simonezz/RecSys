@@ -13,9 +13,10 @@ def handle_client(client_list, conn, address):
 
     ID, start, end = map(int, recv.split('/'))
 
-    sim_list = get_server.find_similar_pb(ID)[start:end + 1]
+    sim_list = get_server.find_similar_pb(ID)
 
-    entry = dict(zip(['ID', 'address', 'port', 'IDList'], [ID, address[0], address[1], sim_list]))
+    entry = dict(zip(['ID', 'address', 'port', 'totalCount', 'IDList'],
+                     [ID, address[0], address[1], len(sim_list), sim_list[start:end + 1]]))
     client_list[ID] = entry
 
     conn.sendall(bytes(json.dumps(client_list), encoding='utf-8'))
