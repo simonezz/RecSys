@@ -18,11 +18,9 @@ class RecommenderSystem:
         # Set parameters
         self.es = ini['ElasticSearch']['host'] # Elasticsearch Host
         self.index_name = ini['ElasticSearch']['INDEX_NAME']
-        self.search_size = ini['ElasticSearch']['SEARCH_SIZE']# Similar problems 갯수
+        self.search_size = ini['ElasticSearch']['SEARCH_SIZE']  # Similar problems 갯수 100으로 설정되어있음
 
     def run(self, ID):
-
-        # ID = int(input("Enter ID: "))
 
         es = Elasticsearch(self.es)
 
@@ -36,7 +34,7 @@ class RecommenderSystem:
                 "query": {"match": {"_id": ID}}
             }
         )
-        # print(res)
+
         if len(res['hits']['hits'])==0: #해당 ID가 Elasticsearch에 없다면,
             raise Exception("해당 ID가 Elasticsearch에 없습니다!")
         for s in res['hits']['hits']:
@@ -101,11 +99,5 @@ def find_similar_pb(ID):
     reco_system = RecommenderSystem()
 
     return reco_system.run(ID)
-    # print("similar ID List: ", reco_system.run(ID))
-
-
-# if __name__ == "__main__":
-#
-#     main(ID)
 
 
