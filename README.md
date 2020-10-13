@@ -55,9 +55,9 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
 
 ## Server_Test
 
-1. get_server_client.py : 파이썬 소켓 서버를 이용하여 client가 문제 ID, 시작 순위, 마지막 순를 보내면 서버에서 유사 문제 ID들을 돌려보내 줌.
+1. get_server_client.py : 파이썬 소켓 서버를 이용하여 client가 문제 ID, 시작 순위, 마지막 순위를 보내면 서버에서 유사 문제 ID들을 돌려보내 줌.
 2. put_server_client.py : 파이썬 소켓 서버를 이용하여 client가 datetime(ex. 20201005) 보내면 서버에서 datetime 이후에 DB에 add된 문제들을 Elasticsearch에 색인화.
-
+3. twins_get_server_client.py : 파이썬 소켓 서버를 이용하여 client가 시중교재문제 ID, 시작 순위, 마지막 순위를 보내면 MySQL의 BookTwins 테이블에서 1:1 매칭되어 있는 문제은행 문제를 기준으로 Elasticsearch에서 유사문제를 찾아냄.
 ### Environment setup
 
   1. `conda create -n RecoSys_server python=3.7` : conda 환경 생성
@@ -84,4 +84,9 @@ ex) server_test/get_server_client.py -c -id 1 -s 0 -e 10 입력 시 id 1번인 �
   $ python server_test/put_server_client.py #server
   $ python server_test/put_server_client.py -c -d {datetime} #client    
   ```
-   
+  3. twins_get_server_client.py
+    ```
+  $ conda activate ${CONDA_VIRTUAL_ENV}
+  $ python server_test/get_server_client.py #server
+  $ python server_test/get_server_client.py -c -id {시중교재문제 ID} -s {start} -e {end}#client  
+  ```
