@@ -85,7 +85,8 @@ ex) server_test/get_server_client.py -c -id 1 -s 0 -e 10 입력 시 id 1번인 �
   $ python server_test/put_server_client.py -c -d {datetime} #client    
   ```
   3. twins_get_server_client.py
-    ```
+  
+   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
   $ python server_test/get_server_client.py #server
   $ python server_test/get_server_client.py -c -id {시중교재문제 ID} -s {start} -e {end}#client  
