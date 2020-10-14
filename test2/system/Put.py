@@ -112,7 +112,7 @@ if __name__=="__main__":
 
     DateTime = input("업데이트하고자 하는 시작 날짜 8자리 (ex 20200920) 입력: ")
 
-    df = get_all_info(prob_db, DateTime)
+    df = get_all_info(prob_db, DateTime)  # DateTime이후에 추가된 문제들 불러옴.
 
     INDEX_FILE = '../test2/system/mapping2.json'
     INDEX_NAME = 'all_images'
