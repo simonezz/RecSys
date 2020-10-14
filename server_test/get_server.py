@@ -95,7 +95,6 @@ INI_FILE = 'get_server.ini'
 
 
 def find_similar_pb(ID):
-    ("찾고자 하는 ID: ", ID)
     reco_system = RecommenderSystem()
 
     return reco_system.run(ID)
