@@ -108,7 +108,7 @@ def put_data(date_time):
     df = get_all_info(prob_db, date_time)
 
     INDEX_FILE = '../test2/system/mapping2.json'
-    INDEX_NAME = 'all_images'
+    INDEX_NAME = 'all_problems'
 
     bulk_start = time.time()
 
