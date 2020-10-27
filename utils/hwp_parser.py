@@ -183,34 +183,6 @@ class HwpReader(object):
         plt.title(section)
         plt.show()
 
-    # @property
-    # def hwp2txt(self, filePath, storage):
-    #     self.__bodytext = ''
-    #     # self.__prvtext = ''
-    #     #bindata는 이미지
-    #
-    #     if storage =='all': # BodyText, PrvText, Bindata 다 뽑음
-    #         for section in self.sectionList:
-    #             if section.split['/'][0] == 'BodyText':
-    #                 self.__bodytext += self.bodyStream2txt(section)
-    #             elif section.split['/'][0] == 'PrvText':
-    #                 self.__prvtext = self.prvStream2txt()
-    #             else: # Bindata
-    #                 self.binStream2img(filePath, section)
-    #     elif storage == 'BodyText'
-    #         self.__bodytext += self.bodyStream2txt(section)
-    #     elif storage ==
-    #
-    #     self.__hwp2txt = ''
-    #     for section in self.sectionList:
-    #         self.__hwp2txt += self.stream2txt(section)
-    #     return self.__hwp2txt
-    #
-    # def writeFile(self, filePath, fileName):
-    #     f = open(filePath + fileName, mode='wt', encoding="utf-16")
-    #     f.write(self.hwp2txt)
-    #     f.close()
-
 
 if __name__ == '__main__':
 
