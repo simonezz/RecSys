@@ -11,7 +11,7 @@ from PIL import Image
 
 
 # 아래한글 파일 hwp로부터 텍스트 또는 이미지 추출한다.
-# 추출 Section으로는 PrvText, BodyText, Bindata가 있다.
+# 추출 Section으로는 PrvText, BodyText, BinData가 있다.
 
 class char(object):
     size = 1
@@ -79,7 +79,7 @@ class HwpReader(object):
             if len(header) == 0:
                 continue
             else:
-                if header[0] in ['BodyText', 'PrvText', 'Bindata']:
+                if header[0] in ['BodyText', 'PrvText', 'BinData']:
                     try:
                         self.__sectionList.append(header[0] + '/' + header[1])
                     except:
@@ -159,29 +159,30 @@ class HwpReader(object):
         data = bin_text.read()
         return data.decode('utf-16')
 
-    def binStream(self, filePath):
-
-        for section in self.sectionList:
-            if section.split('/')[0] == 'BinData':
-                binStream2img(filePath, section)
-
     def binStream2img(self, filePath, section):
 
         # output path에 inputfile 이름과 똑같은 폴더를 만듦
-        os.mkdir(os.path.join(filePath, self.inputName.split['.'][0]))
+        if not os.path.isdir(os.path.join(filePath, self.inputName.split('.')[0])):
+            os.mkdir(os.path.join(filePath, self.inputName.split('.')[0]))
 
-        bin_text = self._ole.openstream('Bindata')
+        bin_text = self._ole.openstream(section)
         data = bin_text.read()
         zobj = zlib.decompressobj(-15)
         data2 = zobj.decompress(data)
 
         img = Image.open(BytesIO(data2))
 
-        plt.imsave(os.path.join(filePath, self.inputName.split['.'][0], section.split['/'][1]), img)
-
+        # 이미지 저장 시 주석 uncomment
+        #         img.save(os.path.join(filePath, self.inputName.split('.')[0], section.split('/')[1]))
         plt.imshow(img)
         plt.title(section)
         plt.show()
+
+    def binStream(self, filePath):
+
+        for section in self.sectionList:
+            if section.split('/')[0] == 'BinData':
+                self.binStream2img(filePath, section)
 
 
 if __name__ == '__main__':
