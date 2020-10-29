@@ -91,3 +91,17 @@ ex) server_test/get_server_client.py -c -id 1 -s 0 -e 10 입력 시 id 1번인 �
   $ python server_test/get_server_client.py #server
   $ python server_test/get_server_client.py -c -id {시중교재문제 ID} -s {start} -e {end}#client  
   ```
+
+## utils
+
+1. hwp_parser.py : 15년도 개정 중 hwp파일이 존재하는 문제 데이터 hwp로부터 텍스트를 파싱(BodyText, BinData, PrvText)
+
+###Run
+
+1. hwp_parser.py
+
+  ```
+  $ conda activate ${CONDA_VIRTUAL_ENV}
+  $ python utils/hwp_parser.py --inputPath {input file path} --inputFile {input file name} --bodyText --w --outputPath{output text path} --outputFile {output text file name}
+# hwp파일로부터 bodyText를 뽑아내고자 할 때(텍스트 따로 저장하지 않을 시 --w 부터 생략)
+  ```
