@@ -1,9 +1,8 @@
 # Recommender-System
 
-MATHFLAT의 유사 문제 추천 알고리즘 개발
-Pre-trained MobileNet을 이용하여 feature vector 추출 후 cosine 유사도 측정
-Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오도록 함.
-
+Development of MATHFLAT's Algorithm for Recommendation of Similar Problems.
+Extract the feature vector using Pre-trained MobileNet and measure cosine similarity.
+Use Elasticsearch to get k questions with high cosine similarity.
 
 
 
@@ -63,8 +62,7 @@ Elasticsearch를 이용하여 Cosine 유사도가 높은 문제가 k개 나오�
   $ python server_test/get_server_client.py #server
   $ python server_test/get_server_client.py -c -id {문제 ID} -s {start} -e {end}#client  
   ```
-ex) server_test/get_server_client.py -c -id 1 -s 0 -e 10 입력 시 id 1번인 문제와 비슷한 0~10순위까지의 문제 return  
-
+ex) server_test/get_server_client.py -c -id 1 -s 0 -e 10 : returns problems data from rank 0 to 10 similar to id number 1.
 
   2. put_server_client.py
 
@@ -78,26 +76,27 @@ ex) server_test/get_server_client.py -c -id 1 -s 0 -e 10 입력 시 id 1번인 �
    ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
   $ python server_test/get_server_client.py #server
-  $ python server_test/get_server_client.py -c -id {시중교재문제 ID} -s {start} -e {end}#client  
+  $ python server_test/get_server_client.py -c -id {bookdata ID} -s {start} -e {end}#client  
   ```
   
 ## ElasticSearch_utils
   
-  1. bulk_all_images_new.py : 현재(2020/09/23)가지고 있는 문제(약 40만개)를 다 ElasticSearch에 넣는 코드(시간 소모 매우 큼) -> 447879개의 데이터 있음
-  (Id, unitCode, problemLevel, feature vector가 있음.)
+  1. bulk_all_images_new.py : Code (very time consuming) putting all the problem data you are currently having (2020/09/23) into ElasticSearch (approximately 400,000) 
+  (Id, unitCode,problemLevel,feature vector are present.)
+  
+  
   
 ## utils
 
-  1. prepare_data.py : Input으로 문제 ID를 받아 이 문제와 unitCode, problemLevel이 같은 문제들 가져온 후 MobileNet으로 Feature vector를 뽑아냄. 
+  1. prepare_data.py : Extracts feature Vectors(using pre-trained MobileNet) of the problems which are same in terms of unitCode, problemLevel.
 
-  2. bulk_feature_vectors.py : Elasticsearch에 feature vectors들을 색인화함. 
+  2. bulk_feature_vectors.py : Index feature vectors in Elasticsearch.
 
-  3. find_similar_problems.py : Elasticsearch의 cosine similarity를 이용하여 유사한 벡터 k개의 ID return.
+  3. find_similar_problems.py : Returns similar vector k with input ID using cosine similarity of elasticsearch.
   
-  4. general_utils.py : 이미지 관련 함수들 모음 (이 중 ini 파일 파싱하는 함수 사용)
+  4. general_utils.py : Collection of image-related functions (using one of these functions to parse ini files)
    
-  5. hwp_parser.py : 15년도 개정 중 hwp파일이 존재하는 문제 데이터(약 15만개) hwp로부터 텍스트를 파싱(BodyText, BinData, PrvText)
-
+  5. hwp_parser.py : Extracts plain text or images from problem data (approximately 150,000) where hwp files exist among 15 curriculum data (BodyText, BinData, PrvText)
 
 ### Run
 
@@ -106,5 +105,5 @@ ex) server_test/get_server_client.py -c -id 1 -s 0 -e 10 입력 시 id 1번인 �
   ```
   $ conda activate ${CONDA_VIRTUAL_ENV}
   $ python utils/hwp_parser.py --inputPath {input file path} --inputFile {input file name} --bodyText --w --outputPath{output text path} --outputFile {output text file name}
-# hwp파일로부터 bodyText를 뽑아내고자 할 때(텍스트 따로 저장하지 않을 시 --w 부터 생략)
+# When you want to extract bodyText from a hwp file (except from --w if you don't want to save result text)
   ```
