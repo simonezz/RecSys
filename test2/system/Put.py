@@ -1,5 +1,5 @@
 import sys
-from elasticsearch import Elasticsearch
+
 sys.path.insert(0, '../../utils')
 
 
@@ -51,17 +51,6 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
     id_list = []
     img_list = []
     for i in list(part_df.index):
-
-        res = es.search(
-            index='all_images',
-            body={
-                "query": {"match": {"_id": i}}
-            }
-        )
-
-        if res['hits']['hits'] > 0: #이미 Elasticsearch에 있다면,
-
-
         url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i,'problemURL'] + "p.png"
         url = url.replace("/math_problems/", "/math_problems/d/")
         try:
@@ -123,9 +112,9 @@ if __name__=="__main__":
 
     DateTime = input("업데이트하고자 하는 시작 날짜 8자리 (ex 20200920) 입력: ")
 
-    df = get_all_info(prob_db, DateTime)
+    df = get_all_info(prob_db, DateTime)  # DateTime이후에 추가된 문제들 불러옴.
 
-    INDEX_FILE = '../Test2/system/mapping2.json'
+    INDEX_FILE = '../test2/system/mapping2.json'
     INDEX_NAME = 'all_images'
 
     bulk_start = time.time()

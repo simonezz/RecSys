@@ -1,10 +1,11 @@
 # 데이터 이미 elasticsearch에 다 들어있다고 가정.
 # 아이디 입력 시 similar 문제 상위 10개 보여주는 것으로 함.
-import sys
-from elasticsearch import Elasticsearch
-sys.path.insert(0, '../../utils')
-import general_utils as g_utils
 import time
+
+# sys.path.insert(0, '../../utils')
+import general_utils as g_utils
+from elasticsearch import Elasticsearch
+
 
 class RecommenderSystem:
 
@@ -17,11 +18,9 @@ class RecommenderSystem:
         # Set parameters
         self.es = ini['ElasticSearch']['host'] # Elasticsearch Host
         self.index_name = ini['ElasticSearch']['INDEX_NAME']
-        self.search_size = ini['ElasticSearch']['SEARCH_SIZE']# Similar problems 갯수
+        self.search_size = ini['ElasticSearch']['SEARCH_SIZE']  # Similar problems 갯수 100으로 설정되어있음
 
-    def run(self):
-
-        ID = int(input("Enter ID: "))
+    def run(self, ID):
 
         es = Elasticsearch(self.es)
 
@@ -35,7 +34,7 @@ class RecommenderSystem:
                 "query": {"match": {"_id": ID}}
             }
         )
-        # print(res)
+
         if len(res['hits']['hits'])==0: #해당 ID가 Elasticsearch에 없다면,
             raise Exception("해당 ID가 Elasticsearch에 없습니다!")
         for s in res['hits']['hits']:
@@ -75,14 +74,14 @@ class RecommenderSystem:
         ID_list = []
         for s in response['hits']['hits']:
 
-            print("ID: ", s['_id'])
-            print("unitCode: ", s['_source']['unitCode'])
-            print("problemLevel: ", s['_source']['problemLevel'])
-            print("score: ", s['_score'])
-            print('---------------------')
+            # print("ID: ", s['_id'])
+            # print("unitCode: ", s['_source']['unitCode'])
+            # print("problemLevel: ", s['_source']['problemLevel'])
+            # print("score: ", s['_score'])
+            # print('---------------------')
             if s['_score'] < 2:
                 try:
-                    if s['_id']==ID_list[-1]: #중복
+                    if s['_id'] == ID_list[-1]:  # 중복
                         pass
                     else:
                         ID_list.append(s['_id'])
@@ -91,17 +90,13 @@ class RecommenderSystem:
 
         return ID_list
 
-INI_FILE = 'Get.ini'
 
-def main():
+INI_FILE = 'get_server.ini'
 
+
+def find_similar_pb(ID):
     reco_system = RecommenderSystem()
 
-    print("similar ID List: ", reco_system.run())
-
-
-if __name__ == "__main__":
-
-    main()
+    return reco_system.run(ID)
 
 

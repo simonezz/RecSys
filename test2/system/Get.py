@@ -1,8 +1,10 @@
 # 데이터 이미 elasticsearch에 다 들어있다고 가정.
 # 아이디 입력 시 similar 문제 상위 10개 보여주는 것으로 함.
 import sys
+
 from elasticsearch import Elasticsearch
-# sys.path.insert(0, '../../utils')
+
+sys.path.insert(0, '../../utils')
 import general_utils as g_utils
 import time
 
@@ -19,9 +21,9 @@ class RecommenderSystem:
         self.index_name = ini['ElasticSearch']['INDEX_NAME']
         self.search_size = ini['ElasticSearch']['SEARCH_SIZE']# Similar problems 갯수
 
-    def run(self, ID):
+    def run(self):
 
-        # ID = int(input("Enter ID: "))
+        ID = int(input("Enter ID: "))
 
         es = Elasticsearch(self.es)
 
@@ -91,19 +93,17 @@ class RecommenderSystem:
 
         return ID_list
 
-INI_FILE = 'Get_server.ini'
+INI_FILE = 'Get.ini'
 
-def find_similar_pb(ID):
+def main():
 
-    ("찾고자 하는 ID: ", ID)
     reco_system = RecommenderSystem()
 
-    return reco_system.run(ID)
-    # print("similar ID List: ", reco_system.run(ID))
+    print("similar ID List: ", reco_system.run())
 
 
-# if __name__ == "__main__":
-#
-#     main(ID)
+if __name__ == "__main__":
+
+    main()
 
 

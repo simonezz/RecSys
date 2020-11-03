@@ -3,25 +3,25 @@
 
 """ # Updated in 20/06/24 """
 
-import logging
 import configparser
 import datetime
-import random
-import operator
 import glob
-import unicodedata
-import os
-import sys
 import json
-import numpy as np
-import cv2
+import logging
+import operator
+import os
+import random
+import sys
 import traceback
-
+import unicodedata
 from copy import deepcopy
-from PIL import Image
-from operator import itemgetter
-from matplotlib import pyplot as plt
 from logging import handlers as log_handlers
+from operator import itemgetter
+
+import cv2
+import numpy as np
+from PIL import Image
+from matplotlib import pyplot as plt
 
 '''
 try:
