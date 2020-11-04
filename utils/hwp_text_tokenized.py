@@ -11,6 +11,8 @@ from tqdm import notebook
 '''
 문제 hwp로부터 text를 가져와 유형별 키워드를 뽑아내는 코드들
 
+시간 소모가 큼 -> 이미 아래의 코드들을 실행한 dataframe이 all_15_hwp_tokenized.csv에 저장되어 있다.
+
 '''
 
 word_classes = ['NNG', 'NNP', 'NNB', 'NR', 'VV', 'VA', 'MM', 'EF', 'MAG', 'MAJ']  # 필요한 품사 모음
