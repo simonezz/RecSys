@@ -198,14 +198,24 @@ if __name__ == '__main__':
 
     parser.add_argument('--w', type=str, required=False, help="if you want to save as files")
     parser.add_argument('--outputPath', type=str, required=False, help="the output base path", default="./")
-    parser.add_argument('--outputFile', type=str, required=False, help="the output base file name", default="output")
+    parser.add_argument('--outputFile', type=str, required=False, help="the output base file name",
+                        default="output.txt")
 
     args = parser.parse_args()
 
     hwpReader = HwpReader(args.inputPath, args.inputFile)
 
     if args.bodyText:
-        print(hwpReader.bodyStream())
+        text = hwpReader.bodyStream()
+        print(text)
+        if args.w:
+            f = open(os.path.join(args.outputPath, args.outputFile), 'w')
+            for sec in text.keys():
+                f.write(sec)
+                f.write('\n')
+                f.write(text[sec])
+
+            f.close()
     if args.binData:
         hwpReader.binStream(args.outputPath)
     if args.prvText:
