@@ -8,6 +8,11 @@ from PyKomoran import *
 from hwp_parser import *
 from tqdm import notebook
 
+'''
+문제 hwp로부터 text를 가져와 유형별 키워드를 뽑아내는 코드들
+
+'''
+
 word_classes = ['NNG', 'NNP', 'NNB', 'NR', 'VV', 'VA', 'MM', 'EF', 'MAG', 'MAJ']  # 필요한 품사 모음
 
 
