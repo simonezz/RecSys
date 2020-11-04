@@ -1,14 +1,16 @@
 # Mysql로부터 문제에 대한 정보를 불러온다. (ex : unitCode, problemLevel...)
+import math
+import time
+
 import pandas as pd
 import pymysql
 import tensorflow as tf
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 import tensorflow.keras.layers as layers
-from tensorflow.keras.models import Model
-import time
-import math
-from sklearn.preprocessing import normalize
 from elasticsearch.helpers import bulk
+from sklearn.preprocessing import normalize
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+from tensorflow.keras.models import Model
+
 '''
 
 Input : problem ID
@@ -16,6 +18,8 @@ Input : problem ID
 Result : Put feature vectors of problems of same unitCode, problemLevel with Input ID into ElasticSearch
 
 '''
+
+
 # Get input data information(unitCode, problemLevel) from MySQL
 # You can find MySQL host, password info from Freewheelin notion -> Engineering wiki -> Credentials
 def get_similar_df(ID, prob_db):
@@ -84,23 +88,21 @@ def extract_feature(result_df, batch_size, input_shape, input_dir):
 
 # Bulk feature vectors to Elastic Search.
 def data_bulk(es, result_df, INDEX_FILE, INDEX_NAME, fvecs):
-
     dim = 1280
     bs = 10
     # Index 생성
-    es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
+    # es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
 
-    with open(INDEX_FILE) as index_file:
-        source = index_file.read().strip()
-        es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
+    # with open(INDEX_FILE) as index_file:
+    #     source = index_file.read().strip()
+    #     es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
 
     # fvecs = np.memmap(fvec_file, dtype='float32', mode='r').view('float32').reshape(-1, dim)
 
     nloop = math.ceil(fvecs.shape[0] / bs)
     for k in range(nloop):
-
         rows = [{'_index': INDEX_NAME,
-                 'Id': f'{list(result_df.index)[i]}', 'fvec': list(normalize(fvecs[i:i+1])[0].tolist())}
+                 'Id': f'{list(result_df.index)[i]}', 'fvec': list(normalize(fvecs[i:i + 1])[0].tolist())}
                 for i in range(k * bs, min((k + 1) * bs, fvecs.shape[0]))]
         s = time.time()
         bulk(es, rows)
