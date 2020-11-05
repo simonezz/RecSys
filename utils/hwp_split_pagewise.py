@@ -1,3 +1,4 @@
+# -*- coding : cp949 -*-
 '''
 hwp파일을 페이지 별로 쪼개서 저장하는 함수
 
@@ -29,17 +30,19 @@ class Hwp:
             self.hwp.Run("FileNew")
         self.hwp.Open(self.name)
 
-    def split_save(self, name):
+    def split_save(self):
+
+        name = self.name
         self.hwp.MovePos(0)
         self.pagecount = self.hwp.PageCount
         hwp_docs = self.hwp.XHwpDocuments
 
-        target_folder = os.path.join(os.environ['USERPROFILE'], 'desktop', 'result')
-
+        # target_folder = os.path.join(os.environ['USERPROFILE'], 'desktop', 'result')
+        target_folder = os.path.join(os.environ['USERPROFILE'], 'desktop/result', name.split('.')[0])
         try:
             os.mkdir(target_folder)
         except FileExistsError:
-            print("바탕화면에 result 폴더가 이미 생성되어 있습니다.")
+            print(f"바탕화면에 {target_folder} 폴더가 이미 생성되어 있습니다.")
 
         for i in range(self.pagecount):
             hwp_docs.Item(0).SetActive_XHwpDocument()
@@ -50,7 +53,7 @@ class Hwp:
             hwp_docs.Item(1).SetActive_XHwpDocument()
             self.hwp.Run("Paste")
             self.hwp.SaveAs(
-                os.path.join(target_folder, name.rsplit('/')[-1].rsplit('-')[0] + "_" + str(i + 1) + ".hwp"))
+                os.path.join(target_folder, name.split(".")[0] + "_" + str(i + 1) + ".hwp"))
             self.hwp.Run("FileClose")
             self.hwp.Run("MovePageDown")
             print(f"{i + 1}/{self.pagecount}")
