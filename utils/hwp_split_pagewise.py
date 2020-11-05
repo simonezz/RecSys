@@ -47,13 +47,16 @@ class Hwp:
         for i in range(self.pagecount):
             hwp_docs.Item(0).SetActive_XHwpDocument()
             sleep(1)
-            self.hwp.Run("CopyPage")
+            # self.hwp.Run("SelectAll")
+            # self.hwp.Run("Copy")
+            self.hwp.Run("MovePageEnd")  # 현 페이지의 마지막으로 커서 옮김
+            self.hwp.Run("CopyPage")  # 현재 페이지만 복사
             sleep(1)
             hwp_docs.Add(isTab=True)
             hwp_docs.Item(1).SetActive_XHwpDocument()
-            self.hwp.Run("Paste")
+            self.hwp.Run("Paste")  # 복사한 페이지 붙여넣기
             self.hwp.SaveAs(
-                os.path.join(target_folder, name.split(".")[0] + "_" + str(i + 1) + ".hwp"))
+                os.path.join(target_folder, name.split(".")[0] + "_" + str(i + 1) + ".hwp"))  # 새로운 hwp파일로 저장
             self.hwp.Run("FileClose")
             self.hwp.Run("MovePageDown")
             print(f"{i + 1}/{self.pagecount}")
@@ -69,12 +72,10 @@ def main():
 
     hwp = Hwp()
     hwp.open_file(name)
-    hwp.split_save(name)
+    hwp.split_save()
     hwp.quit()
 
     print("완료")
-
-    input()
 
 
 if __name__ == "__main__":
