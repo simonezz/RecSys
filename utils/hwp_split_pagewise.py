@@ -2,6 +2,7 @@
 hwp파일을 페이지 별로 쪼개서 저장하는 함수
 
 ** 윈도우에서만 가능하다.(win32com)
+** 한글과컴퓨터가 제대로 설치가 되어 있지 않으면, win32.gencache.EnsureDispatch("HWPFrame.HwpObject")에서 Invalid Class String 에러가 난다.
 
 '''
 
