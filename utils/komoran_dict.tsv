@@ -19,7 +19,7 @@
 가평균	NNP
 가환군	NNP
 각	NNP
-각각	MAG
+각각  MAG
 각기둥	NNP
 각도	NNP
 각뿔	NNP
@@ -30,11 +30,9 @@
 좌표	NNP
 축	NNP
 가정몫	NNP
-더하는 수	NNP
 다각기둥	NNP
 다각뿔	NNP
 다각뿔대	NNP
-각의 변	NNP
 간접증명	NNP
 간접측량	NNP
 간편셈	NNP
@@ -104,7 +102,6 @@
 공사건	NNP
 공식	NNP
 피승수	NNP
-삼차원 벡터	NNP
 공통배수	NNP
 공약수	NNP
 공역	NNP
@@ -136,7 +133,6 @@
 군	NNP
 군수열	NNP
 귀납법	NNP
-귀납적 정의	NNP
 귀류법	NNP
 공통약수	NNP
 공변역	NNP
@@ -162,7 +158,6 @@
 근사식	NNP
 근삿값	NNP
 근원사건	NNP
-근의 공식	NNP
 근호	NNP
 급수	NNP
 급수의 합	NNP
@@ -182,21 +177,17 @@
 기하평균	NNP
 기함수	NNP
 기호	NNP
-긴지름	NNP
 길이	NNP
 꺾은선	NNP
 꺾은선그래프	NNP
 꼬인 위치	NNP
 꼭지각	NNP
 꼭짓점	NNP
-꼭짓점의 차수	NNP
 끝항	NNP
 끼인각	NNP
 나누기	NNP
 나눗셈	NNP
 홀함수	NNP
-나누어지는 수	NNP
-피제수	NNP
 나머지	NNP
 나머지정리	NNP
 나선	NNP
@@ -251,9 +242,6 @@
 단조수열	NNP
 단조증가	NNP
 단조함수	NNP
-단축	NNP
-단측가설	NNP
-단측검정	NNP
 단항식	NNP
 닫힌구간	NNP
 닫힌집합	NNP
@@ -276,8 +264,6 @@
 대칭축	NNP
 대칭행렬	NNP
 대푯값	NNP
-더하기	NNP
-더해지는 수	NNP
 덧셈	NNP
 도수	NNP
 도수분포	NNP
@@ -330,7 +316,6 @@
 멱집합	NNP
 면	NNP
 면대칭	NNP
-면대칭도형	NNP
 명제	NNP
 기하급수	NNP
 거듭제곱급수	NNP
@@ -342,7 +327,6 @@
 모수	NNP
 모순	NNP
 모집단	NNP
-모집단분포	NNP
 모평균	NNP
 모표준편차	NNP
 목적함수	NNP
@@ -372,9 +356,6 @@
 미분계수	NNP
 미분몫	NNP
 미분방정식	NNP
-미분법	NNP
-미분학	NNP
-미적분학	NNP
 미정계수법	NNP
 미지수	NNP
 미지항	NNP
@@ -395,8 +376,6 @@
 반직선	NNP
 반평면	NNP
 밑면적	NNP
-반열린 구간	NNP
-반닫힌 구간	NNP
 발산	NNP
 방심	NNP
 방위각	NNP
@@ -413,8 +392,6 @@
 배수	NNP
 배수비례	NNP
 백분율	NNP
-버림	NNP
-번분수	NNP
 범위	NNP
 법선	NNP
 벡터	NNP
@@ -434,17 +411,12 @@
 복비	NNP
 복비례	NNP
 복소수	NNP
-복소수체	NNP
 복소평면	NNP
 복원 추출	NNP
-복이차방정식	NNP
 볼록	NNP
-볼록다각형	NNP
-볼록다면체	NNP
 부동점	NNP
 부등식	NNP
 부등호	NNP
-부분군	NNP
 부분분수	NNP
 부분수열	NNP
 부분적분	NNP
@@ -497,7 +469,6 @@
 빗원기둥	NNP
 빗원뿔	NNP
 빼기	NNP
-빼지는 수	NNP
 뺄셈	NNP
 뿔면	NNP
 사각기둥	NNP
@@ -518,7 +489,6 @@
 사칙	NNP
 산수	NNP
 산술	NNP
-산술평균	NNP
 산점도	NNP
 산포도	NNP
 삼각기둥	NNP
@@ -551,10 +521,6 @@
 상수항	NNP
 상용로그	NNP
 상한	NNP
-색칠문제	NNP
-생산함수	NNP
-생성수형도	NNP
-서로 같다	NNP
 서로소	NNP
 선	NNP
 선대칭	NNP
@@ -586,7 +552,6 @@
 수평	NNP
 수학	NNP
 수학적 귀납법	NNP
-수학적 확률	NNP
 수형도	NNP
 순간가속도	NNP
 순간변화율	NNP
@@ -615,20 +580,15 @@
 실수체	NNP
 실수축	NNP
 순서짝	NNP
-곱하는수	NNP
-처음점	NNP
-믿음구간	NNP
 십진법	NNP
 쌍곡면	NNP
 쌍곡선	NNP
-쌍곡선함수	NNP
 나머지사건	NNP
 여인자	NNP
 쌍조건문	NNP
 아래끝	NNP
 아랫변	NNP
 알고리즘	NNP
-약	NNP
 약분	NNP
 약수	NNP
 양변	NNP
@@ -665,7 +625,6 @@
 연속	NNP
 연속변량	NNP
 연속변수	NNP
-연속 복리	NNP
 연속분포	NNP
 연속성	NNP
 연속함수	NNP
@@ -697,11 +656,9 @@
 오목다면체	NNP
 오목사각형	NNP
 오심	NNP
-오일러 공식	NNP
-오일러 회로	NNP
+오일러 NNP
 오진법	NNP
 오차	NNP
-오차의 한계	NNP
 올림	NNP
 완전제곱	NNP
 외각	NNP
@@ -765,7 +722,6 @@
 음	NNP
 음수	NNP
 음함수	NNP
-의사결정	NNP
 이계도함수	NNP
 이등변삼각형	NNP
 이등분	NNP
@@ -783,11 +739,6 @@
 이중근호	NNP
 이진법	NNP
 이차곡선	NNP
-이차방정식	NNP
-이차부등식	NNP
-이차식	NNP
-이차함수	NNP
-이차항	NNP
 이항	NNP
 이항계수	NNP
 이항방정식	NNP
@@ -803,18 +754,11 @@
 일반각	NNP
 일반항	NNP
 일반해	NNP
-일부조사	NNP
-일차방정식	NNP
 일차변환	NNP
-일차부등식	NNP
-일차식	NNP
-일차함수	NNP
-일차항	NNP
 임의표본	NNP
 입면도	NNP
 입체	NNP
 입체도형	NNP
-잉여류	NNP
 자리	NNP
 임의표집	NNP
 확률표본	NNP
@@ -839,7 +783,6 @@
 전미분	NNP
 전사건	NNP
 전사함수	NNP
-긴축	NNP
 일대일대응	NNP
 전체사건	NNP
 전수조사	NNP
@@ -849,7 +792,6 @@
 전환법	NNP
 절대부등식	NNP
 절대수렴	NNP
-절대수렴급수	NNP
 절대오차	NNP
 절댓값	NNP
 절편	NNP
@@ -861,14 +803,11 @@
 점대칭	NNP
 점원	NNP
 점집합	NNP
-점화관계	NNP
 점화식	NNP
 접선	NNP
-접선의 길이	NNP
 접원	NNP
 접점	NNP
 접평면	NNP
-접하다	NNP
 정각기둥	NNP
 정각뿔	NNP
 정각뿔대	NNP
@@ -877,7 +816,6 @@
 정규분포표	NNP
 정다각형	NNP
 정다면체	NNP
-정리	NNP
 정비례	NNP
 정사각뿔대	NNP
 정사각행렬	NNP
@@ -899,20 +837,10 @@
 정칙	NNP
 정칙행렬	NNP
 정팔면체	NNP
-제1사분면	NNP
-제2사분면	NNP
-제3사분면	NNP
-제4사분면	NNP
 제곱	NNP
 제곱근	NNP
-제곱근표	NNP
 정방행렬	NNP
 정의구역	NNP
-제일사분면	NNP
-제이사분면	NNP
-제삼사분면	NNP
-제사사분면	NNP
-제곱근풀이	NNP
 제곱비	NNP
 제곱수	NNP
 제곱표	NNP
@@ -929,18 +857,14 @@
 조화평균	NNP
 종속	NNP
 종점	NNP
-좌미분계수	NNP
 좌변	NNP
 좌표	NNP
-좌표계	NNP
 좌표공간	NNP
 좌표변환	NNP
 끝점	NNP
 좌표축	NNP
 좌표평면	NNP
 주기	NNP
-주기운동	NNP
-주기함수	NNP
 주축	NNP
 주치	NNP
 준선	NNP
@@ -956,10 +880,6 @@
 중앙값	NNP
 중적분	NNP
 중점	NNP
-증가	NNP
-증가량	NNP
-증가상태	NNP
-증가율	NNP
 증가함수	NNP
 증명	NNP
 증분	NNP
@@ -978,7 +898,6 @@
 직각쌍곡선	NNP
 직각이등변삼각형	NNP
 직교	NNP
-데카르트 좌표	NNP
 직사각형	NNP
 직선	NNP
 직육면체	NNP
@@ -987,17 +906,13 @@
 진리집합	NNP
 진리표	NNP
 진릿값	NNP
-진법의 전개식	NNP
 진부분집합	NNP
 진분수	NNP
 진수	NNP
 집합	NNP
-집합의 분할	NNP
-집합족	NNP
 짝수	NNP
 짝수점	NNP
 짝순열	NNP
-짧은지름	NNP
 차	NNP
 차수	NNP
 차원	NNP
@@ -1005,13 +920,9 @@
 참	NNP
 참값	NNP
 첫째항	NNP
-체	NNP
 초과	NNP
-초등함수	NNP
-초월수	NNP
 초월함수	NNP
 초점	NNP
-초점거리	NNP
 최대	NNP
 최댓값	NNP
 최대공약수	NNP
@@ -1019,8 +930,6 @@
 최소	NNP
 최솟값	NNP
 최소공배수	NNP
-최적생산량	NNP
-최적의 경로	NNP
 최적화	NNP
 추이율	NNP
 추정	NNP
@@ -1028,7 +937,6 @@
 축	NNP
 축도	NNP
 축소	NNP
-축소비	NNP
 축척	NNP
 충분조건	NNP
 측도	NNP
@@ -1046,7 +954,6 @@
 켤레복소수	NNP
 켤레쌍곡선	NNP
 코사인	NNP
-코사인법칙	NNP
 코시컨트	NNP
 코탄젠트	NNP
 타원	NNP
@@ -1054,7 +961,6 @@
 타원체	NNP
 탄력성	NNP
 탄젠트	NNP
-탄젠트함수	NNP
 통계	NNP
 통분	NNP
 투영	NNP
@@ -1090,7 +996,6 @@
 표본공간	NNP
 표본분산	NNP
 표본비율	NNP
-이차원 벡터	NNP
 표본오차	NNP
 표본조사	NNP
 표본추출	NNP
@@ -1101,7 +1006,6 @@
 표준형	NNP
 표준화	NNP
 표차	NNP
-푸아송분포	NNP
 피적분함수	NNP
 피타고라스	NNP
 필요조건	NNP
@@ -1125,14 +1029,11 @@
 합동조건	NNP
 표집오차	NNP
 표집	NNP
-샘플링	NNP
-최대하계	NNP
 합사건	NNP
 합성명제	NNP
 합성변환	NNP
 합성수	NNP
 합성함수	NNP
-합의 법칙	NNP
 합집합	NNP
 항	NNP
 항등변환	NNP
@@ -1190,10 +1091,6 @@
 히스토그램	NNP
 뒤항	NNP
 가우스 소거법	NNP
-결합공리	NNP
-결합분포함수	NNP
-결합확률밀도함수	NNP
-결합확률질량함수	NNP
 고유벡터	NNP
 고윳값	NNP
 공리	NNP
@@ -1207,8 +1104,6 @@
 근판정법	NNP
 기본행렬	NNP
 기본행연산	NNP
-기약잉여류	NNP
-기저	NNP
 기하분포	NNP
 뉴턴의 방법	NNP
 고유치	NNP
@@ -1220,25 +1115,17 @@
 대립가설	NNP
 대칭관계	NNP
 로피탈	NNP
-매클로린급수	NNP
 방향도함수	NNP
 방향장	NNP
 베르누이 시행	NNP
 변수분리	NNP
 비교판정법	NNP
 비율판정법	NNP
-사다리꼴 방법	NNP
-사전확률	NNP
-사후확률	NNP
 선형미분방정식	NNP
 선형변환	NNP
 수렴구간	NNP
 수렴반지름	NNP
 수렴반경	NNP
-수학적 모델	NNP
-수학적 모델링	NNP
-순서공리	NNP
-순환부분군	NNP
 쌍곡포물면	NNP
 아크사인	NNP
 아크시컨트	NNP
@@ -1271,30 +1158,17 @@
 일차결합	NNP
 일차독립	NNP
 일차종속	NNP
-재배열급수	NNP
 적분인자	NNP
 적분판정법	NNP
-점추정	NNP
-채색다항식	NNP
-채색수	NNP
 정상 상태	NNP
-그래프 색칠	NNP
-체비쇼프 부등식	NNP
 측지선	NNP
 타원포물면	NNP
-테일러 다항식	NNP
-테일러급수	NNP
-테일러의 정리	NNP
-트랙트릭스	NNP
-특성다항식	NNP
 특이적분	NNP
 편도함수	NNP
 평면그래프	NNP
 표본분포	NNP
 프랙털	NNP
-p-급수	NNP
 피보나치수열	NNP
-해밀턴그래프	NNP
 황금분할	NNP
 황금비	NNP
 정리	NNP
