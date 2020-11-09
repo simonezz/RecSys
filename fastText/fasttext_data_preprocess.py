@@ -81,10 +81,14 @@ def parse_arguments():
     return result
 
 
-if __name__ == "__main__":
+def main():
     args = parse_arguments()
     with open(args.save_path, "a") as file:
         file.write("\n")
         file.write(jamo_sentence(tokeniz_hwp(args.tsv_path, args.hwp)))
 
     file.close()
+
+
+if __name__ == '__main__':
+    main()
