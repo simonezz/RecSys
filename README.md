@@ -103,6 +103,11 @@ ex) server_test/get_server_client.py -c -id 1 -s 0 -e 10 : returns problems data
    
   5. hwp_parser.py : Extracts plain text or images from problem data (approximately 150,000) where hwp files exist among 15 curriculum data (BodyText, BinData, PrvText)
 
+  6. hwp_split_pagewise.py : 페이지별로 단원이 나눠져 있기 때문에 페이지별로 한글 파일을 쪼개서 파싱한다.
+  
+  7. konlpy_utils.py : konlpy 관련 methods 저장.
+  
+  8. komoran_dict.tsv : konlpy중 komoran을 커스터마이즈하기 위한 사용자 사전.
 ### Run
 
   5. hwp_parser.py
