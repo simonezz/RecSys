@@ -108,6 +108,10 @@ ex) server_test/get_server_client.py -c -id 1 -s 0 -e 10 : returns problems data
   7. konlpy_utils.py : konlpy 관련 methods 저장.
   
   8. komoran_dict.tsv : konlpy중 komoran을 커스터마이즈하기 위한 사용자 사전.
+  
+  9. all_15_hwp_tokenized.csv : 모든 15년도개정 문제 text, komoran을 사용하여 tokenized text
+  
+  
 ### Run
 
   5. hwp_parser.py
