@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "number_of_shards": 2,
+    "number_of_replicas": 1
+  },
+  "mappings": {
+    "dynamic": "true",
+    "_source": {
+      "enabled": "true"
+    },
+    "properties": {
+      "unitCode": {
+        "type": "integer"
+      },
+      "problemLevel": {
+        "type": "integer"
+      },
+      "fvec": {
+        "type": "dense_vector",
+        "dims": 1280
+      },
+      "planText": {
+        "type": "text"
+      }
+    }
+  }
+}
