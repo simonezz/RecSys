@@ -6,7 +6,6 @@ import zlib
 from io import BytesIO
 
 import matplotlib.pyplot as plt
-import olefile
 from PIL import Image
 
 
@@ -62,10 +61,11 @@ control_char_table = {
 
 
 class HwpReader(object):
-    def __init__(self, filePath, fileName):
-        self._ole = olefile.OleFileIO(os.path.join(filePath, fileName))
+    def __init__(self, olef):
+        # self._ole = olefile.OleFileIO(os.path.join(filePath, fileName))
         # self.inputPath = filePath
-        self.inputName = fileName
+        # self.inputName = fileName
+        self._ole = olef
 
     @property
     def headerList(self):
@@ -173,7 +173,7 @@ class HwpReader(object):
         img = Image.open(BytesIO(data2))
 
         # 이미지 저장 시 주석 uncomment
-        #         img.save(os.path.join(filePath, self.inputName.split('.')[0], section.split('/')[1]))
+        img.save(os.path.join(filePath, self.inputName.split('.')[0], section.split('/')[1]))
         plt.imshow(img)
         plt.title(section)
         plt.show()

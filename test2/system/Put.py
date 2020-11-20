@@ -114,7 +114,7 @@ if __name__=="__main__":
 
     df = get_all_info(prob_db, DateTime)  # DateTime이후에 추가된 문제들 불러옴.
 
-    INDEX_FILE = '../test2/system/mapping2.json'
+    INDEX_FILE = 'mapping_whole_img.json'
     INDEX_NAME = 'all_images'
 
     bulk_start = time.time()

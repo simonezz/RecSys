@@ -1,0 +1,63 @@
+# curl -X GET "localhost:9200/test1118/_search?pretty" -H 'Content-Type: application/json' -d'
+#{
+#  "query": {
+#    "bool": {
+#      "must": {
+#        "match": {
+#          “plainText: “자연수”
+#        }
+#      }
+#    }
+#  }
+#}
+GET localhost:9200/test1118/_search?pretty
+Content-Type: application/json
+
+
+{
+  "query": {
+    "bool": {
+      "must": {
+        "match": {
+          “
+        plainText:
+        “
+        자연수
+        ”
+      }
+    }
+  }
+}
+}
+
+###
+
+###
+
+# curl -X GET "localhost:9200/test1118/_search?pretty" -H 'Content-Type: application/json' -d'
+#{
+#  "query": {
+#    "bool": {
+#      "must": {
+#        "match": {
+#          “plainText: “자연수”
+#        }
+#      }
+#    }
+#  }
+#}
+GET localhost:9200/test1118/_search Content-Type: application/json
+{
+  "query": {
+    "bool": {
+      "must": {
+        "match": {
+        plainText:
+        “자연수”
+      }
+    }
+  }
+}
+}
+
+

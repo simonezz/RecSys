@@ -18,7 +18,7 @@ from tqdm import tqdm
 def get_all_info(prob_db):
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
 
-    sql = "SELECT ID, unitCode, problemLevel, problemURL FROM iclass.Table_middle_problems where isHide=1"
+    sql = "SELECT ID, unitCode, problemLevel, problemURL FROM iclass.Table_middle_problems"
 
     curs.execute(sql)
     df = pd.DataFrame(curs.fetchall())
@@ -115,7 +115,7 @@ if __name__=="__main__":
     )
     df = get_all_info(prob_db)
 
-    INDEX_FILE = '../similar_image_search/test2/system/mapping2.json'
+    INDEX_FILE = '../test2/system/mapping_whole_img.json'
     INDEX_NAME = 'all_problems'
 
     bulk_start = time.time()
