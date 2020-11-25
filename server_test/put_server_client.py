@@ -31,7 +31,7 @@ def server(client_list):
 
 def client(date_time):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((socket.gethostname(), 5000))
+    s.connect((socket.gethostname(), 5001))
     s.send(date_time.encode())
 
 def parse_arguments():

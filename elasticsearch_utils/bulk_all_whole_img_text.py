@@ -41,7 +41,7 @@ def preprocess_from_url(content, input_shape):
 
 
 # batch별로 데이터 elasticsearch에 넣음
-def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
+def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
     batch_size = 100
 
     part_df.set_index("ID", inplace=True)
@@ -67,7 +67,11 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
             hwpReader = HwpReader(f)
             bodyText_dic = hwpReader.bodyStream()
 
-            text_list.append(' '.join(list(bodyText_dic.values())))
+            txt = " ".join(list(bodyText_dic.values()))
+            word_classes = ['NNP', 'NNG', 'VV', 'EC', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP', 'JX']
+            text_list.append(' '.join(komoran.get_morphes_by_tags(re.sub('[^ 가-힣]', '', txt), word_classes)))
+
+            # text_list.append(' '.join(list(bodyText_dic.values())))
 
             img_list.append(preprocess_from_url(res.content, input_shape))
             id_list.append(i)
@@ -93,7 +97,7 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
 
 
 # 모든 데이터를 넣음
-def bulk_all(df, INDEX_FILE, INDEX_NAME):
+def bulk_all(df, INDEX_FILE, INDEX_NAME, komoran):
     es = Elasticsearch(hosts=['localhost:9200'])
     dim = 1280
     bs = 10
@@ -116,9 +120,12 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME):
 
     model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
 
+    # komoran = customize_komoran_model('../utils/komoran_dict.tsv')
+
     # for k in tqdm(range(33521)):
+
     for k in tqdm(range(nloop)):
-        bulk_batchwise(es, df.loc[k * bs:min((k + 1) * bs, df.shape[0])], INDEX_NAME, model, input_shape)
+        bulk_batchwise(es, df.loc[k * bs:min((k + 1) * bs, df.shape[0])], INDEX_NAME, model, input_shape, komoran)
 
     es.indices.refresh(index=INDEX_NAME)
     print(es.cat.indices(v=True))
@@ -139,7 +146,12 @@ if __name__ == "__main__":
 
     bulk_start = time.time()
 
-    bulk_all(df, INDEX_FILE, INDEX_NAME)
+    from PyKomoran import *
+
+    komoran = Komoran(DEFAULT_MODEL['FULL'])
+    komoran.set_user_dic('../utils/komoran_dict.tsv')
+
+    bulk_all(df, INDEX_FILE, INDEX_NAME, komoran)
 
     print("Hide data bulk 소요시간: ", time.time() - bulk_start)
     print("Success!")

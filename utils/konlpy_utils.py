@@ -82,7 +82,7 @@ def customize_komoran_model(tsv_file_path):
 
 # 코모란 모델을 통해 필요한 품사 단어만 뽑기
 def komoran_usr_dic(komoran, text):
-    word_classes = ['NNG', 'NNP', 'NNB', 'NR', 'VV', 'VA', 'MM', 'EF', 'MAG', 'MAJ']  # 사용할 품사 리스트
+    word_classes = ['NNP', 'NNG', 'VV', 'EC', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP', 'JX']  # 사용할 품사 리스트
 
     return komoran.get_morphes_by_tags(text, tag_list=word_classes)
 
