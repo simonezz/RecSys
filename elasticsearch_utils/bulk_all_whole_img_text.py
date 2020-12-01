@@ -15,7 +15,7 @@ from sklearn.preprocessing import normalize
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.models import Model
 from tqdm import tqdm
-
+import re
 from urllib.request import Request, urlopen
 import olefile
 
@@ -24,7 +24,7 @@ import olefile
 def get_all_info(prob_db):
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
 
-    sql = "SELECT ID, unitCode, problemLevel, problemURL FROM iclass.Table_middle_problems WHERE curriculumNumber=15 and hwpExist = 1"
+    sql = "SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15"
 
     curs.execute(sql)
     df = pd.DataFrame(curs.fetchall())
@@ -52,30 +52,38 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
 
     for i in list(part_df.index):
         img_url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i, 'problemURL'] + "p.png"
-        img_url = img_url.replace("/math_problems/", "/math_problems/d/")
+        img_url = img_url.replace("/math_problems/", "/math_problems/ng/")  # ng는 고화질, d는 저화질
 
         hwp_url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i, 'problemURL'] + "p.hwp"
         hwp_url = hwp_url.replace("math_problems", "math_problems/hwp")
 
         try:
-            res = requests.get(img_url)
-            tmp = Request(hwp_url)
-            tmp = urlopen(tmp).read()
+            img_res = requests.get(img_url)  # png
+            img_list.append(preprocess_from_url(img_res.content, input_shape))
+            try:
+                tmp = Request(hwp_url)  # hwp
+                tmp = urlopen(tmp).read()
 
-            f = olefile.OleFileIO(tmp)
+                f = olefile.OleFileIO(tmp)
 
-            hwpReader = HwpReader(f)
-            bodyText_dic = hwpReader.bodyStream()
+                hwpReader = HwpReader(f)
+                bodyText_dic = hwpReader.bodyStream()
 
-            txt = " ".join(list(bodyText_dic.values()))
+                txt = " ".join(list(bodyText_dic.values()))
+
+            except:  # hwp 존재하지 않으면 ocr 사용
+
+                @TODO
+
+                : ocr코드
+                추가
+
             word_classes = ['NNP', 'NNG', 'VV', 'EC', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP', 'JX']
             text_list.append(' '.join(komoran.get_morphes_by_tags(re.sub('[^ 가-힣]', '', txt), word_classes)))
 
-            # text_list.append(' '.join(list(bodyText_dic.values())))
-
-            img_list.append(preprocess_from_url(res.content, input_shape))
             id_list.append(i)
-        except:
+
+        except:  # png가 존재하지 않으면
             print(f'ID : {i} 의 url이 유효하지 않습니다.')
             pass
 
@@ -90,8 +98,8 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
     bulk(es, [{'_index': INDEX_NAME,
                '_id': id_list[i], 'fvec': list(normalize(fvecs[i:i + 1])[0].tolist()),
                'unitCode': part_df.loc[id_list[i], 'unitCode'], 'problemLevel': part_df.loc[id_list[i], 'problemLevel'],
-               'plainText': text_list[i]}
-              for i in range(len(id_list))])
+               'problemType': part_df.loc[id_list[i], 'problemType'],
+               'plainText': text_list[i]} for i in range(len(id_list))])
 
     return
 
@@ -99,17 +107,16 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
 # 모든 데이터를 넣음
 def bulk_all(df, INDEX_FILE, INDEX_NAME, komoran):
     es = Elasticsearch(hosts=['localhost:9200'])
-    dim = 1280
-    bs = 10
+    bs = 20
     # Index 생성
     #     es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
     #
     #
     # mappings 정의
-    with open(INDEX_FILE) as index_file:
-        source = index_file.read().strip()
-        # es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
-    print("Elasticsearch Index :", INDEX_NAME, "created!")
+    # with open(INDEX_FILE) as index_file:
+    #     source = index_file.read().strip()
+    #     es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
+    # print("Elasticsearch Index :", INDEX_NAME, "created!")
     nloop = math.ceil(df.shape[0] / bs)
 
     input_shape = (224, 224, 3)
@@ -142,7 +149,7 @@ if __name__ == "__main__":
     df = get_all_info(prob_db)  # 전체 data 업로드
 
     INDEX_FILE = '../test2/system/mapping_whole_img_text.json'
-    INDEX_NAME = 'whole_images_text'
+    INDEX_NAME = 'mathflat1'
 
     bulk_start = time.time()
 
@@ -154,4 +161,4 @@ if __name__ == "__main__":
     bulk_all(df, INDEX_FILE, INDEX_NAME, komoran)
 
     print("Hide data bulk 소요시간: ", time.time() - bulk_start)
-    print("Success!")
+    print("201201 Success!")
