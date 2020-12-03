@@ -1,20 +1,23 @@
 # coding: utf-8
 
-import os
 from collections import namedtuple
+import os
 
-from supervisely_lib._utils import batched
-from supervisely_lib.api.module_api import ApiField
-from supervisely_lib.collection.key_indexed_collection import KeyIndexedCollection
-from supervisely_lib.io.fs import touch
-from supervisely_lib.io.json import dump_json_file
-from supervisely_lib.project.project import Dataset, Project, OpenMode
-from supervisely_lib.project.project import read_single_project as read_project_wrapper
+from supervisely_lib.io.fs import file_exists, touch
+from supervisely_lib.io.json import dump_json_file, load_json_file
 from supervisely_lib.project.project_meta import ProjectMeta
 from supervisely_lib.task.progress import Progress
-from supervisely_lib.video import video as sly_video
+from supervisely_lib._utils import batched
 from supervisely_lib.video_annotation.key_id_map import KeyIdMap
+
+from supervisely_lib.api.module_api import ApiField
+from supervisely_lib.collection.key_indexed_collection import KeyIndexedCollection
+from supervisely_lib.video import video as sly_video
+
+from supervisely_lib.project.project import Dataset, Project, OpenMode
+from supervisely_lib.project.project import read_single_project as read_project_wrapper
 from supervisely_lib.video_annotation.video_annotation import VideoAnnotation
+
 
 VideoItemPaths = namedtuple('VideoItemPaths', ['video_path', 'ann_path'])
 
@@ -216,3 +219,6 @@ def download_video_project(api, project_id, dest_dir, dataset_ids=None, download
             ds_progress.iters_done_report(len(batch))
 
     project_fs.set_key_id_map(key_id_map)
+
+
+

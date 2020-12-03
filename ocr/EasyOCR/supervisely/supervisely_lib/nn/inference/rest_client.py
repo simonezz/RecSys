@@ -1,12 +1,12 @@
 import argparse
 import io
 import json
-
 import requests
-from requests_toolbelt import MultipartEncoder
+
 from supervisely_lib.io import fs as sly_fs
-from supervisely_lib.nn.inference.rest_constants import GET_OUTPUT_META, IMAGE, INFERENCE, MODEL, \
-    SUPPORTED_REQUEST_TYPES
+from supervisely_lib.nn.inference.rest_constants import GET_OUTPUT_META, IMAGE, INFERENCE, MODEL, SUPPORTED_REQUEST_TYPES
+
+from requests_toolbelt import MultipartEncoder
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Inference REST client for standalone Supervisely models.')

@@ -1,7 +1,7 @@
 # coding: utf-8
 
-from supervisely_lib.api.entity_annotation.figure_api import FigureApi
 from supervisely_lib.video_annotation.key_id_map import KeyIdMap
+from supervisely_lib.api.entity_annotation.figure_api import FigureApi
 
 
 class PointcloudFigureApi(FigureApi):
@@ -16,3 +16,4 @@ class PointcloudFigureApi(FigureApi):
             figures_json.append(figure.to_json(key_id_map))
 
         self._append_bulk(pointcloud_id, figures_json, keys, key_id_map)
+

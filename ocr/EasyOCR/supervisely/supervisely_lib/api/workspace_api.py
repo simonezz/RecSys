@@ -27,7 +27,7 @@ class WorkspaceApi(ModuleApi, UpdateableModule):
         :param filters: list
         :return: list of all the workspaces in the selected team
         '''
-        return self.get_list_all_pages('workspaces.list', {ApiField.TEAM_ID: team_id, ApiField.FILTER: filters or []})
+        return self.get_list_all_pages('workspaces.list',  {ApiField.TEAM_ID: team_id, ApiField.FILTER: filters or []})
 
     def get_info_by_id(self, id):
         '''

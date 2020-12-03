@@ -1,9 +1,9 @@
 # coding: utf-8
 
-from supervisely_lib._utils import take_with_default
+from supervisely_lib.io.json import JsonSerializable
 from supervisely_lib.annotation.obj_class_collection import ObjClassCollection
 from supervisely_lib.annotation.tag_meta_collection import TagMetaCollection
-from supervisely_lib.io.json import JsonSerializable
+from supervisely_lib._utils import take_with_default
 
 
 class ProjectMetaJsonFields:
@@ -28,12 +28,11 @@ def _merge_img_obj_tag_metas(img_tag_metas: ObjClassCollection,
     return img_tag_metas.add_items(obj_tag_metas_to_add)
 
 
-# @TODO: add validation
+#@TODO: add validation
 class ProjectMeta(JsonSerializable):
     '''
     This is a class for creating and using ProjectMeta objects. This class contain data about meta information of the project
     '''
-
     def __init__(self, obj_classes=None, tag_metas=None):
         '''
         :param obj_classes: Collection that stores ObjClass instances with unique names.

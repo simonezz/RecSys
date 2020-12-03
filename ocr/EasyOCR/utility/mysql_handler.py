@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import mysql.connector
+from utility import general_utils as g_utils
+import pandas as pd
 import sys
 import time
 import traceback
-
-import mysql.connector
-import pandas as pd
-from utility import general_utils as g_utils
 
 DEFAULT_HOST = 'localhost'
 DEFAULT_PORT = 3306
@@ -58,7 +57,7 @@ class MysqlHandler:
                 return cursor
             except Exception as e:
                 self.log_exception('get_cursor', e)
-                self.logger.info('get_cursor. try gain to connect db. {}'.format(idx + 1))
+                self.logger.info('get_cursor. try gain to connect db. {}'.format(idx+1))
 
                 self.close()
 
@@ -139,7 +138,7 @@ class MysqlHandler:
             else:
                 sql += ", {}".format(name)
                 sql += " {}".format(type)
-                if isinstance(df.loc[row][2], str) and len(df.loc[row][2]) > 0:  # additional info
+                if isinstance(df.loc[row][2], str) and len(df.loc[row][2]) > 0: # additional info
                     sql += " " + df.loc[row][2].strip()
 
         sql += " )"
@@ -174,7 +173,7 @@ class MysqlHandler:
     def show_table(self):
         cursor = self.get_cursor()
         if cursor is None:
-            self.logger.error('show_table. failed to get cursor')
+            self.logger.error('show_table. failed to get cursor' )
             return
 
         cursor.execute("SHOW TABLES")
@@ -209,7 +208,7 @@ class MysqlHandler:
         if len(value_dicts) == 0:
             return False
 
-        sql = "INSERT INTO " + table_name + " (" + ', '.join(value_dicts.keys()) + ") "
+        sql  = "INSERT INTO " + table_name + " (" + ', '.join(value_dicts.keys()) + ") "
         sql += "VALUES (" + self.get_string_with_quotes(value_dicts.values()) + ")"
 
         try:
@@ -235,7 +234,7 @@ class MysqlHandler:
         g_utils.file_exists(csv_fname, exit_=True)
         df = pd.read_csv(csv_fname, dtype=object)
 
-        sql = "INSERT INTO " + table_name + " (" + ', '.join(df.columns) + ") "
+        sql  = "INSERT INTO " + table_name + " (" + ', '.join(df.columns) + ") "
         sql += "VALUES (" + ", ".join(["%s"] * len(df.columns)) + ")"
 
         if row_num < 0:
@@ -418,11 +417,8 @@ class MysqlHandler:
     def create_filter_string(self, cond_list, sort_col='', sort_desc=True):
         filter_string = ""
         if cond_list:
-            for i, cond in enumerate(cond_list):
-                if i == 0:
-                    filter_string += cond
-                else:
-                    filter_string += ' AND ' + cond
+            for cond in cond_list:
+                filter_string += ' AND ' + cond
         if sort_col:
             filter_string += " ORDER BY " + sort_col
             if sort_desc:
@@ -434,8 +430,8 @@ class MysqlHandler:
     def select_with_filter(self, table_name, filter_string, col_names=None, show_=False, inplace=False):
 
         try:
-            sql = "SELECT " + ", ".join(col_names) if col_names else "SELECT *"
-            sql += " FROM " + table_name + " WHERE " + filter_string
+            sql  = "SELECT " + ", ".join(col_names) if col_names else "SELECT *"
+            sql += " FROM " + table_name + " WHERE 1=1 " + filter_string
 
             cursor = self.get_cursor()
             if cursor is None:
@@ -455,7 +451,7 @@ class MysqlHandler:
 
     def delete_with_filter(self, table_name, filter_string, show_=False):
         try:
-            sql = "DELETE FROM " + table_name + " WHERE " + filter_string
+            sql  = "DELETE FROM " + table_name + " WHERE " + filter_string
 
             if show_:
                 self.logger.info(sql)

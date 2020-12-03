@@ -9,7 +9,6 @@ class DatasetApi(UpdateableModule, RemoveableModuleApi):
     files live. There is no more levels: images or videos are directly attached to a dataset. Dataset is a unit of work.
     All images or videos are directly attached to a dataset. A dataset is some sort of data folder with stuff to annotate.
     '''
-
     @staticmethod
     def info_sequence():
         return [ApiField.ID,
@@ -35,8 +34,7 @@ class DatasetApi(UpdateableModule, RemoveableModuleApi):
         :param filters: list
         :return: list all the datasets for a given project
         '''
-        return self.get_list_all_pages('datasets.list',
-                                       {ApiField.PROJECT_ID: project_id, ApiField.FILTER: filters or []})
+        return self.get_list_all_pages('datasets.list',  {ApiField.PROJECT_ID: project_id, ApiField.FILTER: filters or []})
 
     def get_info_by_id(self, id):
         '''
@@ -149,3 +147,4 @@ class DatasetApi(UpdateableModule, RemoveableModuleApi):
         new_dataset = self.copy(dst_project_id, id, new_name, change_name_if_conflict, with_annotations)
         self.remove(id)
         return new_dataset
+

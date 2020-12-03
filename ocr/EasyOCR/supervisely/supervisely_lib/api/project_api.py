@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from enum import Enum
 import pandas as pd
 
 from supervisely_lib.api.module_api import ApiField, CloneableModuleApi, UpdateableModule, RemoveableModuleApi
@@ -42,7 +43,7 @@ class ProjectApi(CloneableModuleApi, UpdateableModule, RemoveableModuleApi):
         :param filters: list
         :return: list all the projects for a given workspace
         '''
-        return self.get_list_all_pages('projects.list', {ApiField.WORKSPACE_ID: workspace_id, "filter": filters or []})
+        return self.get_list_all_pages('projects.list',  {ApiField.WORKSPACE_ID: workspace_id, "filter": filters or []})
 
     def get_info_by_id(self, id, expected_type=None, raise_error=False):
         '''

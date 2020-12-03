@@ -2,11 +2,12 @@
 
 from collections import namedtuple
 
-import numpy as np
+from supervisely_lib.sly_logger import logger
 from supervisely_lib.metric.common import log_head, log_line, TOTAL_GROUND_TRUTH
 from supervisely_lib.metric.matching import filter_labels_by_name, match_labels_by_iou
 from supervisely_lib.metric.metric_base import MetricsBase
-from supervisely_lib.sly_logger import logger
+
+import numpy as np
 
 MATCHES = 'matches'
 AP = 'average-precision'

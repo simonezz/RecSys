@@ -2,13 +2,14 @@
 
 import cv2
 import numpy as np
+
 from shapely.geometry import mapping, Polygon as ShapelyPolygon
-from supervisely_lib.geometry import validation
-from supervisely_lib.geometry.constants import EXTERIOR, INTERIOR, POINTS, LABELER_LOGIN, UPDATED_AT, CREATED_AT, ID, \
-    CLASS_ID
+
 from supervisely_lib.geometry.conversions import shapely_figure_to_coords_list
 from supervisely_lib.geometry.point_location import row_col_list_to_points, points_to_row_col_list
 from supervisely_lib.geometry.vector_geometry import VectorGeometry
+from supervisely_lib.geometry.constants import EXTERIOR, INTERIOR, POINTS, LABELER_LOGIN, UPDATED_AT, CREATED_AT, ID, CLASS_ID
+from supervisely_lib.geometry import validation
 from supervisely_lib.sly_logger import logger
 
 
@@ -16,7 +17,6 @@ class Polygon(VectorGeometry):
     '''
     This is a class for creating and using Polygon objects for Labels
     '''
-
     @staticmethod
     def geometry_name():
         return 'polygon'
@@ -50,8 +50,7 @@ class Polygon(VectorGeometry):
         class_id = data.get(CLASS_ID, None)
         return cls(exterior=row_col_list_to_points(data[POINTS][EXTERIOR], flip_row_col_order=True),
                    interior=[row_col_list_to_points(i, flip_row_col_order=True) for i in data[POINTS][INTERIOR]],
-                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                   created_at=created_at)
+                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
     def crop(self, rect):
         '''
@@ -62,9 +61,8 @@ class Polygon(VectorGeometry):
         from supervisely_lib.geometry.point_location import PointLocation
         try:
             points = [PointLocation(row=rect.top, col=rect.left), PointLocation(row=rect.top, col=rect.right + 1),
-                      PointLocation(row=rect.bottom + 1, col=rect.right + 1),
-                      PointLocation(row=rect.bottom + 1, col=rect.left)]
-            # points = rect.corners # old implementation with 1 pixel error (right bottom) #@TODO: investigate here (critical issue)
+                PointLocation(row=rect.bottom + 1, col=rect.right + 1), PointLocation(row=rect.bottom + 1, col=rect.left)]
+            #points = rect.corners # old implementation with 1 pixel error (right bottom) #@TODO: investigate here (critical issue)
 
             clipping_window_shpl = ShapelyPolygon(points_to_row_col_list(points))
             self_shpl = ShapelyPolygon(self.exterior_np, holes=self.interior_np)

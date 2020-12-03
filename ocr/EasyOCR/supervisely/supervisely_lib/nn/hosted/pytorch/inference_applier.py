@@ -1,15 +1,16 @@
 # coding: utf-8
 
-# Third-party imports.
-import numpy as np
 # Supervisely imports.
 import supervisely_lib as sly
-import torch
-from supervisely_lib.nn import raw_to_labels
-from supervisely_lib.nn.hosted.constants import SETTINGS
 from supervisely_lib.nn.hosted.inference_single_image import SingleImageInferenceBase
+from supervisely_lib.nn.hosted.constants import SETTINGS
 from supervisely_lib.nn.hosted.pytorch.constants import CUSTOM_MODEL_CONFIG
 from supervisely_lib.nn.pytorch.weights import WeightsRW
+from supervisely_lib.nn import raw_to_labels
+
+# Third-party imports.
+import numpy as np
+import torch
 from torch.autograd import Variable
 from torchvision.transforms.functional import to_tensor
 
@@ -26,7 +27,7 @@ class PytorchSegmentationApplier(SingleImageInferenceBase):
         self._determine_model_input_size()
 
     def _construct_and_fill_model(self):
-        super()._construct_and_fill_model()  # Progress reporting done by the base class.
+        super()._construct_and_fill_model()   # Progress reporting done by the base class.
         # Check the class index --> name mapping to infer the number of model output dimensions.
         num_classes = max(self.out_class_mapping.keys()) + 1
 

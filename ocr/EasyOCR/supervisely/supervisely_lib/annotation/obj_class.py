@@ -2,14 +2,13 @@
 
 from copy import deepcopy
 from typing import List
-
-from supervisely_lib._utils import take_with_default
-from supervisely_lib.annotation.json_geometries_map import GET_GEOMETRY_FROM_STR
-from supervisely_lib.collection.key_indexed_collection import KeyObject
-from supervisely_lib.geometry.any_geometry import AnyGeometry
-from supervisely_lib.geometry.geometry import Geometry
 from supervisely_lib.imaging.color import random_rgb, rgb2hex, hex2rgb, _validate_color
 from supervisely_lib.io.json import JsonSerializable
+from supervisely_lib.collection.key_indexed_collection import KeyObject
+from supervisely_lib.geometry.geometry import Geometry
+from supervisely_lib.geometry.any_geometry import AnyGeometry
+from supervisely_lib._utils import take_with_default
+from supervisely_lib.annotation.json_geometries_map import GET_GEOMETRY_FROM_STR
 
 
 class ObjClassJsonFields:
@@ -20,7 +19,7 @@ class ObjClassJsonFields:
 
 
 class ObjClass(KeyObject, JsonSerializable):
-    def __init__(self, name: str, geometry_type: type, color: List[int] = None, geometry_config: dict = None):
+    def __init__(self, name: str, geometry_type: type, color: List[int]=None, geometry_config: dict=None):
         """
         Class of objects (person, car, etc) with necessary properties: name, type of geometry (Polygon, Rectangle, ...)
         and RGB color. Only one class can be associated with Label.
@@ -114,8 +113,7 @@ class ObjClass(KeyObject, JsonSerializable):
     def __eq__(self, other: 'ObjClass'):
         return isinstance(other, ObjClass) and \
                self.name == other.name and \
-               (self.geometry_type == other.geometry_type or AnyGeometry in [self.geometry_type,
-                                                                             other.geometry_type]) and \
+               (self.geometry_type == other.geometry_type or AnyGeometry in [self.geometry_type, other.geometry_type]) and \
                self.geometry_config == other.geometry_config
 
     def __ne__(self, other: 'ObjClass'):

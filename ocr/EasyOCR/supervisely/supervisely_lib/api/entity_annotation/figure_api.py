@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from supervisely_lib.api.module_api import ApiField, RemoveableBulkModuleApi
+from supervisely_lib.api.module_api import ApiField, ModuleApi, RemoveableBulkModuleApi
 from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 
 
@@ -32,10 +32,10 @@ class FigureApi(RemoveableBulkModuleApi):
 
     def create(self, entity_id, object_id, meta, geometry_json, geometry_type, track_id=None):
         input_figure = {
-            ApiField.META: meta,
-            ApiField.OBJECT_ID: object_id,
-            ApiField.GEOMETRY_TYPE: geometry_type,
-            ApiField.GEOMETRY: geometry_json};
+                    ApiField.META: meta,
+                    ApiField.OBJECT_ID: object_id,
+                    ApiField.GEOMETRY_TYPE: geometry_type,
+                    ApiField.GEOMETRY: geometry_json};
 
         if track_id is not None:
             input_figure[ApiField.TRACK_ID] = track_id
@@ -53,8 +53,7 @@ class FigureApi(RemoveableBulkModuleApi):
         :return: list of figures with given ids from dataset with given id
         '''
         filters = [{"field": "id", "operator": "in", "value": ids}]
-        figures_infos = self.get_list_all_pages('figures.list',
-                                                {ApiField.DATASET_ID: dataset_id, ApiField.FILTER: filters})
+        figures_infos = self.get_list_all_pages('figures.list', {ApiField.DATASET_ID: dataset_id, ApiField.FILTER: filters})
 
         if len(ids) != len(figures_infos):
             ids_downloaded = [info.id for info in figures_infos]

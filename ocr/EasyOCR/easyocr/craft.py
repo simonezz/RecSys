@@ -10,7 +10,6 @@ import torch.nn.functional as F
 
 from .model.modules import vgg16_bn, init_weights
 
-
 class double_conv(nn.Module):
     def __init__(self, in_ch, mid_ch, out_ch):
         super(double_conv, self).__init__()
@@ -78,4 +77,4 @@ class CRAFT(nn.Module):
 
         y = self.conv_cls(feature)
 
-        return y.permute(0, 2, 3, 1), feature
+        return y.permute(0,2,3,1), feature

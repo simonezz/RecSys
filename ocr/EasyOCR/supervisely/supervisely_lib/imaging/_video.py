@@ -37,3 +37,4 @@ def validate_ext(ext: str):
     if not is_valid_ext(ext):
         raise VideoExtensionError('Unsupported video extension: {}. Only the following extensions are supported: {}.'
                                   .format(ALLOWED_VIDEO_EXTENSIONS))
+

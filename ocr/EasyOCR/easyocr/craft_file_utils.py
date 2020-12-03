@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-from collections import OrderedDict
-
-import cv2
 import numpy as np
+import cv2
+from collections import OrderedDict
 from PIL import ImageFont, ImageDraw, Image
-from system.system_ocr import SaveImageMode
 from utility import general_utils as utils
+from system.system_ocr import SaveImageMode
 
 FONT_PATH = "../easyocr/fonts/SourceHanSerifK-Regular.otf"
 
@@ -41,8 +40,7 @@ def list_files(in_path):
     return img_files, mask_files, gt_files
 
 
-def saveResult(img_file, img, boxes, dirname='./Output/', verticals=None, texts=None, scores=None,
-               mode=SaveImageMode.origin.name):
+def saveResult(img_file, img, boxes, dirname='./Output/', verticals=None, texts=None, scores=None, mode=SaveImageMode.origin.name):
     """ save text detection result one by one
         Args:
             img_file (str): image file name
@@ -91,13 +89,13 @@ def saveResult(img_file, img, boxes, dirname='./Output/', verticals=None, texts=
 
             if texts is not None:
                 # Pillow ver.
-                font = ImageFont.truetype(FONT_PATH, 10)
-                margin = 10
+                font = ImageFont.truetype(FONT_PATH, 27)
+                margin = 40
                 pil_img = Image.fromarray(img)
                 draw = ImageDraw.Draw(pil_img)
                 if scores is not None:
                     draw.text(xy=(poly[0][0] + 1, poly[0][1] + 1 - margin),
-                              text='[{}] : '.format(i + 1) + texts[i] + ' : ' + '{:4.2f}'.format(scores[i]),
+                              text='[{}] : '.format(i+1) + texts[i] + ' : ' + '{:4.2f}'.format(scores[i]),
                               font=font, fill=text_color)
                 else:
                     draw.text(xy=(poly[0][0] + 1, poly[0][1] + 1 - margin),
@@ -109,9 +107,7 @@ def saveResult(img_file, img, boxes, dirname='./Output/', verticals=None, texts=
 
     # Save result image
     utils.imwrite(img, rst_img_fpath)
-    print(rst_img_fpath, "저장 완료!")
     return True
-
 
 def get_color_array(color):
     colors = OrderedDict({
@@ -122,3 +118,5 @@ def get_color_array(color):
         "white": (255, 255, 255),
     })
     return colors[color]
+
+

@@ -26,7 +26,7 @@ class TeamApi(ModuleNoParent, UpdateableModule):
         :param filters: list
         :return: list of all teams
         '''
-        return self.get_list_all_pages('teams.list', {ApiField.FILTER: filters or []})
+        return self.get_list_all_pages('teams.list',  {ApiField.FILTER: filters or []})
 
     def get_info_by_id(self, id):
         '''
@@ -49,3 +49,4 @@ class TeamApi(ModuleNoParent, UpdateableModule):
 
     def _get_update_method(self):
         return 'teams.editInfo'
+

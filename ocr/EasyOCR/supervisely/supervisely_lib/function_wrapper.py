@@ -2,8 +2,8 @@
 
 import os
 import traceback
-
 from supervisely_lib.sly_logger import logger, EventType
+
 
 SLY_DEBUG = 'SLY_DEBUG'
 

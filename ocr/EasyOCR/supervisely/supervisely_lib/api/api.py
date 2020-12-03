@@ -1,29 +1,33 @@
 # coding: utf-8
 
-import json
 import os
-
 import requests
-import supervisely_lib.api.agent_api as agent_api
-import supervisely_lib.api.annotation_api as annotation_api
+import json
+
+from requests_toolbelt import MultipartEncoderMonitor, MultipartEncoder
+
+import supervisely_lib.api.team_api as team_api
+import supervisely_lib.api.workspace_api as workspace_api
+import supervisely_lib.api.project_api as project_api
+import supervisely_lib.api.neural_network_api as neural_network_api
+import supervisely_lib.api.task_api as task_api
 import supervisely_lib.api.dataset_api as dataset_api
 import supervisely_lib.api.image_api as image_api
-import supervisely_lib.api.labeling_job_api as labeling_job_api
-import supervisely_lib.api.neural_network_api as neural_network_api
-import supervisely_lib.api.object_class_api as object_class_api
+import supervisely_lib.api.annotation_api as annotation_api
 import supervisely_lib.api.plugin_api as plugin_api
-import supervisely_lib.api.pointcloud.pointcloud_api as pointcloud_api
-import supervisely_lib.api.project_api as project_api
-import supervisely_lib.api.report_api as report_api
+import supervisely_lib.api.agent_api as agent_api
 import supervisely_lib.api.role_api as role_api
-import supervisely_lib.api.task_api as task_api
-import supervisely_lib.api.team_api as team_api
 import supervisely_lib.api.user_api as user_api
+import supervisely_lib.api.labeling_job_api as labeling_job_api
 import supervisely_lib.api.video.video_api as video_api
-import supervisely_lib.api.workspace_api as workspace_api
-from requests_toolbelt import MultipartEncoderMonitor, MultipartEncoder
-from supervisely_lib.io.network_exceptions import process_requests_exception, process_unhandled_request
+import supervisely_lib.api.pointcloud.pointcloud_api as pointcloud_api
+import supervisely_lib.api.object_class_api as object_class_api
+import supervisely_lib.api.report_api as report_api
+
 from supervisely_lib.sly_logger import logger
+
+
+from supervisely_lib.io.network_exceptions import process_requests_exception, process_unhandled_request
 
 SUPERVISELY_TASK_ID = 'SUPERVISELY_TASK_ID'
 SUPERVISELY_PUBLIC_API_RETRIES = 'SUPERVISELY_PUBLIC_API_RETRIES'
@@ -202,12 +206,10 @@ class Api:
             reason = response.reason
 
         if 400 <= response.status_code < 500:
-            http_error_msg = u'%s Client Error: %s for url: %s (%s)' % (
-            response.status_code, reason, response.url, response.content.decode('utf-8'))
+            http_error_msg = u'%s Client Error: %s for url: %s (%s)' % (response.status_code, reason, response.url, response.content.decode('utf-8'))
 
         elif 500 <= response.status_code < 600:
-            http_error_msg = u'%s Server Error: %s for url: %s (%s)' % (
-            response.status_code, reason, response.url, response.content.decode('utf-8'))
+            http_error_msg = u'%s Server Error: %s for url: %s (%s)' % (response.status_code, reason, response.url, response.content.decode('utf-8'))
 
         if http_error_msg:
             raise requests.exceptions.HTTPError(http_error_msg, response=response)

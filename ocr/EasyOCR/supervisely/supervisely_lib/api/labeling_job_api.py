@@ -1,9 +1,8 @@
 # coding: utf-8
 import time
-
-from supervisely_lib.api.module_api import ApiField, ModuleApi, RemoveableModuleApi, ModuleWithStatus, \
-    WaitingTimeExceeded
 from supervisely_lib.collection.str_enum import StrEnum
+from supervisely_lib.api.module_api import ApiField, ModuleApi, RemoveableModuleApi, ModuleWithStatus, \
+                                           WaitingTimeExceeded
 
 
 class LabelingJobApi(RemoveableModuleApi, ModuleWithStatus):
@@ -166,13 +165,13 @@ class LabelingJobApi(RemoveableModuleApi, ModuleWithStatus):
         data = {ApiField.NAME: name,
                 ApiField.DATASET_ID: dataset_id,
                 ApiField.USER_IDS: user_ids,
-                # ApiField.DESCRIPTION: description,
+                #ApiField.DESCRIPTION: description,
                 ApiField.META: {
-                    'classes': classes_to_label,
-                    'projectTags': tags_to_label,
-                    'imageTags': filter_images_by_tags,
-                    'imageFiguresLimit': objects_limit_per_image,
-                    'imageTagsLimit': tags_limit_per_image, }
+                     'classes': classes_to_label,
+                     'projectTags': tags_to_label,
+                     'imageTags': filter_images_by_tags,
+                     'imageFiguresLimit': objects_limit_per_image,
+                     'imageTagsLimit': tags_limit_per_image,}
                 }
 
         if readme is not None:
@@ -249,7 +248,7 @@ class LabelingJobApi(RemoveableModuleApi, ModuleWithStatus):
         return self.Status(status_str)
 
     def raise_for_status(self, status):
-        # there is no ERROR status for labeling job
+        #there is no ERROR status for labeling job
         pass
 
     def wait(self, id, target_status, wait_attempts=None, wait_attempt_timeout_sec=None):

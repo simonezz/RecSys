@@ -1,7 +1,8 @@
 # coding: utf-8
 
-from supervisely_lib.api.module_api import ApiField
 from supervisely_lib.api.module_api import ModuleApi
+from supervisely_lib.api.module_api import ApiField
+from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 
 
 class ObjectClassApi(ModuleApi):
@@ -27,8 +28,7 @@ class ObjectClassApi(ModuleApi):
         :param filters: list
         :return: List the object classes from the given project
         '''
-        return self.get_list_all_pages('advanced.object_classes.list',
-                                       {ApiField.PROJECT_ID: project_id, "filter": filters or []})
+        return self.get_list_all_pages('advanced.object_classes.list',  {ApiField.PROJECT_ID: project_id, "filter": filters or []})
 
     def get_name_to_id_map(self, project_id):
         '''
@@ -66,3 +66,5 @@ class ObjectClassApi(ModuleApi):
     #     response = self._api.post('videos.tags.bulk.add', {ApiField.VIDEO_ID: video_id, ApiField.TAGS: tags_json})
     #     ids = [obj[ApiField.ID] for obj in response.json()]
     #     return ids
+
+

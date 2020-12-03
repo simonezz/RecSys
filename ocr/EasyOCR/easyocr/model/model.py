@@ -1,7 +1,5 @@
 import torch.nn as nn
-
 from .modules import ResNet_FeatureExtractor, BidirectionalLSTM
-
 
 class Model(nn.Module):
 
@@ -20,6 +18,7 @@ class Model(nn.Module):
 
         """ Prediction """
         self.Prediction = nn.Linear(self.SequenceModeling_output, num_class)
+
 
     def forward(self, input, text):
         """ Feature extraction stage """

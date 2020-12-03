@@ -1,9 +1,9 @@
 # coding: utf-8
 
 from copy import deepcopy
-
 import cv2
 import numpy as np
+
 from supervisely_lib.geometry.constants import EXTERIOR, INTERIOR, POINTS, GEOMETRY_SHAPE, GEOMETRY_TYPE
 from supervisely_lib.geometry.geometry import Geometry
 from supervisely_lib.geometry.point_location import PointLocation, points_to_row_col_list
@@ -14,7 +14,6 @@ class VectorGeometry(Geometry):
     '''
     This is a base class for creating and using VectorGeometry objects for Labels
     '''
-
     def __init__(self, exterior, interior,
                  sly_id=None, class_id=None, labeler_login=None, updated_at=None, created_at=None):
         '''
@@ -25,14 +24,13 @@ class VectorGeometry(Geometry):
             raise TypeError('Argument "exterior" must be list of "PointLocation" objects!')
 
         if not isinstance(interior, list) or \
-                not all(isinstance(c, list) for c in interior) or \
+            not all(isinstance(c, list) for c in interior) or \
                 not all(isinstance(p, PointLocation) for c in interior for p in c):
             raise TypeError('Argument "interior" must be list of list of "PointLocation" objects!')
 
         self._exterior = deepcopy(exterior)
         self._interior = deepcopy(interior)
-        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                         created_at=created_at)
+        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
     def to_json(self):
         '''

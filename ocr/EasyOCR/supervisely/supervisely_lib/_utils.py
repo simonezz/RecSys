@@ -1,15 +1,17 @@
 # coding: utf-8
 
+import string
+import re
 import base64
 import hashlib
 import json
+import numpy as np
 import random
-import re
-import string
 from datetime import datetime
 
-import numpy as np
 from supervisely_lib.io import fs as sly_fs
+from supervisely_lib.sly_logger import logger
+
 
 random.seed(datetime.now())
 
@@ -19,14 +21,13 @@ def rand_str(length):
     return ''.join((random.choice(chars)) for _ in range(length))
 
 
-# @TODO: use in API? or remove
+#@TODO: use in API? or remove
 def generate_free_name(used_names, possible_name, with_ext=False):
     res_name = possible_name
     new_suffix = 1
     while res_name in set(used_names):
         if with_ext is True:
-            res_name = '{}_{:02d}{}'.format(sly_fs.get_file_name(possible_name), new_suffix,
-                                            sly_fs.get_file_ext(possible_name))
+            res_name = '{}_{:02d}{}'.format(sly_fs.get_file_name(possible_name), new_suffix, sly_fs.get_file_ext(possible_name))
         else:
             res_name = '{}_{:02d}'.format(possible_name, new_suffix)
         new_suffix += 1

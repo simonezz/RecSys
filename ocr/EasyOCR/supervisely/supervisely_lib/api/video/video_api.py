@@ -1,13 +1,14 @@
 # coding: utf-8
 
-from supervisely_lib._utils import batched
 from supervisely_lib.api.module_api import ApiField, RemoveableBulkModuleApi
 from supervisely_lib.api.video.video_annotation_api import VideoAnnotationAPI
+from supervisely_lib.api.video.video_object_api import VideoObjectApi
 from supervisely_lib.api.video.video_figure_api import VideoFigureApi
 from supervisely_lib.api.video.video_frame_api import VideoFrameAPI
-from supervisely_lib.api.video.video_object_api import VideoObjectApi
 from supervisely_lib.api.video.video_tag_api import VideoTagApi
+
 from supervisely_lib.io.fs import ensure_base_path
+from supervisely_lib._utils import batched
 
 
 class VideoApi(RemoveableBulkModuleApi):
@@ -52,7 +53,7 @@ class VideoApi(RemoveableBulkModuleApi):
         :param filters: list
         :return: List of the videos from the dataset with given id
         '''
-        return self.get_list_all_pages('videos.list', {ApiField.DATASET_ID: dataset_id, ApiField.FILTER: filters or []})
+        return self.get_list_all_pages('videos.list',  {ApiField.DATASET_ID: dataset_id, ApiField.FILTER: filters or []})
 
     def get_info_by_id(self, id):
         '''
@@ -124,7 +125,7 @@ class VideoApi(RemoveableBulkModuleApi):
         response = self._download(id, is_stream=True)
         ensure_base_path(path)
         with open(path, 'wb') as fd:
-            for chunk in response.iter_content(chunk_size=1024 * 1024):
+            for chunk in response.iter_content(chunk_size=1024*1024):
                 fd.write(chunk)
 
     def download_range_by_id(self, id, frame_start, frame_end, is_stream=True):
@@ -146,7 +147,7 @@ class VideoApi(RemoveableBulkModuleApi):
         :param is_stream: bool
         :return: Response object containing video on given path between given start and end frames
         '''
-        response = self._api.get(method='image-converter/transcode' + path_original,
+        response = self._api.get(method = 'image-converter/transcode' + path_original,
                                  params={'startFrame': frame_start, 'endFrame': frame_end, "transmux": True},
                                  stream=is_stream,
                                  use_public_api=False)
@@ -201,8 +202,7 @@ class VideoApi(RemoveableBulkModuleApi):
                                                                     "data": {
                                                                         ApiField.TRACK_ID: track_id,
                                                                         ApiField.ERROR: {
-                                                                            ApiField.MESSAGE: "{}: {}".format(error,
-                                                                                                              message)
+                                                                            ApiField.MESSAGE: "{}: {}".format(error, message)
                                                                         }
                                                                     }
                                                                     })

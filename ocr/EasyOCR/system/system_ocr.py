@@ -1,18 +1,20 @@
-import argparse
 import os
 import sys
 import time
-from enum import Enum
-
-import cv2
+import argparse
 import easyocr
-import numpy as np
+import cv2
 import requests
-from easyocr import craft_file_utils as file_utils
-from easyocr.utils import group_text_box_by_ths
+import numpy as np
+from enum import Enum
+from PIL import Image
 from utility import general_utils as utils
 from utility import imgproc_utils as img_utils
+from easyocr import craft_file_utils as file_utils
+from easyocr.utils import reformat_input, group_text_box_by_ths
+from easyocr import mathpix_api as mathpix
 from utility import mysql_handler as mysql
+
 
 _this_folder_ = os.path.dirname(os.path.abspath(__file__))
 _this_basename_ = os.path.splitext(os.path.basename(__file__))[0]
@@ -21,7 +23,6 @@ _this_basename_ = os.path.splitext(os.path.basename(__file__))[0]
 class SaveImageMode(Enum):
     origin = 1
     white = 2
-
 
 class SysOCR:
     def __init__(self, ini=None, logger=None):
@@ -80,7 +81,7 @@ class SysOCR:
         self.detect_height_ths = None
         self.detect_width_ths = None
         self.detect_add_margin = None
-
+        
         # CRNN variables
         self.recog_decoder = None
         self.recog_beamWidth = None
@@ -110,8 +111,7 @@ class SysOCR:
         self.textarea_detection_algorithm = ini['textarea_detection_algorithm']
         self.text_detection_algorithm = ini['text_detection_algorithm']
         self.text_recognition_algorithm = ini['text_recognition_algorithm']
-        self.textarea_detection_ini = utils.get_ini_parameters(
-            os.path.join(_this_folder_, ini['textarea_detection_ini_fname']))
+        self.textarea_detection_ini = utils.get_ini_parameters(os.path.join(_this_folder_, ini['textarea_detection_ini_fname']))
         self.easyocr_ini = utils.get_ini_parameters(os.path.join(_this_folder_, ini['ocr_ini_fname']))
         self.enable_mathpix_ = True if ini['enable_mathpix_'] == 'True' else False
         self.convert_plain_ = True if ini['convert_plain_'] == 'True' else False
@@ -194,8 +194,7 @@ class SysOCR:
         self.s3_resol = ini['resol']
 
     def init_text_reader(self):
-        self.text_reader_inst = easyocr.Reader(lang_list=self.lang, gpu=self.gpu, download_enabled=False,
-                                               model_storage_directory='../easyocr/model')
+        self.text_reader_inst = easyocr.Reader(lang_list=self.lang, gpu=self.gpu, download_enabled=False, model_storage_directory='../model')
 
     def init_text_detection(self):
         self.text_det_inst = self.text_reader_inst.detector
@@ -212,33 +211,25 @@ class SysOCR:
 
         # De-rotate image
         try:
-            self.derot_img, self.derot_angle = img_utils.derotate_image(img,
-                                                                        inside_margin_ratio=self.derot_inside_margin_ratio,
-                                                                        max_angle=self.derot_max_angle,
-                                                                        max_angle_candidates=self.derot_max_angle_candidates,
-                                                                        angle_resolution=self.derot_angle_resolution,
-                                                                        check_time_=True,
-                                                                        pause_sec=self.derot_pause_sec,
-                                                                        save_img_=self.derot_save_img_,
-                                                                        save_fpath=os.path.join(rst_path, core_name),
-                                                                        logger=self.logger)
+            self.derot_img, self.derot_angle = img_utils.derotate_image(img, inside_margin_ratio=self.derot_inside_margin_ratio,
+                                                                        max_angle=self.derot_max_angle, max_angle_candidates=self.derot_max_angle_candidates,
+                                                                        angle_resolution=self.derot_angle_resolution, check_time_=True,
+                                                                        pause_sec=self.derot_pause_sec, save_img_=self.derot_save_img_,
+                                                                        save_fpath=os.path.join(rst_path, core_name), logger=self.logger)
         except Exception as dre:
             self.logger.error(" # run.derotate_image.exception : {}".format(dre))
 
         self.time_arr.append(time.time())
-
-        if img_h < self.min_height:
+        
+        if img_h < self.min_height:            
             split_imgs = [img]
         else:
             # Split area by line detection
             try:
                 split_imgs, split_ = img_utils.split_area_by_condition(self.derot_img, enable_=self.split_enable_,
-                                                                       mode=self.split_mode,
-                                                                       line_detection_algorithm=self.line_detection_algorithm,
-                                                                       pause_sec=self.split_pause_sec,
-                                                                       save_img_=self.split_save_img_,
-                                                                       save_fpath=os.path.join(rst_path, core_name),
-                                                                       roi_ratio=self.split_roi_ratio,
+                                                                       mode=self.split_mode, line_detection_algorithm=self.line_detection_algorithm,
+                                                                       pause_sec=self.split_pause_sec, save_img_=self.split_save_img_,
+                                                                       save_fpath=os.path.join(rst_path, core_name), roi_ratio=self.split_roi_ratio,
                                                                        check_time_=True, logger=self.logger)
             except Exception as e:
                 self.logger.error(" # run.split_area_in_image.exception : {}".format(e))
@@ -252,28 +243,18 @@ class SysOCR:
             detect_start_time = time.time()
             try:
                 horizontal_list, free_list = self.text_reader_inst.detect(split_img,
-                                                                          min_size=self.detect_min_size,
-                                                                          text_threshold=self.detect_text_threshold,
-                                                                          low_text=self.detect_low_text,
-                                                                          link_threshold=self.detect_link_threshold,
-                                                                          canvas_size=self.detect_canvas_size,
-                                                                          mag_ratio=self.detect_mag_ratio,
-                                                                          slope_ths=self.detect_slope_ths,
-                                                                          ycenter_ths=self.detect_ycenter_ths,
-                                                                          height_ths=self.detect_height_ths,
-                                                                          width_ths=self.detect_width_ths,
-                                                                          add_margin=self.detect_add_margin,
-                                                                          reformat=False)
+                                                                          min_size=self.detect_min_size, text_threshold=self.detect_text_threshold, low_text=self.detect_low_text,
+                                                                          link_threshold=self.detect_link_threshold, canvas_size=self.detect_canvas_size, mag_ratio=self.detect_mag_ratio,
+                                                                          slope_ths=self.detect_slope_ths, ycenter_ths=self.detect_ycenter_ths, height_ths=self.detect_height_ths,
+                                                                          width_ths=self.detect_width_ths, add_margin=self.detect_add_margin, reformat=False)
             except Exception as e:
                 self.logger.error(" # run.text_detection.exception : {}".format(e))
 
             self.time_arr.append(time.time())
-            self.logger.info(" [TEXT-DETECT] # {}/{}-th elapsed time : {:.3f} sec.".format(i + 1, len(split_imgs),
-                                                                                           time.time() - detect_start_time))
+            self.logger.info(" [TEXT-DETECT] # {}/{}-th elapsed time : {:.3f} sec.".format(i+1, len(split_imgs), time.time() - detect_start_time))
 
             # 검출 좌표 업데이트
-            horizontal_list = [[box[0] + curr_x, box[1] + curr_x, box[2] + curr_y, box[3] + curr_y] for box in
-                               horizontal_list]
+            horizontal_list = [[box[0]+curr_x, box[1]+curr_x, box[2]+curr_y, box[3]+curr_y] for box in horizontal_list]
 
             # Recognize texts in text detection results - CRNN
             try:
@@ -281,21 +262,13 @@ class SysOCR:
 
                 recog_start_time = time.time()
                 ocr_results = self.text_reader_inst.recognize(img_cv_grey, horizontal_list, free_list,
-                                                              decoder=self.recog_decoder,
-                                                              beamWidth=self.recog_beamWidth,
-                                                              batch_size=self.recog_batch_size,
-                                                              workers=self.recog_workers,
-                                                              allowlist=self.recog_allowlist,
-                                                              blocklist=self.recog_blocklist,
-                                                              detail=self.recog_detail, paragraph=self.recog_paragraph,
-                                                              contrast_ths=self.recog_contrast_ths,
-                                                              adjust_contrast=self.recog_adjust_contrast,
-                                                              filter_ths=self.recog_filter_ths, reformat=False,
-                                                              enable_mathpix_=self.enable_mathpix_,
-                                                              convert_plain_=self.convert_plain_)
+                                                              decoder=self.recog_decoder, beamWidth=self.recog_beamWidth, batch_size=self.recog_batch_size,
+                                                              workers=self.recog_workers, allowlist=self.recog_allowlist, blocklist=self.recog_blocklist,
+                                                              detail=self.recog_detail, paragraph=self.recog_paragraph, contrast_ths=self.recog_contrast_ths,
+                                                              adjust_contrast=self.recog_adjust_contrast, filter_ths=self.recog_filter_ths, reformat=False,
+                                                              enable_mathpix_=self.enable_mathpix_, convert_plain_=self.convert_plain_)
                 self.time_arr.append(time.time())
-                self.logger.info(" [TEXT-RECOG] # {}/{}-th elapsed time : {:.3f} sec.".format(i + 1, len(split_imgs),
-                                                                                              time.time() - recog_start_time))
+                self.logger.info(" [TEXT-RECOG] # {}/{}-th elapsed time : {:.3f} sec.".format(i+1, len(split_imgs), time.time() - recog_start_time))
                 self.ocr_results += ocr_results
             except Exception as e:
                 self.logger.error(" # run.text_recognition.exception : {}".format(e))
@@ -314,7 +287,6 @@ class SysOCR:
             rst_bboxes = bboxes
         return rst_img, rst_bboxes
 
-
 def get_page_position_by_index(curr_pos, idx, img):
     curr_x, curr_y = curr_pos
     if idx + 1 == 1:
@@ -322,7 +294,6 @@ def get_page_position_by_index(curr_pos, idx, img):
     elif idx + 1 == 2:
         curr_x += img.shape[1]
     return curr_x, curr_y
-
 
 def split_result(result):
     bboxes, texts, scores = [], [], []
@@ -341,15 +312,58 @@ def split_result(result):
 def main(args):
     this = SysOCR(ini=utils.get_ini_parameters(args.ini_fname))
     this.logger = utils.setup_logger_with_ini(this.ini['LOGGER'],
-                                              )
+                                              logging_=args.logging_, console_=args.console_logging_)
     this.init_logger(logger=this.logger)
-
     this.init_functions()
 
+    this.logger.info(" [SYS-OCR] # {} in {} mode started!".format(_this_basename_, args.op_mode))
+
     if args.op_mode == 'standalone':
-        return False
+        utils.folder_exists(args.out_path, create_=True)
+        utils.folder_exists(DEBUG_PATH, create_=True)
+        if os.path.isdir(args.img_path):
+            utils.copy_folder_structure(args.img_path, args.out_path)
+            utils.copy_folder_structure(DEBUG_PATH, args.out_path)
+
+        img_fnames = utils.get_filenames(args.img_path, extensions=utils.IMG_EXTENSIONS)
+        img_fnames = sorted(img_fnames, key=lambda x: int(x.replace(".jpg", "").split('_')[-1]))
+        this.logger.info(" [SYS-OCR] # Total file number to be processed: {:d}.".format(len(img_fnames)))
+
+        for idx, fname in enumerate(img_fnames):
+            this.logger.info(" [SYS-OCR] # Processing {} ({:d}/{:d})".format(fname, (idx + 1), len(img_fnames)))
+            dir_name, core_name, ext = utils.split_fname(fname)
+            rst_path = dir_name.replace(os.path.dirname(args.img_path), os.path.dirname(args.out_path))
+            this.time_arr = [time.time()]
+
+            # Run OCR
+            img = utils.imread(fname, color_fmt='RGB')
+            ocr_results, derot_img  = this.run(img, rst_path, core_name)
+            this.logger.info(" # OCR results : {}".format(ocr_results))
+
+            # # Group text boxes by height, width_ths
+            group_ocr_results = group_text_box_by_ths(ocr_results, ycenter_ths=this.detect_ycenter_ths, height_ths=this.detect_ycenter_ths, width_ths=1.5)
+
+            bboxes, texts, scores = split_result(group_ocr_results)
+
+            rst_fname = "".join(['res_', core_name, ext])
+            rst_img, rst_bboxes = this.adjust_reuslt_by_save_mode(mode=this.coord_mode, img=img,
+                                                                  derot_img=derot_img, derot_angle=this.derot_angle,
+                                                                  bboxes=bboxes)
+            if this.save_rst_:
+                file_utils.saveResult(rst_fname, rst_img, rst_bboxes, dirname=rst_path, texts=texts, mode=SaveImageMode[this.background_mode].name)
+                                      #,scores=scores)
+            this.logger.info(" # Saved image at {}".format(os.path.join(rst_path, rst_fname)))
+
+            this.time_arr.append(time.time())
+
+            time_arr_str = ["{:5.3f}".format(this.time_arr[i + 1] - this.time_arr[i])
+                            for i in range(len(this.time_arr) - 1)]
+            this.logger.info(" [SYS-OCR] # Done {:d}/{:d}-th frame : {}".format(idx+1, len(img_fnames), time_arr_str))
+
 
     elif args.op_mode == 'standalone-s3':
+        utils.folder_exists(args.out_path, create_=True)
+        utils.folder_exists(DEBUG_PATH, create_=True)
 
         # Set db handler
         db = mysql.MysqlHandler(this.mysql_user_name,
@@ -363,7 +377,7 @@ def main(args):
         print("DB column names : {}".format(db_colum_names))
 
         # set db filter cond.
-        cond_list = ["{0}={1}".format('unitCode', '332000036'), ]
+        cond_list = ["{0}<={1}".format('unitCode', '212072'), ]
 
         filter_string = db.create_filter_string(cond_list=cond_list)
         print(filter_string)
@@ -385,34 +399,31 @@ def main(args):
                                             col_names=['ID', 'BookNameCode'])  # 시중문제
             img_urls = [f"https://mathflat.s3.ap-northeast-2.amazonaws.com/math_problems/book/{p_url[1]}/{p_url[0]}.png"
                         for p_url in db_data]  # 시중문제 볼 때 옵션
+            
         print("DB data size : {}".format(len(db_data)))
 
-        img_Ids = [i[0] for i in db_data]
-
+        img_base_url = os.path.join(this.s3_url, 'mathflat')
+        img_ext = 'p.png'
+        img_urls = [img_base_url + p_url[0].replace('/math_problems/', '/math_problems/{}/'.format(this.s3_resol)) + img_ext for p_url in db_data]
+        # img_fnames = sorted(img_fnames, key=lambda x: int(x.replace(".jpg", "").split('_')[-1]))
         this.logger.info(" [SYS-OCR] # Total file number to be processed: {:d}.".format(len(img_urls)))
 
         for idx, img_url in enumerate(img_urls):
             this.logger.info(" [SYS-OCR] # Processing {} ({:d}/{:d})".format(img_url, (idx + 1), len(img_urls)))
             dir_name, core_name, ext = utils.split_fname(img_url)
-            core_name = str(img_Ids[idx])
             rst_path = args.out_path
             this.time_arr = [time.time()]
 
-            img = None
-
-            try:
-                res = requests.get(img_url, stream=True).raw
-                img = np.asarray(bytearray(res.read()), dtype="uint8")
-                img = cv2.imdecode(img, cv2.IMREAD_COLOR)
-            except:
-                pass
+            res = requests.get(img_url, stream=True).raw
+            img = np.asarray(bytearray(res.read()), dtype="uint8")
+            img = cv2.imdecode(img, cv2.IMREAD_COLOR)
 
             # Run OCR
             # img = utils.imread(img_url, color_fmt='RGB')
-            if img is None:  # or idx <= 34:
+            if img is None:# or idx <= 34:
                 continue
 
-            ocr_results, derot_img = this.run(img, " ", core_name)
+            ocr_results, derot_img = this.run(img, rst_path, core_name)
             this.logger.info(" # OCR results : {}".format(ocr_results))
 
             # # Group text boxes by height, width_ths
@@ -421,15 +432,13 @@ def main(args):
 
             bboxes, texts, scores = split_result(group_ocr_results)
 
-            print(texts)
-            # rst_fname = "".join(['res_', core_name, ext])
-            rst_fname = core_name
+            rst_fname = "".join(['res_', core_name, ext])
             rst_img, rst_bboxes = this.adjust_reuslt_by_save_mode(mode=this.coord_mode, img=img,
                                                                   derot_img=derot_img, derot_angle=this.derot_angle,
                                                                   bboxes=bboxes)
             if this.save_rst_:
-                file_utils.saveResult(rst_fname, rst_img, rst_bboxes, dirname=rst_path, texts=texts,
-                                      mode=SaveImageMode[this.background_mode].name)
+                file_utils.saveResult(rst_fname, rst_img, rst_bboxes, dirname=rst_path, texts=texts),
+                                      # mode=SaveImageMode[this.background_mode].name)
                 # ,scores=scores)
             this.logger.info(" # Saved image at {}".format(os.path.join(rst_path, rst_fname)))
 
@@ -443,18 +452,16 @@ def main(args):
 
     return True
 
-
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--op_mode", required=True, choices=['standalone', 'standalone-s3', 'server'],
-                        help="operation mode")
+    parser.add_argument("--op_mode", required=True, choices=['standalone', 'standalone-s3', 'server'], help="operation mode")
     parser.add_argument("--ini_fname", required=True, help="System code ini filename")
-    # parser.add_argument("--img_path", required=True, type=str, help="input file")
+    parser.add_argument("--img_path", required=True, type=str, help="input file")
     parser.add_argument("--out_path", default=".", help="Output folder")
-    #
-    # parser.add_argument("--logging_", default=False, action='store_true', help="Activate logging")
-    # parser.add_argument("--console_logging_", default=False, action='store_true', help="Activate logging")
+
+    parser.add_argument("--logging_", default=False, action='store_true', help="Activate logging")
+    parser.add_argument("--console_logging_", default=False, action='store_true', help="Activate logging")
 
     args = parser.parse_args(argv)
 
@@ -464,12 +471,11 @@ def parse_arguments(argv):
 SELF_TEST_ = True
 OP_MODE = 'standalone-s3'  # standalone / standalone-s3 / server
 INI_FNAME = _this_basename_ + ".ini"
-# DEBUG_PATH = "../Debug/IMGs/쎈_수학(상)2/"
+DEBUG_PATH = "../Debug/IMGs/쎈_수학(상)2/"
 # IMG_PATH = "../Input/시중교재_new/쎈_수학(상)/img/"
 # OUT_PATH = "../Output/시중교재_new/쎈_수학(상)/img/"
-# IMG_PATH = "../Input/시중교재_problem/"
-OUT_PATH = "../Output/book"  # 시중문제
-OUT_PATH = "../Output"
+IMG_PATH = "../Input/시중교재_problem/"
+OUT_PATH = "../Output/s3/"
 # IMG_PATH = "../Input/test/crop_problem.png"
 # OUT_PATH = "../Output/test/"
 # IMG_PATH = "../Input/test/라이트쎈 중2-1 부록_15.jpg"
@@ -481,10 +487,10 @@ if __name__ == "__main__":
         if SELF_TEST_:
             sys.argv.extend(["--op_mode", OP_MODE])
             sys.argv.extend(["--ini_fname", INI_FNAME])
-            # sys.argv.extend(["--img_path", IMG_PATH])
+            sys.argv.extend(["--img_path", IMG_PATH])
             sys.argv.extend(["--out_path", OUT_PATH])
-            # sys.argv.extend(["--logging_"])
-            # sys.argv.extend(["--console_logging_"])
+            sys.argv.extend(["--logging_"])
+            sys.argv.extend(["--console_logging_"])
         else:
             sys.argv.extend(["--help"])
 

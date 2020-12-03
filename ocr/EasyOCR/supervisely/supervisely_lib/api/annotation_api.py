@@ -2,9 +2,9 @@
 
 import json
 
-from supervisely_lib._utils import batched
 from supervisely_lib.annotation.annotation import Annotation
 from supervisely_lib.api.module_api import ApiField, ModuleApi
+from supervisely_lib._utils import batched
 
 
 class AnnotationApi(ModuleApi):
@@ -27,8 +27,7 @@ class AnnotationApi(ModuleApi):
         :param progress_cb:
         :return: list all the annotations for a given dataset
         '''
-        return self.get_list_all_pages('annotations.list',
-                                       {ApiField.DATASET_ID: dataset_id, ApiField.FILTER: filters or []}, progress_cb)
+        return self.get_list_all_pages('annotations.list',  {ApiField.DATASET_ID: dataset_id, ApiField.FILTER: filters or []}, progress_cb)
 
     def download(self, image_id, with_custom_data=False):
         '''
@@ -70,7 +69,6 @@ class AnnotationApi(ModuleApi):
         def read_json(ann_path):
             with open(ann_path) as json_file:
                 return json.load(json_file)
-
         self._upload_batch(read_json, img_ids, ann_paths, progress_cb)
 
     def upload_json(self, img_id, ann_json):

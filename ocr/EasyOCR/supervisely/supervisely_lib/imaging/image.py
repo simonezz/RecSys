@@ -1,22 +1,23 @@
 # coding: utf-8
 
 import os.path
-from enum import Enum
+from pkg_resources import parse_version
 
 import cv2
-import numpy as np
-import skimage.transform
 from PIL import ImageDraw, ImageFile, ImageFont, Image as PILImage
-from pkg_resources import parse_version
-from supervisely_lib._utils import get_bytes_hash
-from supervisely_lib.geometry.image_rotator import ImageRotator
+import numpy as np
+from enum import Enum
+import skimage.transform
+
+from supervisely_lib.io.fs import ensure_base_path, get_file_ext
 from supervisely_lib.geometry.rectangle import Rectangle
+from supervisely_lib.geometry.image_rotator import ImageRotator
 from supervisely_lib.imaging.font import get_font
-from supervisely_lib.io.fs import ensure_base_path
+from supervisely_lib._utils import get_bytes_hash
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-# @TODO: refactoring image->img
+#@TODO: refactoring image->img
 KEEP_ASPECT_RATIO = -1  # TODO: need move it to best place
 
 # Do NOT use directly for image extension validation. Use is_valid_ext() /  has_valid_ext() below instead.
@@ -47,7 +48,6 @@ class UnsupportedImageFormat(Exception):
 
 class ImageReadException(Exception):
     pass
-
 
 def is_valid_ext(ext: str) -> bool:
     '''
@@ -140,7 +140,7 @@ def write(path, img):
     ensure_base_path(path)
     validate_ext(path)
     img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2BGR)
-    return cv2.imwrite(path, img)  # why return there?
+    return cv2.imwrite(path, img) # why return there?
 
 
 def draw_text_sequence(bitmap: np.ndarray,
@@ -172,7 +172,7 @@ def draw_text_sequence(bitmap: np.ndarray,
 def draw_text(bitmap: np.ndarray,
               text: str,
               anchor_point: tuple,
-              corner_snap: CornerAnchorMode = CornerAnchorMode.TOP_LEFT,
+              corner_snap: CornerAnchorMode=CornerAnchorMode.TOP_LEFT,
               font: ImageFont.FreeTypeFont = None,
               fill_background=True) -> tuple:
     """
@@ -213,12 +213,12 @@ def draw_text(bitmap: np.ndarray,
     if fill_background:
         rect_right = rect_left + text_width
         rect_bottom = rect_top + text_height
-        drawer.rectangle(((rect_left, rect_top), (rect_right + 1, rect_bottom)), fill=(255, 255, 255, 128))
-    drawer.text((rect_left + 1, rect_top), text, fill=(0, 0, 0, 255), font=font)
+        drawer.rectangle(((rect_left, rect_top), (rect_right+1, rect_bottom)), fill=(255, 255, 255, 128))
+    drawer.text((rect_left+1, rect_top), text, fill=(0, 0, 0, 255), font=font)
 
     source_img = PILImage.alpha_composite(source_img, canvas)
     source_img = source_img.convert("RGB")
-    bitmap[:, :, :] = np.array(source_img, dtype=np.uint8)
+    bitmap[:,:,:] = np.array(source_img, dtype=np.uint8)
 
     return (text_height, text_width)
 
@@ -334,7 +334,7 @@ def restore_proportional_size(in_size: tuple, out_size: tuple = None,
     return result_row, result_col
 
 
-def resize(img: np.ndarray, out_size: tuple = None, frow: float = None, fcol: float = None) -> np.ndarray:
+def resize(img: np.ndarray, out_size: tuple=None, frow: float=None, fcol: float=None) -> np.ndarray:
     '''
     The function resize resizes the image img down to or up to the specified size. If some parameters are not specified, or
     size dimensions are less than 0 it generate exception error(ValueError).
@@ -348,7 +348,7 @@ def resize(img: np.ndarray, out_size: tuple = None, frow: float = None, fcol: fl
     return cv2.resize(img, (result_width, result_height), interpolation=cv2.INTER_CUBIC)
 
 
-def resize_inter_nearest(img: np.ndarray, out_size: tuple = None, frow: float = None, fcol: float = None) -> np.ndarray:
+def resize_inter_nearest(img: np.ndarray, out_size: tuple=None, frow: float=None, fcol: float=None) -> np.ndarray:
     '''
     The function resize_inter_nearest resize image to match a certain size. Performs interpolation to up-size or
     down-size images. For down-sampling N-dimensional images by applying a function or the arithmetic mean, see
@@ -490,7 +490,7 @@ def random_color_scale(image: np.ndarray, min_factor: float, max_factor: float) 
         Image array with shifted colors.
     """
     image_float = image.astype(np.float64)
-    scales = np.random.uniform(low=min_factor, high=max_factor, size=(1, 1, image.shape[2]))
+    scales = np.random.uniform(low=min_factor, high=max_factor, size=(1,1, image.shape[2]))
     res_image = image_float * scales
     return np.clip(res_image, 0, 255).astype(np.uint8)
 

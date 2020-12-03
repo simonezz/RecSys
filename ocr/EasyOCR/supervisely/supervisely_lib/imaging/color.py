@@ -1,6 +1,6 @@
 # coding: utf-8
-import colorsys
 import random
+import colorsys
 
 
 def _validate_color(color):
@@ -110,3 +110,4 @@ def _hex2rgba(hex_value: str) -> list:
     """
     assert len(hex_value) == 9, "Supported only HEX RGBA string format!"
     return _hex2color(hex_value)
+

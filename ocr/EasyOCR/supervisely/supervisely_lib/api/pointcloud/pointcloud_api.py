@@ -1,14 +1,15 @@
 # coding: utf-8
 from collections import defaultdict
 
-from requests_toolbelt import MultipartEncoder
-from supervisely_lib._utils import batched
 from supervisely_lib.api.module_api import ApiField, RemoveableBulkModuleApi
-from supervisely_lib.api.pointcloud.pointcloud_annotation_api import PointcloudAnnotationAPI
-from supervisely_lib.api.pointcloud.pointcloud_figure_api import PointcloudFigureApi
-from supervisely_lib.api.pointcloud.pointcloud_object_api import PointcloudObjectApi
-from supervisely_lib.api.pointcloud.pointcloud_tag_api import PointcloudTagApi
 from supervisely_lib.io.fs import ensure_base_path, get_file_hash
+from supervisely_lib._utils import batched
+
+from supervisely_lib.api.pointcloud.pointcloud_annotation_api import PointcloudAnnotationAPI
+from supervisely_lib.api.pointcloud.pointcloud_object_api import PointcloudObjectApi
+from supervisely_lib.api.pointcloud.pointcloud_figure_api import PointcloudFigureApi
+from supervisely_lib.api.pointcloud.pointcloud_tag_api import PointcloudTagApi
+from requests_toolbelt import MultipartDecoder, MultipartEncoder
 
 
 class PointcloudApi(RemoveableBulkModuleApi):
@@ -34,7 +35,7 @@ class PointcloudApi(RemoveableBulkModuleApi):
                 ApiField.LINK,
                 ApiField.HASH,
                 ApiField.PATH_ORIGINAL,
-                # ApiField.PREVIEW,
+                #ApiField.PREVIEW,
                 ApiField.CLOUD_MIME,
                 ApiField.FIGURES_COUNT,
                 ApiField.ANN_OBJECTS_COUNT,
@@ -55,8 +56,7 @@ class PointcloudApi(RemoveableBulkModuleApi):
         :param filters: list
         :return: list of the pointclouds objects from the dataset with given id
         '''
-        return self.get_list_all_pages('point-clouds.list',
-                                       {ApiField.DATASET_ID: dataset_id, ApiField.FILTER: filters or []})
+        return self.get_list_all_pages('point-clouds.list',  {ApiField.DATASET_ID: dataset_id, ApiField.FILTER: filters or []})
 
     def get_info_by_id(self, id):
         '''
@@ -83,7 +83,7 @@ class PointcloudApi(RemoveableBulkModuleApi):
         response = self._download(id, is_stream=True)
         ensure_base_path(path)
         with open(path, 'wb') as fd:
-            for chunk in response.iter_content(chunk_size=1024 * 1024):
+            for chunk in response.iter_content(chunk_size=1024*1024):
                 fd.write(chunk)
 
     def get_list_related_images(self, id):
@@ -91,7 +91,7 @@ class PointcloudApi(RemoveableBulkModuleApi):
         filters = [{"field": ApiField.ENTITY_ID, "operator": "=", "value": id}]
         return self.get_list_all_pages('point-clouds.images.list',
                                        {ApiField.DATASET_ID: dataset_id, ApiField.FILTER: filters},
-                                       convert_json_info_cb=lambda x: x)
+                                       convert_json_info_cb=lambda x : x)
 
     def download_related_image(self, id, path):
         response = self._api.post('point-clouds.images.download', {ApiField.ID: id}, stream=True)
@@ -101,7 +101,7 @@ class PointcloudApi(RemoveableBulkModuleApi):
                 fd.write(chunk)
         return response
 
-    # @TODO: copypaste from video_api
+    #@TODO: copypaste from video_api
     def upload_hash(self, dataset_id, name, hash, meta=None):
         meta = {} if meta is None else meta
         return self.upload_hashes(dataset_id, [name], [hash], [meta])[0]
@@ -150,7 +150,6 @@ class PointcloudApi(RemoveableBulkModuleApi):
     def upload_paths(self, dataset_id, names, paths, progress_cb=None, metas=None):
         def path_to_bytes_stream(path):
             return open(path, 'rb')
-
         hashes = self._upload_data_bulk(path_to_bytes_stream, get_file_hash, paths, progress_cb)
         return self.upload_hashes(dataset_id, names, hashes, metas=metas)
 

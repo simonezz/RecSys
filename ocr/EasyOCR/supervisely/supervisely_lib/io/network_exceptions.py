@@ -1,9 +1,8 @@
 # coding: utf-8
 
-import time
 import traceback
-
 import requests
+import time
 
 CONNECTION_ERROR = 'Temporary connection error, please wait ...'
 AGENT_CONNECTION_ERROR = 'Temporary connection error (agent ping), please wait ...'
@@ -19,7 +18,7 @@ RETRY_STATUS_CODES = {
     504,  # Gateway Timeout
     509,  # Bandwidth Limit Exceeded (Apache)
     598,  # Network read timeout error
-    599  # Network connect timeout error
+    599   # Network connect timeout error
 }
 
 
@@ -35,8 +34,7 @@ def process_requests_exception(external_logger, exc, api_method_name, url,
                                 (exc.response.status_code in RETRY_STATUS_CODES)
 
     is_need_ping_error = False
-    if isinstance(exc, requests.exceptions.HTTPError) and hasattr(exc, 'response') and (
-            exc.response.status_code == 400):
+    if isinstance(exc, requests.exceptions.HTTPError) and hasattr(exc, 'response') and (exc.response.status_code == 400):
         try:
             server_explanation = exc.response.json()
             is_need_ping_error = (server_explanation.get('error', None) == SPECIAL_RECONNECT_ERROR)

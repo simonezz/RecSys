@@ -2,16 +2,20 @@ import json
 import os
 from copy import deepcopy
 
+from supervisely_lib.imaging import image as sly_image
+from supervisely_lib.nn.inference.rest_constants import GET_OUTPUT_META, IMAGE, INFERENCE, MODEL, OUTPUT_META, \
+    ANNOTATION, META, MODE, GPU_DEVICE
+
+from supervisely_lib.worker_api.interfaces import SingleImageInferenceInterface
+from supervisely_lib.project.project_meta import ProjectMeta
+from supervisely_lib.nn.hosted.deploy import ModelDeploy
+from supervisely_lib.function_wrapper import function_wrapper
+
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
-from supervisely_lib.function_wrapper import function_wrapper
-from supervisely_lib.imaging import image as sly_image
-from supervisely_lib.nn.hosted.deploy import ModelDeploy
-from supervisely_lib.nn.inference.rest_constants import GET_OUTPUT_META, IMAGE, INFERENCE, MODEL, ANNOTATION, META, \
-    MODE, GPU_DEVICE
-from supervisely_lib.project.project_meta import ProjectMeta
-from supervisely_lib.worker_api.interfaces import SingleImageInferenceInterface
+
 from werkzeug.datastructures import FileStorage
+
 
 
 class RestInferenceServer:
@@ -57,6 +61,7 @@ class RestInferenceServer:
             if 'output_meta' in response_json:
                 return response_json['output_meta']
             return response_json
+
 
     class Inference(Resource):
         def __init__(self, model):

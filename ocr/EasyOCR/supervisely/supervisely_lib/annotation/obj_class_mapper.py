@@ -13,7 +13,6 @@ class RenamingObjClassMapper(ObjClassMapper):
     '''
     This is a class for renaming ObjClass in given ObjClassCollection
     '''
-
     def __init__(self, dest_obj_classes: ObjClassCollection, renamer: Renamer):
         self._dest_obj_classes = dest_obj_classes
         self._renamer = renamer

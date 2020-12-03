@@ -2,12 +2,12 @@
 
 import os
 
-from supervisely_lib.annotation.annotation import Annotation
-from supervisely_lib.metric.metric_base import MetricsBase
-from supervisely_lib.project.project import Project, OpenMode
+from supervisely_lib.task.progress import Progress
 from supervisely_lib.sly_logger import logger
 from supervisely_lib.task.paths import TaskPaths
-from supervisely_lib.task.progress import Progress
+from supervisely_lib.metric.metric_base import MetricsBase
+from supervisely_lib.project.project import Project, OpenMode
+from supervisely_lib.annotation.annotation import Annotation
 
 PROJECT_GT = 'project_gt'
 PROJECT_PRED = 'project_pred'

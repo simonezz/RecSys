@@ -3,21 +3,21 @@
 
 """ # Updated in 20/06/24 """
 
-import math
-import operator
 import os
 import time
-
-import cv2
-import imutils
+import cv2, math
 import numpy as np
+import operator
+import imutils
+import operator
+from PIL import Image, ImageDraw, ImageFont
+
 from utility import general_utils as utils
 
 HANGUL_FONT = "../common/fonts/gothic.ttf"
 
 
-def split_area_by_condition(img, roi_ratio=0.2, enable_=True, mode='line_detection',
-                            line_detection_algorithm='HoughLineTransform',
+def split_area_by_condition(img, roi_ratio=0.2, enable_=True, mode='line_detection', line_detection_algorithm='HoughLineTransform',
                             check_time_=False,
                             pause_sec=-1,
                             save_img_=False,
@@ -32,15 +32,14 @@ def split_area_by_condition(img, roi_ratio=0.2, enable_=True, mode='line_detecti
     x_margin = center_x * roi_ratio
 
     # ROI 추출(라인 검출 영역)
-    roi = [int(center_x - x_margin), 0, int(center_x + x_margin), img_h]  # x, y, x+w, x+h
+    roi = [int(center_x - x_margin), 0, int(center_x + x_margin), img_h] # x, y, x+w, x+h
     crop_img = img[roi[1]:roi[3], roi[0]:roi[2]]
 
     # 영역 좌표 계산
     split_ = False
     area_pts = []
     if mode == 'contour_detection':
-        split_, contour_pts = check_contours_in_img(crop_img, pause_sec=pause_sec, save_img_=save_img_,
-                                                    save_fpath=save_fpath)
+        split_, contour_pts = check_contours_in_img(crop_img, pause_sec=pause_sec, save_img_=save_img_, save_fpath=save_fpath)
         area_pts = contour_pts
 
     elif mode == 'line_detection':
@@ -58,10 +57,10 @@ def split_area_by_condition(img, roi_ratio=0.2, enable_=True, mode='line_detecti
         trans_line_pts = utils.transpose_list(area_pts)
         start_xs, start_ys, end_xs, end_ys = trans_line_pts[0], trans_line_pts[1], trans_line_pts[2], trans_line_pts[3]
         line_xs = start_xs + end_xs
-        avg_line_x = sum(line_xs) // len(line_xs)
+        avg_line_x =  sum(line_xs) // len(line_xs)
 
         # 원본 좌표로 변환
-        split_x = int(avg_line_x + roi[0])
+        split_x = int(avg_line_x  + roi[0])
         split_y = int(start_ys[0] + roi[1])
 
         # 이미지 영역 분할
@@ -71,7 +70,6 @@ def split_area_by_condition(img, roi_ratio=0.2, enable_=True, mode='line_detecti
         if check_time_:
             logger.info(" [SPLIT-AREA] # elapsed time : {:.3f} sec".format(float(time.time() - start_time)))
         return split_imgs, split_
-
 
 def check_contours_in_img(img,
                           pause_sec=-1, save_img_=False,
@@ -91,7 +89,7 @@ def check_contours_in_img(img,
 
     # Create structure element for extracting vertical lines through morphology operations
     vertical_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, vertical_size))
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, vertical_size - 6))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, vertical_size-6))
 
     # Apply morphology operations
     img_v = cv2.dilate(img_bw, kernel)
@@ -108,18 +106,18 @@ def check_contours_in_img(img,
     for i, cnt in enumerate(contours):
         x, y, w, h = cv2.boundingRect(cnt)
         box_size = w * h
-        max_box_size = height * width * (1 / 3)
+        max_box_size = height * width * (1/3)
         box_h = h
-        min_height = height * (1 / 5)
+        min_height = height * (1/5)
         if box_size > max_box_size:
             continue
         elif box_h < min_height:
             continue
-        contour_pts.append([x, y, x + w, y + h])
+        contour_pts.append([x, y, x+w, y+h])
 
     # Select the largest box height
     if len(contour_pts) > 0:
-        contour_pt = max((pt for pt in contour_pts), key=lambda x: (x[3] - x[1]))
+        contour_pt = max((pt for pt in contour_pts), key=lambda x: (x[3]-x[1]))
         rect_x, rect_y, rect_w, rect_h = contour_pt
         cv2.rectangle(img_contour, (rect_x, rect_y), (rect_w, rect_h), (0, 0, 255), 2)
 
@@ -133,7 +131,6 @@ def check_contours_in_img(img,
         return True, contour_pts
     else:
         return False, contour_pts
-
 
 def check_lines_in_img(img, algorithm='HoughLineTransform', get_line_=False,
                        pause_sec=-1, save_img_=False,
@@ -215,8 +212,7 @@ def check_lines_in_img(img, algorithm='HoughLineTransform', get_line_=False,
         height = dim[0]
         min_line_length = (height // 8)
         max_line_gap = (min_line_length)
-        linesP = cv2.HoughLinesP(img_inv, 1, np.pi / 180, threshold=100, minLineLength=min_line_length,
-                                 maxLineGap=max_line_gap)
+        linesP = cv2.HoughLinesP(img_inv, 1, np.pi / 180, threshold=100, minLineLength=min_line_length, maxLineGap=max_line_gap)
         img_lines = np.copy(img_rgb)
         if linesP is None:
             print(" # Total lines: 0")
@@ -228,7 +224,7 @@ def check_lines_in_img(img, algorithm='HoughLineTransform', get_line_=False,
             num_linesP = len(linesP)
             print(" # Total lines: {}".format(num_linesP))
             for line in linesP:
-                cv2.line(img_lines, tuple(line[0][0:2]), tuple(line[0][2:]), utils.RED, 10)  # (x0, y0), (x1, y1)
+                cv2.line(img_lines, tuple(line[0][0:2]), tuple(line[0][2:]), utils.RED, 10) # (x0, y0), (x1, y1)
                 # angle = np.arctan2(line[0][3] - line[0][1], line[0][2] - line[0][0]) * 180. / np.pi
                 # print(" # Rotated angle = {:.1f}".format(angle))
                 line_pts.append(line.tolist()[0])
@@ -317,7 +313,7 @@ def derotate_image(img,
         check_lines_in_img(img, algorithm='HoughLineTransform')
         check_lines_in_img(img, algorithm='ProbabilisticHoughTransform')
 
-    ret, img_bw = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)  # defualt min : 128
+    ret, img_bw = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU) # defualt min : 128
     """
     kernel = np.ones((5, 5), np.uint8)  # note this is a horizontal kernel
     bw = np.copy(img_bw)
@@ -380,16 +376,14 @@ def derotate_image(img,
 
     return rot_img, rot_angle
 
-
 def transform_bboxes(bboxes, angle, src_shape, dst_shape):
     ori_bboxes = []
     for box in bboxes:
         ori_bbox = []
         for i in range(len(box)):
-            ori_bbox.append(transform_point(box[i], np.radians(angle), src_shape, dst_shape))
+             ori_bbox.append(transform_point(box[i], np.radians(angle), src_shape, dst_shape))
         ori_bboxes.append(ori_bbox)
     return ori_bboxes
-
 
 def transform_point(src_point, radian, src_shape, dst_shape):
     """ Transform the point from source to destination image.
@@ -411,6 +405,6 @@ def transform_point(src_point, radian, src_shape, dst_shape):
     qx = int(src_offset_x + cos_rad * adjusted_x + sin_rad * adjusted_y)
     qy = int(src_offset_y + -sin_rad * adjusted_x + cos_rad * adjusted_y)
 
-    dst_offset_x, dst_offset_y = (dst_shape[1] - src_shape[1]) / 2.0, (dst_shape[0] - src_shape[0]) / 2.0
+    dst_offset_x, dst_offset_y = (dst_shape[1]-src_shape[1]) / 2.0, (dst_shape[0]-src_shape[0]) / 2.0
     dst_x, dst_y = int(qx + dst_offset_x), int(qy + dst_offset_y)
     return [dst_x, dst_y]

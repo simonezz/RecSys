@@ -2,11 +2,11 @@
 
 import cv2
 import numpy as np
-from supervisely_lib.geometry import validation
-from supervisely_lib.geometry.constants import EXTERIOR, INTERIOR, POINTS, LABELER_LOGIN, UPDATED_AT, CREATED_AT, ID, \
-    CLASS_ID
+
+from supervisely_lib.geometry.constants import EXTERIOR, INTERIOR, POINTS, LABELER_LOGIN, UPDATED_AT, CREATED_AT, ID, CLASS_ID
 from supervisely_lib.geometry.geometry import Geometry
 from supervisely_lib.geometry.point_location import PointLocation, points_to_row_col_list
+from supervisely_lib.geometry import validation
 
 
 # @TODO: validation
@@ -14,7 +14,6 @@ class Rectangle(Geometry):
     '''
     This is a class for creating and using Rectangle objects for Labels
     '''
-
     @staticmethod
     def geometry_name():
         return 'rectangle'
@@ -79,8 +78,7 @@ class Rectangle(Geometry):
         [top, bottom] = sorted([exterior[0][1], exterior[1][1]])
         [left, right] = sorted([exterior[0][0], exterior[1][0]])
         return cls(top=top, left=left, bottom=bottom, right=right,
-                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                   created_at=created_at)
+                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
     def crop(self, other):
         '''
@@ -282,4 +280,4 @@ class Rectangle(Geometry):
         :param data: numpy array
         :return: numpy array
         '''
-        return data[self.top:(self.bottom + 1), self.left:(self.right + 1), ...]
+        return data[self.top:(self.bottom+1), self.left:(self.right+1), ...]

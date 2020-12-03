@@ -3,28 +3,29 @@
 import itertools
 from collections import defaultdict
 from copy import deepcopy
-
 import numpy as np
 import pkg_resources
+
+from supervisely_lib.metric.common import safe_ratio
+from supervisely_lib.project.project_meta import ProjectMeta
 from supervisely_lib.annotation.annotation import Annotation
 from supervisely_lib.annotation.label import Label
 from supervisely_lib.annotation.obj_class import ObjClass
 from supervisely_lib.annotation.obj_class_collection import make_renamed_classes, ObjClassCollection
 from supervisely_lib.annotation.obj_class_mapper import ObjClassMapper, RenamingObjClassMapper
-from supervisely_lib.annotation.renamer import Renamer, is_name_included
-from supervisely_lib.annotation.tag_meta import TagValueType
 from supervisely_lib.annotation.tag_meta_collection import make_renamed_tag_metas
+from supervisely_lib.annotation.tag_meta import TagValueType
 from supervisely_lib.annotation.tag_meta_mapper import RenamingTagMetaMapper, TagMetaMapper, make_renamed_tags
+from supervisely_lib.annotation.renamer import Renamer, is_name_included
 from supervisely_lib.geometry.geometry import Geometry
 from supervisely_lib.geometry.multichannel_bitmap import MultichannelBitmap
 from supervisely_lib.geometry.rectangle import Rectangle
 from supervisely_lib.geometry.sliding_windows import SlidingWindows
 from supervisely_lib.imaging.image import read as sly_image_read
-from supervisely_lib.metric.common import safe_ratio
 from supervisely_lib.nn import raw_to_labels
 from supervisely_lib.nn.config import update_recursively, update_strict, MultiTypeValidator
 from supervisely_lib.nn.hosted.inference_single_image import SingleImageInferenceBase
-from supervisely_lib.project.project_meta import ProjectMeta
+
 
 INFERENCE_MODE_CONFIG = 'inference_mode_config'
 CLASS_NAME = 'class_name'

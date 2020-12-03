@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from supervisely_lib.annotation.tag_meta import TagMeta
 from supervisely_lib.collection.key_indexed_collection import KeyIndexedCollection
 from supervisely_lib.io.json import JsonSerializable
+from supervisely_lib.annotation.tag_meta import TagMeta
 
 
 class TagMetaCollection(KeyIndexedCollection, JsonSerializable):
@@ -42,3 +42,4 @@ def make_renamed_tag_metas(src_tag_metas: TagMetaCollection, renamer, skip_missi
             raise KeyError(
                 'Tag meta named {} could not be mapped to a destination name.'.format(src_tag.name))
     return TagMetaCollection(items=result_tags)
+

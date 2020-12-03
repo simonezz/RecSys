@@ -10,8 +10,7 @@ class Pointcloud(Geometry):
         return 'point_cloud'
 
     def __init__(self, indices, sly_id=None, class_id=None, labeler_login=None, updated_at=None, created_at=None):
-        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                         created_at=created_at)
+        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
         if type(indices) is not list:
             raise TypeError("\"indices\" param has to be of type {!r}".format(type(list)))
@@ -36,5 +35,4 @@ class Pointcloud(Geometry):
         created_at = data.get(CREATED_AT, None)
         sly_id = data.get(ID, None)
         class_id = data.get(CLASS_ID, None)
-        return cls(indices, sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                   created_at=created_at)
+        return cls(indices, sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)

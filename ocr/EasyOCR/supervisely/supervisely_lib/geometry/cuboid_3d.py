@@ -11,7 +11,6 @@ class Vector3d:
     '''
     This is a class for creating and using Vector3d objects for Cuboid3d class objects
     '''
-
     def __init__(self, x, y, z):
         '''
         :param x: int
@@ -61,7 +60,6 @@ class Cuboid3d(Geometry):
     '''
     This is a class for creating and using Cuboid3d objects for Labels
     '''
-
     @staticmethod
     def geometry_name():
         return 'cuboid_3d'
@@ -74,10 +72,9 @@ class Cuboid3d(Geometry):
         :param position: Vector3d class object
         :param rotation: Vector3d class object
         :param dimensions: Vector3d class object
-        '''
-        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                         created_at=created_at)
-
+        '''         
+        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
+        
         if type(position) is not Vector3d:
             raise TypeError("\"position\" param has to be of type {!r}".format(type(Vector3d)))
         if type(rotation) is not Vector3d:
@@ -107,8 +104,8 @@ class Cuboid3d(Geometry):
         :return: Cuboid3d in json format
         '''
         res = {POSITION: self.position.to_json(),
-               ROTATION: self.rotation.to_json(),
-               DIMENTIONS: self.dimensions.to_json()}
+                ROTATION: self.rotation.to_json(),
+                DIMENTIONS: self.dimensions.to_json()}
 
         self._add_creation_info(res)
         return res
@@ -129,5 +126,4 @@ class Cuboid3d(Geometry):
         created_at = data.get(CREATED_AT, None)
         sly_id = data.get(ID, None)
         class_id = data.get(CLASS_ID, None)
-        return cls(position, rotation, dimentions, sly_id=sly_id, class_id=class_id, labeler_login=labeler_login,
-                   updated_at=updated_at, created_at=created_at)
+        return cls(position, rotation, dimentions, sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)

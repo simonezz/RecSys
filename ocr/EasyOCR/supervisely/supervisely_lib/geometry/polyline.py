@@ -2,20 +2,20 @@
 
 import cv2
 import numpy as np
+
 from shapely.geometry import mapping, LineString, Polygon as ShapelyPolygon
-from supervisely_lib import logger
-from supervisely_lib.geometry import validation
-from supervisely_lib.geometry.constants import EXTERIOR, POINTS, LABELER_LOGIN, UPDATED_AT, CREATED_AT, ID, CLASS_ID
 from supervisely_lib.geometry.conversions import shapely_figure_to_coords_list
 from supervisely_lib.geometry.point_location import row_col_list_to_points
 from supervisely_lib.geometry.vector_geometry import VectorGeometry
+from supervisely_lib.geometry.constants import EXTERIOR, POINTS, LABELER_LOGIN, UPDATED_AT, CREATED_AT, ID, CLASS_ID
+from supervisely_lib.geometry import validation
+from supervisely_lib import logger
 
 
 class Polyline(VectorGeometry):
     '''
     This is a class for creating and using Polyline objects for Labels
     '''
-
     @staticmethod
     def geometry_name():
         return 'line'
@@ -29,8 +29,7 @@ class Polyline(VectorGeometry):
             raise ValueError('"{}" field must contain at least two points to create "Polyline" object.'
                              .format(EXTERIOR))
 
-        super().__init__(exterior=exterior, interior=[], sly_id=sly_id, class_id=class_id, labeler_login=labeler_login,
-                         updated_at=updated_at,
+        super().__init__(exterior=exterior, interior=[], sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
                          created_at=created_at)
 
     @classmethod
@@ -47,8 +46,7 @@ class Polyline(VectorGeometry):
         sly_id = data.get(ID, None)
         class_id = data.get(CLASS_ID, None)
         return cls(exterior=row_col_list_to_points(data[POINTS][EXTERIOR], flip_row_col_order=True),
-                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                   created_at=created_at)
+                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
     def crop(self, rect):
         '''

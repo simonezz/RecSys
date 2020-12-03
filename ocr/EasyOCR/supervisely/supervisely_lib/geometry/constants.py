@@ -31,6 +31,7 @@ POSITION = "position"
 ROTATION = "rotation"
 DIMENTIONS = "dimensions"
 
+
 LABELER_LOGIN = 'labelerLogin'
 UPDATED_AT = 'updatedAt'
 CREATED_AT = 'createdAt'

@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from supervisely_lib._utils import take_with_default
 from supervisely_lib.annotation.tag_meta import TagValueType
 from supervisely_lib.collection.key_indexed_collection import KeyObject
+from supervisely_lib._utils import take_with_default
 
 
 class TagJsonFields:
@@ -12,7 +12,7 @@ class TagJsonFields:
     UPDATED_AT = 'updatedAt'
     CREATED_AT = 'createdAt'
     ID = 'id'
-    # TAG_META_ID = 'tagId'
+    #TAG_META_ID = 'tagId'
 
 
 class Tag(KeyObject):
@@ -20,7 +20,6 @@ class Tag(KeyObject):
     This is a class for creating and using Tags objects. The tags can be attached both to whole images and to
     individual geometric labels.
     '''
-
     def __init__(self, meta, value=None, sly_id=None, labeler_login=None, updated_at=None, created_at=None):
         '''
         The constructor for Tag class.
@@ -64,7 +63,7 @@ class Tag(KeyObject):
         '''
         res = {
             TagJsonFields.TAG_NAME: self.meta.name,
-            # TagJsonFields.VALUE: self.value
+            #TagJsonFields.VALUE: self.value
         }
         if self.meta.value_type != TagValueType.NONE:
             res[TagJsonFields.VALUE] = self.value
@@ -106,8 +105,7 @@ class Tag(KeyObject):
             created_at = data.get(TagJsonFields.CREATED_AT, None)
             sly_id = data.get(TagJsonFields.ID, None)
         meta = tag_meta_collection.get(tag_name)
-        return cls(meta=meta, value=value, sly_id=sly_id, labeler_login=labeler_login, updated_at=updated_at,
-                   created_at=created_at)
+        return cls(meta=meta, value=value, sly_id=sly_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
     def get_compact_str(self):
         '''

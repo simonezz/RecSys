@@ -2,26 +2,26 @@
 # -*- coding:utf-8 -*-
 
 """ # Updated in 20/09/01 """
+import coloredlogs
+import logging
 import configparser
 import datetime
-import glob
-import json
-import logging
-import operator
-import os
 import random
-import sys
-import traceback
+import operator
+import glob
 import unicodedata
-from copy import deepcopy
-from logging import handlers as log_handlers
-from operator import itemgetter
-
-import coloredlogs
-import cv2
+import os
+import sys
+import json
 import numpy as np
+import cv2
+import traceback
+
+from copy import deepcopy
 from PIL import Image
+from operator import itemgetter
 from matplotlib import pyplot as plt
+from logging import handlers as log_handlers
 
 '''
 try:
@@ -85,13 +85,9 @@ COLORS = COLOR_ARRAY_RGBCMY
 
 class LoggerWrapper:
     def debug(self): pass
-
     def verbose(self): pass
-
     def warning(self): pass
-
     def info(self): pass
-
     def error(self): pass
 
 
@@ -873,7 +869,7 @@ def folder_exists(in_dir, type_='rst', exit_=False, create_=False, print_=False)
     else:
         if create_:
             try:
-                # print(in_dir)
+                #print(in_dir)
                 os.makedirs(in_dir)
             except OSError:
                 print(" @ Error: make_dirs in check_directory_existence routine...\n")

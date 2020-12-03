@@ -1,10 +1,10 @@
 # coding: utf-8
 
-import errno
 import os
 import shutil
-import subprocess
+import errno
 import tarfile
+import subprocess
 
 from supervisely_lib._utils import get_bytes_hash
 
@@ -98,8 +98,8 @@ def list_files(dir: str, valid_extensions: list = None, filter_fn=None) -> list:
     """
     res = list(os.path.join(dir, x.name) for x in os.scandir(dir) if x.is_file())
     return [file_path for file_path in res if
-            (valid_extensions is None or get_file_ext(file_path) in valid_extensions) and
-            (filter_fn is None or filter_fn(file_path))]
+      (valid_extensions is None or get_file_ext(file_path) in valid_extensions) and
+      (filter_fn is None or filter_fn(file_path))]
 
 
 def mkdir(dir: str):
@@ -277,8 +277,8 @@ def get_file_hash(path):
 
 def tree(dir_path):
     out = subprocess.Popen(['tree', '--filelimit', '500', '-h', '-n', dir_path],
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT)
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
     stdout, stderr = out.communicate()
     return stdout.decode("utf-8")
 

@@ -1,10 +1,9 @@
 # coding: utf-8
 
-from collections import defaultdict
-from typing import List
-
 from prettytable import PrettyTable
 from supervisely_lib._utils import take_with_default
+from typing import List, Iterable
+from collections import defaultdict
 
 
 class DuplicateKeyError(KeyError):
@@ -17,7 +16,6 @@ class KeyObject:
     r"""Base class fo objects that should implement ``key`` method. Child classes then can be stored
     KeyIndexedCollection.
     """
-
     def key(self):
         r"""
         Returns:
@@ -33,7 +31,7 @@ class KeyIndexedCollection:
     But it raises :class:`DuplicateKeyError <supervisely_lib.collection.key_indexed_collection.DuplicateKeyError>`
     exception when trying to add object with already existing key.
     """
-
+    
     item_type = KeyObject
     """The type of items that can be storred in collection. Defaul value is 
     :class:`KeyObject <supervisely_lib.collection.key_indexed_collection.KeyObject>`. 

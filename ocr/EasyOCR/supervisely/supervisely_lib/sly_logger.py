@@ -1,12 +1,11 @@
 # coding: utf-8
 
-import datetime
 import logging
-import os
 import types
+import datetime
+import os
 from collections import namedtuple
 from enum import Enum
-
 import simplejson
 from pythonjsonlogger import jsonlogger
 
@@ -53,11 +52,12 @@ LogLevelSpec = namedtuple('LogLevelSpec', [
     'descr',
 ])
 
+
 LOGGING_LEVELS = {
     'FATAL': LogLevelSpec(50, True, 'Critical error'),
-    'ERROR': LogLevelSpec(40, True, 'Error'),  # may be shown to end user
-    'WARN': LogLevelSpec(30, False, 'Warning'),  # may be shown to end user
-    'INFO': LogLevelSpec(20, False, 'Info'),  # may be shown to end user
+    'ERROR': LogLevelSpec(40, True, 'Error'),   # may be shown to end user
+    'WARN': LogLevelSpec(30, False, 'Warning'),   # may be shown to end user
+    'INFO': LogLevelSpec(20, False, 'Info'),   # may be shown to end user
     'DEBUG': LogLevelSpec(10, False, 'Debug'),
     'TRACE': LogLevelSpec(5, False, 'Trace'),
 }
@@ -205,3 +205,4 @@ def get_task_logger(task_id):
 
 
 logger = set_global_logger()
+

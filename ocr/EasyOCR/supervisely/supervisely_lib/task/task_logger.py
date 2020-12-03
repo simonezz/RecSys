@@ -1,14 +1,15 @@
 # coding: utf-8
 
-import concurrent.futures
-import json
-import logging
 import queue
+import logging
 import threading
+import concurrent.futures
 import time
+import json
 
-from supervisely_lib.sly_logger import add_logger_handler, change_formatters_default_values, \
-    ServiceType, EventType, logger
+from supervisely_lib.sly_logger import get_task_logger, add_logger_handler, change_formatters_default_values, \
+                                       ServiceType, EventType, add_default_logging_into_file, logger
+from supervisely_lib.api.module_api import ApiField
 
 BATCH_SIZE_LOG = 50
 
@@ -86,7 +87,7 @@ def init_global_task_logger(task_id, api=None, file_path=None):
         handler = SlyApiHandler(api)
         add_logger_handler(logger, handler)
     if file_path is not None:
-        # add_default_logging_into_file(logger, self.dir_logs)
+        #add_default_logging_into_file(logger, self.dir_logs)
         pass
 
 
@@ -110,3 +111,6 @@ def log_task_crashed(logger, e=None):
         e = Exception("Crashed without exception info")
     logger.critical('TASK_END', exc_info=True, extra={'event_type': EventType.TASK_CRASHED, 'exc_str': str(e)})
     _stop_and_wait_logger(logger)
+
+
+

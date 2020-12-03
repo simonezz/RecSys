@@ -1,10 +1,11 @@
 # coding: utf-8
 
-from supervisely_lib.api.entity_annotation.entity_annotation_api import EntityAnnotationAPI
 from supervisely_lib.api.module_api import ApiField
+from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 from supervisely_lib.pointcloud_annotation.pointcloud_annotation import PointcloudAnnotation
 from supervisely_lib.pointcloud_annotation.pointcloud_object_collection import PointcloudObjectCollection
-from supervisely_lib.video_annotation.key_id_map import KeyIdMap
+
+from supervisely_lib.api.entity_annotation.entity_annotation_api import EntityAnnotationAPI
 
 
 class PointcloudAnnotationAPI(EntityAnnotationAPI):

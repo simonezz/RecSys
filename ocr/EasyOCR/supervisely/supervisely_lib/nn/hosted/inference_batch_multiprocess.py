@@ -1,22 +1,26 @@
 # coding: utf-8
 
-import multiprocessing as mp
 import os
 import queue
+import time
 from collections import namedtuple
 from copy import deepcopy
 from threading import Thread
 
+import multiprocessing as mp
+
 from supervisely_lib import logger
 from supervisely_lib.annotation.annotation import Annotation
+from supervisely_lib.imaging import image as sly_image
 from supervisely_lib.nn.config import AlwaysPassingConfigValidator
-from supervisely_lib.nn.hosted.inference_batch import determine_task_inference_mode_config
-from supervisely_lib.nn.hosted.inference_modes import InferenceModeFactory
 from supervisely_lib.project.project import Project, read_single_project, OpenMode
 from supervisely_lib.project.project_meta import ProjectMeta
 from supervisely_lib.task.paths import TaskPaths
-from supervisely_lib.task.progress import Progress
 from supervisely_lib.task.progress import report_inference_finished
+from supervisely_lib.nn.hosted.inference_modes import InferenceModeFactory
+from supervisely_lib.nn.hosted.inference_batch import determine_task_inference_mode_config
+from supervisely_lib.task.progress import Progress
+
 
 InferenceRequest = namedtuple('InferenceRequest', ['ds_name', 'item_name', 'item_paths'])
 InferenceResponse = namedtuple('InferenceResponse', ['ds_name', 'item_name', 'item_paths', 'ann_json', 'meta_json'])

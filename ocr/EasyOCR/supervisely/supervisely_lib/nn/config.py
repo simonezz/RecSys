@@ -1,8 +1,9 @@
 # coding: utf-8
 import collections
 
-from jsonschema import Draft4Validator, validators
 from supervisely_lib.io.json import load_json_file
+
+from jsonschema import Draft4Validator, validators
 
 
 # From https://python-jsonschema.readthedocs.io/en/v2.6.0/faq/

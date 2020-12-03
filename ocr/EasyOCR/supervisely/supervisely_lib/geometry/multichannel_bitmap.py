@@ -1,12 +1,12 @@
 # coding: utf-8
 import base64
-import io
 import zlib
-
+import io
 import numpy as np
+
 from supervisely_lib.geometry.bitmap_base import BitmapBase, resize_origin_and_bitmap
-from supervisely_lib.geometry.constants import MULTICHANNEL_BITMAP
 from supervisely_lib.geometry.point_location import PointLocation
+from supervisely_lib.geometry.constants import MULTICHANNEL_BITMAP
 
 
 class MultichannelBitmap(BitmapBase):
@@ -39,8 +39,8 @@ class MultichannelBitmap(BitmapBase):
         '''
         full_img_data = np.zeros(rotator.src_imsize + self.data.shape[2:], dtype=self.data.dtype)
         full_img_data[
-        self.origin.row:(self.origin.row + self.data.shape[0]),
-        self.origin.col:(self.origin.col + self.data.shape[1]), ...] = self.data[:, :, ...]
+            self.origin.row:(self.origin.row + self.data.shape[0]),
+            self.origin.col:(self.origin.col + self.data.shape[1]), ...] = self.data[:, :, ...]
         rotated_full_data = rotator.rotate_img(full_img_data, use_inter_nearest=True)
         # Rotate the bounding box to find out the bounding box of the rotated bitmap within the full image.
         rotated_bbox = self.to_bbox().rotate(rotator)
@@ -61,7 +61,7 @@ class MultichannelBitmap(BitmapBase):
             cropped_origin = PointLocation(row=cropped_area.top, col=cropped_area.left)
             cropped_area_in_data = cropped_area.translate(drow=-self._origin.row, dcol=-self.origin.col)
             return [MultichannelBitmap(data=cropped_area_in_data.get_cropped_numpy_slice(self._data),
-                                       origin=cropped_origin, )]
+                                       origin=cropped_origin,)]
 
     def resize(self, in_size, out_size):
         '''

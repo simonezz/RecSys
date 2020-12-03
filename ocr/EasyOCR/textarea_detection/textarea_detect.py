@@ -1,14 +1,12 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import argparse
 import os
 import sys
+import argparse
 import time
-
-from textarea_detection import yolov5_tad
 from utility import general_utils as g_utils
-
+from textarea_detection import yolov5_tad
 sys.path.append('yolov5')
 
 _this_folder_ = os.path.dirname(os.path.abspath(__file__))
@@ -49,7 +47,7 @@ def main(args):
     g_utils.folder_exists(args.out_path, create_=True)
 
     img_fnames = sorted(g_utils.get_filenames(args.img_path, extensions=g_utils.IMG_EXTENSIONS,
-                                              recursive_=True, exit_=True))
+                                            recursive_=True, exit_=True))
     this.logger.info(" # Total file number to be processed: {:d}.".format(len(img_fnames)))
 
     for idx, fname in enumerate(img_fnames):
@@ -65,8 +63,7 @@ def main(args):
             dir_name, core_name, ext = g_utils.split_fname(fname)
             # file_utils.saveResult(core_name + '.jpg', img, polys, dirname='./Output/')
 
-        time_arr_str = ["{:5.3f}".format(this.time_arr[i + 1] - this.time_arr[i]) for i in
-                        range(len(this.time_arr) - 1)]
+        time_arr_str = ["{:5.3f}".format(this.time_arr[i+1] - this.time_arr[i]) for i in range(len(this.time_arr)-1)]
         this.logger.info(" # Textarea detection processing : {:d}-th frame : {}".format(idx + 1, time_arr_str))
 
     this.logger.info(" # {} finished.".format(_this_basename_))
@@ -94,6 +91,7 @@ INI_FNAME = _this_basename_ + ".ini"
 IMG_PATH = "../Input/시중교재_new/쎈_수학(상)2/img/[SSEN] 2 (상) 본문 (2018) [좋은책신사고]_46.jpg"
 OUT_PATH = os.path.join(_this_folder_, "../Output/")
 HANDLER_TYPE = 'yolov5'
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:

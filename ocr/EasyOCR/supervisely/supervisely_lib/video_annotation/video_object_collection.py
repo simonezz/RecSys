@@ -1,7 +1,7 @@
 # coding: utf-8
+from supervisely_lib.video_annotation.video_object import VideoObject
 from supervisely_lib.collection.key_indexed_collection import KeyIndexedCollection
 from supervisely_lib.project.project_meta import ProjectMeta
-from supervisely_lib.video_annotation.video_object import VideoObject
 
 
 class VideoObjectCollection(KeyIndexedCollection):

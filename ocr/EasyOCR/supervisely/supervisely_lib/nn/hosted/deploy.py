@@ -7,11 +7,13 @@ from supervisely_lib.io.json import load_json_file
 from supervisely_lib.nn.config import update_recursively
 from supervisely_lib.nn.hosted.constants import CONFIG, MODEL
 from supervisely_lib.task.paths import TaskPaths
-from supervisely_lib.worker_api.agent_rpc import SimpleCache
+
 from supervisely_lib.worker_api.rpc_servicer import AgentRPCServicer
+from supervisely_lib.worker_api.agent_rpc import SimpleCache
 
 
 class ModelDeploy:
+
     config = {
         'cache_limit': 500,
         'connection': {

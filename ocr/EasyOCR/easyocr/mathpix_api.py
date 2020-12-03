@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-import base64
-import json
 import os
-
 import cv2
+import base64
 import requests
+import json
+import numpy as np
+from PIL import Image
 from utility import general_utils as g_utils
-
 #
 # Common module for calling Mathpix OCR service from Python.
 #
@@ -26,7 +26,6 @@ default_headers = {
 
 service = 'https://api.mathpix.com/v3/latex'
 
-
 # Return the base64 encoding of an image with the given filename.
 def image_uri(filename, numpy=False):
     if numpy:
@@ -38,13 +37,11 @@ def image_uri(filename, numpy=False):
     image_data = open(filename, "rb").read()
     return "data:image/jpg;base64," + base64.b64encode(image_data).decode()
 
-
 # Call the Mathpix service with the given arguments, headers, and timeout.
 def latex(args, headers=default_headers, timeout=30):
     r = requests.post(service,
-                      data=json.dumps(args), headers=headers, timeout=timeout)
+        data=json.dumps(args), headers=headers, timeout=timeout)
     return json.loads(r.text)
-
 
 def recognize_textline_by_mathpix(image):
     # Text recognition routine
@@ -67,8 +64,8 @@ def recognize_textline_by_mathpix(image):
         tl_x, tl_y, width, height = pos['top_left_x'], pos['top_left_y'], pos['width'], pos['height']
         tr_x, tr_y = (tl_x + width), (tl_y + height)
 
-        box = [[tl_x, tl_y], [tr_x, tr_y], [tr_x, tr_y + height], [tl_x, tl_y + height]]
-        text = res['text']  # text / latex_simplified / latex_styled / asciimath
+        box = [[tl_x, tl_y], [tr_x, tr_y], [tr_x, tr_y+height], [tl_x, tl_y+height]]
+        text = res['text'] # text / latex_simplified / latex_styled / asciimath
         conf = res['latex_confidence']
         # conf = res['latex_confidence']
 

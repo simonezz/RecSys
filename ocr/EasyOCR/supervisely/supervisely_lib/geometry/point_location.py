@@ -2,11 +2,11 @@
 
 from copy import deepcopy
 
-from supervisely_lib._utils import unwrap_if_numpy
+from supervisely_lib.io.json import JsonSerializable
+from supervisely_lib.imaging import image as sly_image
 from supervisely_lib.geometry import validation
 from supervisely_lib.geometry.constants import EXTERIOR, INTERIOR, POINTS
-from supervisely_lib.imaging import image as sly_image
-from supervisely_lib.io.json import JsonSerializable
+from supervisely_lib._utils import unwrap_if_numpy
 
 
 class PointLocation(JsonSerializable):
@@ -145,7 +145,6 @@ def row_col_list_to_points(data, flip_row_col_order=False, do_round=False):
     :param do_round: bool param to round coords
     :return: list of points(PointLocation class objects)
     '''
-
     def _maybe_round(v):
         return v if not do_round else round(v)
 

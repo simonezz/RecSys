@@ -37,8 +37,8 @@ base_html = """
 </body></html>
 """
 
-# <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-# <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+#<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+#<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
 table_html = """
 <div>
@@ -46,10 +46,10 @@ table_html = """
 </div>
 """
 
+
 div_wrapper = """
 <div class="wrapper">{}</div>
 """
-
 
 def df_html(df, index=True):
     return table_html % df.to_html(index=index, escape=False)
@@ -67,3 +67,4 @@ def compile_report(dfs, html_divs=[], index=True):
     elmenets = div_wrapper.format(divs)
     result += elmenets
     return base_html % result
+

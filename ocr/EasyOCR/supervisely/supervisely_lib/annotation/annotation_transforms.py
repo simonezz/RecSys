@@ -2,19 +2,21 @@
 
 import collections
 import operator
+import numpy as np
+
+from skimage import measure
+from scipy import ndimage
+
 from typing import List, Callable
 
-import numpy as np
-from scipy import ndimage
-from skimage import measure
 from supervisely_lib.annotation.annotation import Annotation
 from supervisely_lib.annotation.label import Label
 from supervisely_lib.annotation.obj_class import ObjClass
 from supervisely_lib.geometry.bitmap import Bitmap, SkeletonizeMethod
-from supervisely_lib.geometry.point_location import PointLocation
 from supervisely_lib.geometry.polygon import Polygon
 from supervisely_lib.geometry.polyline import Polyline
 from supervisely_lib.geometry.rectangle import Rectangle
+from supervisely_lib.geometry.point_location import PointLocation
 
 
 def skeletonize_bitmap(ann: Annotation, classes: List[str], method_id: SkeletonizeMethod) -> Annotation:
@@ -28,7 +30,6 @@ def skeletonize_bitmap(ann: Annotation, classes: List[str], method_id: Skeletoni
     Returns:
         Annotation with skeletonized labels.
     """
-
     def _skel(label: Label):
         if label.obj_class.name not in classes:
             return [label]
@@ -52,7 +53,6 @@ def approximate_vector(ann: Annotation, classes: List[str], epsilon: float) -> A
     Returns:
         Annotation with approximated vector figures of selected classes.
     """
-
     def _approx(label: Label):
         if label.obj_class.name not in classes:
             return [label]
@@ -91,12 +91,10 @@ def drop_object_by_class(ann: Annotation, classes: List[str]) -> Annotation:
     Returns:
         Annotation with removed labels of specified classes.
     """
-
     def _filter(label: Label):
         if label.obj_class.name in classes:
             return [label]
         return []
-
     return ann.transform_labels(_filter)
 
 
@@ -156,7 +154,7 @@ def bitwise_mask(ann: Annotation, class_mask: str, classes_to_correct: List[str]
         full_target_mask = np.full(imsize, False, bool)
 
         full_target_mask[target_original.row:target_original.row + target_mask.shape[0],
-        target_original.col:target_original.col + target_mask.shape[1]] = target_mask
+                         target_original.col:target_original.col + target_mask.shape[1]] = target_mask
 
         def perform_op(label):
             if label.obj_class.name not in classes_to_correct or label.obj_class.name == class_mask:
@@ -184,7 +182,6 @@ def find_contours(ann: Annotation, classes_mapping: dict) -> Annotation:  # @TOD
     Returns:
         Annotation with Bitmaps converted to contours Polygons.
     """
-
     def to_contours(label: Label):
         new_obj_cls = classes_mapping.get(label.obj_class.name)
         if new_obj_cls is None:

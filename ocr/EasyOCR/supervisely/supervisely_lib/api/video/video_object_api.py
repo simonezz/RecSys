@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from supervisely_lib.api.entity_annotation.object_api import ObjectApi
 from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 from supervisely_lib.video_annotation.video_object_collection import VideoObjectCollection
+from supervisely_lib.api.entity_annotation.object_api import ObjectApi
 
 
 class VideoObjectApi(ObjectApi):

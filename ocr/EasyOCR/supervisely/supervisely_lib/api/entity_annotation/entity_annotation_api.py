@@ -29,8 +29,7 @@ class EntityAnnotationAPI(ModuleApi):
                                                                self._entity_ids_str: entity_ids})
         return response.json()
 
-    def _append(self, tag_api, object_api, figure_api, project_id, dataset_id, entity_id, tags, objects, figures,
-                key_id_map: KeyIdMap = None):
+    def _append(self, tag_api, object_api, figure_api, project_id, dataset_id, entity_id, tags, objects, figures, key_id_map: KeyIdMap = None):
         if key_id_map is None:
             # create for internal purposes (to link figures and tags to objects)
             key_id_map = KeyIdMap()

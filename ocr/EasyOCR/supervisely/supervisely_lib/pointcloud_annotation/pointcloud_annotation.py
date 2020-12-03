@@ -1,25 +1,28 @@
 # coding: utf-8
 
-import uuid
 from copy import deepcopy
+import uuid
 
 from supervisely_lib._utils import take_with_default
+from supervisely_lib.video_annotation.video_tag_collection import VideoTagCollection
+from supervisely_lib.video_annotation.video_object_collection import VideoObjectCollection
+from supervisely_lib.video_annotation.frame_collection import FrameCollection
+from supervisely_lib.video_annotation.constants import FRAMES, IMG_SIZE, IMG_SIZE_HEIGHT, IMG_SIZE_WIDTH, \
+                                                       DESCRIPTION, FRAMES_COUNT, TAGS, OBJECTS, VIDEO_ID, KEY, \
+                                                       VIDEOS_MAP, VIDEO_NAME
+from supervisely_lib.video_annotation.key_id_map import KeyIdMap
+
+from supervisely_lib.video_annotation.video_annotation import VideoAnnotation
+from supervisely_lib.video_annotation.constants import FIGURES
 from supervisely_lib.pointcloud_annotation.constants import POINTCLOUD_ID
 from supervisely_lib.pointcloud_annotation.pointcloud_figure import PointcloudFigure
-from supervisely_lib.pointcloud_annotation.pointcloud_object_collection import PointcloudObjectCollection
-from supervisely_lib.video_annotation.constants import DESCRIPTION, TAGS, OBJECTS, KEY
-from supervisely_lib.video_annotation.constants import FIGURES
-from supervisely_lib.video_annotation.key_id_map import KeyIdMap
-from supervisely_lib.video_annotation.video_annotation import VideoAnnotation
-from supervisely_lib.video_annotation.video_object_collection import VideoObjectCollection
-from supervisely_lib.video_annotation.video_tag_collection import VideoTagCollection
+from supervisely_lib.pointcloud_annotation.pointcloud_object_collection import  PointcloudObjectCollection
 
 
 class PointcloudAnnotation(VideoAnnotation):
     '''
     This is a class for creating and using PointcloudAnnotation
     '''
-
     def __init__(self, objects=None, figures=None, tags=None, description="", key=None):
         '''
         :param objects: VideoObjectCollection
@@ -49,7 +52,7 @@ class PointcloudAnnotation(VideoAnnotation):
     def validate_figures_bounds(self):
         raise RuntimeError("Not supported for pointcloud")
 
-    def to_json(self, key_id_map: KeyIdMap = None):
+    def to_json(self, key_id_map: KeyIdMap=None):
         '''
         The function to_json convert PointcloudAnnotation to json format
         :param key_id_map: KeyIdMap class object
@@ -71,7 +74,7 @@ class PointcloudAnnotation(VideoAnnotation):
         return res_json
 
     @classmethod
-    def from_json(cls, data, project_meta, key_id_map: KeyIdMap = None):
+    def from_json(cls, data, project_meta, key_id_map: KeyIdMap=None):
         '''
         :param data: input PointcloudAnnotation in json format
         :param project_meta: ProjectMeta class object

@@ -2,11 +2,11 @@
 
 from copy import deepcopy
 
-from supervisely_lib.metric.common import log_head, log_line, safe_ratio, sum_counters, TRUE_POSITIVE, PRECISION, \
-    RECALL, TOTAL_GROUND_TRUTH, TOTAL_PREDICTIONS
+from supervisely_lib.sly_logger import logger
 from supervisely_lib.metric.matching import filter_labels_by_name, match_labels_by_iou
 from supervisely_lib.metric.metric_base import MetricsBase
-from supervisely_lib.sly_logger import logger
+from supervisely_lib.metric.common import log_head, log_line, safe_ratio, sum_counters, TRUE_POSITIVE, PRECISION, \
+    RECALL, TOTAL_GROUND_TRUTH, TOTAL_PREDICTIONS
 
 RAW_COUNTERS = [TRUE_POSITIVE, TOTAL_GROUND_TRUTH, TOTAL_PREDICTIONS]
 

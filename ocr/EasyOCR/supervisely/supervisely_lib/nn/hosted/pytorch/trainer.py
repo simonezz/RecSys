@@ -1,15 +1,16 @@
-import torch
 from supervisely_lib import logger
 from supervisely_lib.nn.dataset import ensure_samples_nonempty
 from supervisely_lib.nn.hosted.class_indexing import CONTINUE_TRAINING, TRANSFER_LEARNING
 from supervisely_lib.nn.hosted.pytorch.constants import CUSTOM_MODEL_CONFIG, HEAD_LAYER
 from supervisely_lib.nn.hosted.trainer import SuperviselyModelTrainer, BATCH_SIZE, DATASET_TAGS, EPOCHS, LOSS, LR, \
     TRAIN, VAL, WEIGHTS_INIT_TYPE, INPUT_SIZE, HEIGHT, WIDTH
+from supervisely_lib.nn.training.eval_planner import EvalPlanner, VAL_EVERY
 from supervisely_lib.nn.pytorch.dataset import PytorchSegmentationSlyDataset
 from supervisely_lib.nn.pytorch.weights import WeightsRW
-from supervisely_lib.nn.training.eval_planner import EvalPlanner, VAL_EVERY
 from supervisely_lib.task.paths import TaskPaths
 from supervisely_lib.task.progress import Progress, epoch_float, report_metrics_training, report_metrics_validation
+
+import torch
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 
@@ -42,7 +43,7 @@ class PytorchSegmentationTrainer(SuperviselyModelTrainer):
             VAL_EVERY: 0.5,
             LR: 0.001,
             WEIGHTS_INIT_TYPE: TRANSFER_LEARNING,  # CONTINUE_TRAINING,
-            CUSTOM_MODEL_CONFIG: {}  # Model-specific settings go in this section.
+            CUSTOM_MODEL_CONFIG: {}    # Model-specific settings go in this section.
         }
 
     def __init__(self, model_factory_fn, optimization_loss_fn, training_metrics_dict=None, default_model_config=None):

@@ -1,22 +1,22 @@
 # coding: utf-8
-import json
 import unittest
-
 import numpy as np
-from supervisely_lib.geometry.bitmap import Bitmap
-from supervisely_lib.geometry.constants import POINTS, EXTERIOR, INTERIOR, BITMAP, DATA, ORIGIN
-from supervisely_lib.geometry.image_rotator import ImageRotator
-from supervisely_lib.geometry.multichannel_bitmap import MultichannelBitmap
-from supervisely_lib.geometry.point import Point
+import json
+
 from supervisely_lib.geometry.point_location import PointLocation, row_col_list_to_points, points_to_row_col_list
+from supervisely_lib.geometry.point import Point
+from supervisely_lib.geometry.bitmap import Bitmap
+from supervisely_lib.geometry.multichannel_bitmap import MultichannelBitmap
 from supervisely_lib.geometry.polygon import Polygon
 from supervisely_lib.geometry.rectangle import Rectangle
+from supervisely_lib.geometry.image_rotator import ImageRotator
 from supervisely_lib.imaging.image import KEEP_ASPECT_RATIO
+from supervisely_lib.geometry.constants import POINTS, EXTERIOR, INTERIOR, BITMAP, DATA, ORIGIN
 
 
 class PointTest(unittest.TestCase):
     def setUp(self):
-        self.point = Point(row=10, col=5)
+        self.point = Point(row=10,  col=5)
 
     def assertPointEquals(self, point, row, col):
         self.assertIsInstance(point, Point)
@@ -527,7 +527,7 @@ class BitmapTest(unittest.TestCase):
         interiors_points = [[],
                             [np.array([[13, 113], [12, 114], [13, 115], [14, 114]]),
                              np.array([[11, 113], [10, 114], [11, 115], [12, 114]])],
-                            []]
+                           []]
 
         self.assertEqual(len(polygons), 2)
         for polygon, target_exterior, target_interiors in zip(polygons, exteriors_points, interiors_points):

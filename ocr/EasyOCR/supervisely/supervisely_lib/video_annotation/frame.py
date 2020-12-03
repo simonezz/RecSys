@@ -1,16 +1,15 @@
 # coding: utf-8
 
 from supervisely_lib._utils import take_with_default
-from supervisely_lib.collection.key_indexed_collection import KeyObject
 from supervisely_lib.video_annotation.constants import FIGURES, INDEX
 from supervisely_lib.video_annotation.video_figure import VideoFigure
+from supervisely_lib.collection.key_indexed_collection import KeyObject
 
 
 class Frame(KeyObject):
     '''
     This is a class for creating and using frames for videos
     '''
-
     def __init__(self, index, figures=None):
         '''
 

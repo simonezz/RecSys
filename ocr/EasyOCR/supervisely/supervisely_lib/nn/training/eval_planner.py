@@ -1,6 +1,7 @@
 # coding: utf-8
 import math
 
+
 VAL_EVERY = 'val_every'
 
 
@@ -12,7 +13,6 @@ class EvalPlanner:
         epochs: Number of train epochs.
         val_every:  Validation period by epoch (value 0.5 mean 2 validations per epoch).
     """
-
     def __init__(self, epochs, val_every):
         self.epochs = epochs
         self.val_every = val_every

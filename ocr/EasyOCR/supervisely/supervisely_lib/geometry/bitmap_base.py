@@ -2,7 +2,7 @@
 import numpy as np
 
 from supervisely_lib.geometry.constants import DATA, ORIGIN, GEOMETRY_SHAPE, GEOMETRY_TYPE, \
-    LABELER_LOGIN, UPDATED_AT, CREATED_AT, ID, CLASS_ID
+                                               LABELER_LOGIN, UPDATED_AT, CREATED_AT, ID, CLASS_ID
 from supervisely_lib.geometry.geometry import Geometry
 from supervisely_lib.geometry.point_location import PointLocation
 from supervisely_lib.geometry.rectangle import Rectangle
@@ -34,8 +34,7 @@ def resize_origin_and_bitmap(origin: PointLocation, bitmap: np.ndarray, in_size,
 class BitmapBase(Geometry):
     def __init__(self, data: np.ndarray, origin: PointLocation = None, expected_data_dims=None,
                  sly_id=None, class_id=None, labeler_login=None, updated_at=None, created_at=None):
-        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                         created_at=created_at)
+        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
         """
         :param origin: PointLocation class object
         :param data: np.ndarray
@@ -111,8 +110,7 @@ class BitmapBase(Geometry):
         sly_id = json_data.get(ID, None)
         class_id = json_data.get(CLASS_ID, None)
         return cls(data=data, origin=PointLocation(row=row, col=col),
-                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                   created_at=created_at)
+                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
     @property
     def origin(self) -> PointLocation:

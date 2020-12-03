@@ -14,7 +14,6 @@ class RenamingTagMetaMapper(TagMetaMapper):
     '''
     This is a class for renaming TagMeta in given TagMetaCollection
     '''
-
     def __init__(self, dest_tag_meta_dict: TagMetaCollection, renamer: Renamer):
         self._dest_tag_meta_dict = dest_tag_meta_dict
         self._renamer = renamer

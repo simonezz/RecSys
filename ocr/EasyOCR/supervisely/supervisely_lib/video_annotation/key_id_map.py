@@ -1,7 +1,6 @@
 # coding: utf-8
 
 import uuid
-
 from bidict import bidict
 from supervisely_lib.io.json import dump_json_file, load_json_file
 
@@ -17,7 +16,6 @@ class KeyIdMap:
     '''
     This is a class for creating and using key_id_maps for videos
     '''
-
     def __init__(self):
         self._data = dict()
         self._data[TAGS] = bidict()

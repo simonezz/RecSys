@@ -1,9 +1,11 @@
 # coding: utf-8
 
 import numpy as np
-from supervisely_lib.metric.common import render_labels_for_class_name, safe_ratio, sum_counters, TOTAL_GROUND_TRUTH
-from supervisely_lib.metric.metric_base import MetricsBase
+
 from supervisely_lib.sly_logger import logger
+from supervisely_lib.metric.metric_base import MetricsBase
+from supervisely_lib.metric.common import render_labels_for_class_name, safe_ratio, sum_counters, TOTAL_GROUND_TRUTH
+
 
 INTERSECTION = 'intersection'
 UNION = 'union'

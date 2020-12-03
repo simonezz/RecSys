@@ -1,15 +1,17 @@
 # coding: utf-8
 
+import cv2
 from copy import deepcopy
 
-import cv2
-from supervisely_lib.geometry.constants import LABELER_LOGIN, CREATED_AT, UPDATED_AT, ID, CLASS_ID
-from supervisely_lib.geometry.geometry import Geometry
+from supervisely_lib.imaging.color import rgb2hex, hex2rgb
+from supervisely_lib.io.json import JsonSerializable
+
 from supervisely_lib.geometry.point import Point
 from supervisely_lib.geometry.point_location import PointLocation
 from supervisely_lib.geometry.rectangle import Rectangle
-from supervisely_lib.imaging.color import rgb2hex, hex2rgb
-from supervisely_lib.io.json import JsonSerializable
+from supervisely_lib.geometry.geometry import Geometry
+from supervisely_lib.geometry.constants import LABELER_LOGIN, CREATED_AT, UPDATED_AT, ID, CLASS_ID
+
 
 EDGES = 'edges'
 NODES = 'nodes'
@@ -26,7 +28,6 @@ class Node(JsonSerializable):
     '''
     This is a class for creating and using Nodes
     '''
-
     def __init__(self, location: PointLocation, disabled=True):
         '''
         :param location: PointLocation class object
@@ -87,7 +88,6 @@ class GraphNodes(Geometry):
     '''
     This is a class for creating and using GraphNodes
     '''
-
     @staticmethod
     def geometry_name():
         return 'graph'
@@ -97,8 +97,7 @@ class GraphNodes(Geometry):
         '''
         :param nodes: dictionary containing nodes of graph
         '''
-        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                         created_at=created_at)
+        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
         self._nodes = nodes
 
     @property
@@ -314,3 +313,4 @@ class GraphNodes(Geometry):
         :return: dictionary(graph template) in json format
         '''
         return GraphNodes._transform_config_colors(config, rgb2hex)
+

@@ -1,21 +1,23 @@
 # coding: utf-8
 
 
-import itertools
 import json
+import itertools
+import numpy as np
+
 from copy import deepcopy
 
-import numpy as np
 from supervisely_lib import logger
-from supervisely_lib._utils import take_with_default
 from supervisely_lib.annotation.label import Label
 from supervisely_lib.annotation.obj_class_collection import ObjClassCollection
 from supervisely_lib.annotation.tag_collection import TagCollection
-from supervisely_lib.geometry.multichannel_bitmap import MultichannelBitmap
-from supervisely_lib.geometry.rectangle import Rectangle
-from supervisely_lib.imaging import font as sly_font
-from supervisely_lib.imaging import image as sly_image
 from supervisely_lib.project.project_meta import ProjectMeta
+from supervisely_lib.geometry.rectangle import Rectangle
+from supervisely_lib.imaging import image as sly_image
+from supervisely_lib.imaging import font as sly_font
+from supervisely_lib._utils import take_with_default
+from supervisely_lib.geometry.multichannel_bitmap import MultichannelBitmap
+
 
 ANN_EXT = '.json'
 
@@ -43,7 +45,6 @@ class Annotation:
         img_description (str): image description
         pixelwise_scores_labels (list)
     '''
-
     def __init__(self, img_size, labels=None, img_tags=None, img_description="",
                  pixelwise_scores_labels=None, custom_data=None):
         '''
@@ -140,6 +141,7 @@ class Annotation:
         prob_labels = None
         if AnnotationJsonFields.PROBABILITY_LABELS in custom_data and \
                 AnnotationJsonFields.PROBABILITY_CLASSES in custom_data:
+
             prob_classes = ObjClassCollection.from_json(custom_data[AnnotationJsonFields.PROBABILITY_CLASSES])
 
             # @TODO: tony, maybe link with project meta (add probability classes???)
@@ -179,8 +181,7 @@ class Annotation:
                           labels=take_with_default(labels, self.labels),
                           img_tags=take_with_default(img_tags, self.img_tags),
                           img_description=take_with_default(img_description, self.img_description),
-                          pixelwise_scores_labels=take_with_default(pixelwise_scores_labels,
-                                                                    self.pixelwise_scores_labels),
+                          pixelwise_scores_labels=take_with_default(pixelwise_scores_labels, self.pixelwise_scores_labels),
                           custom_data=take_with_default(custom_data, self.custom_data)
                           )
 
@@ -312,10 +313,8 @@ class Annotation:
         :param new_size: new image size
         :return: Annotation class object with new labels and image size
         '''
-
         def _do_transform_labels(src_labels, label_transform_fn):
             return list(itertools.chain(*[label_transform_fn(label) for label in src_labels]))
-
         new_labels = _do_transform_labels(self._labels, label_transform_fn)
         new_pixelwise_scores_labels = _do_transform_labels(self._pixelwise_scores_labels, label_transform_fn)
         return self.clone(img_size=take_with_default(new_size, self.img_size), labels=new_labels,
@@ -328,10 +327,8 @@ class Annotation:
         :param rect: Rectangle class object
         :return: Annotation class object with new labels
         '''
-
         def _crop_label(label):
             return label.crop(rect)
-
         return self.transform_labels(_crop_label)
 
     def relative_crop(self, rect):
@@ -341,10 +338,8 @@ class Annotation:
         :param rect: Rectangle class object
         :return: Annotation class object with new labels and image size
         '''
-
         def _crop_label(label):
             return label.relative_crop(rect)
-
         return self.transform_labels(_crop_label, rect.to_size())
 
     def rotate(self, rotator):
@@ -354,10 +349,8 @@ class Annotation:
         :param rotator: ImageRotator class object
         :return: Annotation class object with new(rotated) labels and image size
         '''
-
         def _rotate_label(label):
             return [label.rotate(rotator)]
-
         return self.transform_labels(_rotate_label, tuple(rotator.new_imsize))
 
     def resize(self, out_size):
@@ -367,10 +360,8 @@ class Annotation:
         :param out_size: new image size
         :return: Annotation class object with new(resized) labels and image size
         '''
-
         def _resize_label(label):
             return [label.resize(self.img_size, out_size)]
-
         return self.transform_labels(_resize_label, out_size)
 
     def scale(self, factor):
@@ -380,10 +371,8 @@ class Annotation:
         :param factor: float scale parameter
         :return: Annotation class object with new scale
         '''
-
         def _scale_label(label):
             return [label.scale(factor)]
-
         result_size = (round(self.img_size[0] * factor), round(self.img_size[1] * factor))
         return self.transform_labels(_scale_label, result_size)
 
@@ -393,10 +382,8 @@ class Annotation:
         current Annotation object
         :return: Annotation class object
         '''
-
         def _fliplr_label(label):
             return [label.fliplr(self.img_size)]
-
         return self.transform_labels(_fliplr_label)
 
     def flipud(self):
@@ -405,10 +392,8 @@ class Annotation:
         current Annotation object
         :return: Annotation class object
         '''
-
         def _flipud_label(label):
             return [label.flipud(self.img_size)]
-
         return self.transform_labels(_flipud_label)
 
     def _get_font(self):
@@ -473,7 +458,7 @@ class Annotation:
         :param colors: colors of classes on render mask
         :return: dictionary with statistics of space representation
         '''
-        # @TODO: check similar colors
+        #@TODO: check similar colors
 
         if len(names) != len(colors):
             raise RuntimeError("len(names) != len(colors) [{} != {}]".format(len(names), len(colors)))
@@ -491,7 +476,7 @@ class Annotation:
 
         covered_pixels = 0
         for name, color in zip(names, colors):
-            col_name = name  # "{} [area]".format(name)
+            col_name = name #"{} [area]".format(name)
             class_mask = np.all(render == color, axis=-1).astype('uint8')
             cnt_pixels = class_mask.sum()
             covered_pixels += cnt_pixels
@@ -514,10 +499,8 @@ class Annotation:
         :param class_names: list of classes names
         :return: dictionary with a number of different classes in annotation and it total count
         '''
-
         def _name_to_key(name):
-            return name  # "{} [count]".format(name)
-
+            return name#"{} [count]".format(name)
         total = 0
         stat = {_name_to_key(name): 0 for name in class_names}
         for label in self._labels:

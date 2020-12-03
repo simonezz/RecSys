@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from supervisely_lib.geometry.constants import LABELER_LOGIN, UPDATED_AT, CREATED_AT, ID, CLASS_ID
 from supervisely_lib.geometry.cuboid_3d import Vector3d
 from supervisely_lib.geometry.geometry import Geometry
+from supervisely_lib.geometry.constants import LABELER_LOGIN, UPDATED_AT, CREATED_AT, ID, CLASS_ID
 
 
 class Point3d(Geometry):
@@ -12,8 +12,7 @@ class Point3d(Geometry):
 
     def __init__(self, point: Vector3d,
                  sly_id=None, class_id=None, labeler_login=None, updated_at=None, created_at=None):
-        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                         created_at=created_at)
+        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
         if type(point) is not Vector3d:
             raise TypeError("\"position\" param has to be of type {!r}".format(type(Vector3d)))
@@ -46,5 +45,4 @@ class Point3d(Geometry):
         created_at = data.get(CREATED_AT, None)
         sly_id = data.get(ID, None)
         class_id = data.get(CLASS_ID, None)
-        return cls(point, sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                   created_at=created_at)
+        return cls(point, sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)

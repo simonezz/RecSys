@@ -1,11 +1,12 @@
 # coding: utf-8
 
 import cv2
+
+from supervisely_lib.geometry.point_location import PointLocation
+from supervisely_lib.geometry.geometry import Geometry
+from supervisely_lib.geometry.rectangle import Rectangle
 from supervisely_lib._utils import unwrap_if_numpy
 from supervisely_lib.geometry.constants import LABELER_LOGIN, UPDATED_AT, CREATED_AT, ID, CLASS_ID
-from supervisely_lib.geometry.geometry import Geometry
-from supervisely_lib.geometry.point_location import PointLocation
-from supervisely_lib.geometry.rectangle import Rectangle
 
 
 class Point(Geometry):
@@ -14,8 +15,7 @@ class Point(Geometry):
         """
         Create geopmetry point in (row, col) position. Float-type coordinates will be deprecated soon.
         """
-        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                         created_at=created_at)
+        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
         self._row = round(unwrap_if_numpy(row))
         self._col = round(unwrap_if_numpy(col))
 
@@ -28,16 +28,14 @@ class Point(Geometry):
         return self._col
 
     @classmethod
-    def from_point_location(cls, pt: PointLocation, sly_id=None, class_id=None, labeler_login=None, updated_at=None,
-                            created_at=None):
+    def from_point_location(cls, pt: PointLocation, sly_id=None, class_id=None, labeler_login=None, updated_at=None, created_at=None):
         '''
         The function from_point_location create Point class object from given PointLocation class object
         :param pt: PointLocation class object
         :return: Point class object
         '''
         return cls(row=pt.row, col=pt.col,
-                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                   created_at=created_at)
+                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
     @property
     def point_location(self) -> PointLocation:
@@ -152,3 +150,7 @@ class Point(Geometry):
         return cls.from_point_location(PointLocation.from_json(data),
                                        sly_id=sly_id, class_id=class_id,
                                        labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
+
+
+
+

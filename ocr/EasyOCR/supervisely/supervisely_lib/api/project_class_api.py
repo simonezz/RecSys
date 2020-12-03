@@ -1,14 +1,14 @@
 # coding: utf-8
 
-from supervisely_lib.api.module_api import ApiField
 from supervisely_lib.api.module_api import ModuleApi
+from supervisely_lib.api.module_api import ApiField
 
 
 class ProjectClassApi(ModuleApi):
     @staticmethod
     def info_sequence():
         return [ApiField.ID,
-                # ApiField.PROJECT_ID,
+                #ApiField.PROJECT_ID,
                 ApiField.NAME,
                 ApiField.DESCRIPTION,
                 ApiField.SHAPE,
@@ -27,5 +27,4 @@ class ProjectClassApi(ModuleApi):
         :param filters: list
         :return: list all the classes for a given project
         '''
-        return self.get_list_all_pages('advanced.object_classes.list',
-                                       {ApiField.PROJECT_ID: project_id, "filter": filters or []})
+        return self.get_list_all_pages('advanced.object_classes.list',  {ApiField.PROJECT_ID: project_id, "filter": filters or []})

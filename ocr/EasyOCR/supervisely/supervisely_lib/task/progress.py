@@ -14,7 +14,6 @@ class Progress:
     '''
     This is a class for conveniently monitoring the operation of modules and displaying statistics on data processing
     '''
-
     def __init__(self, message, total_cnt, ext_logger=None):
         '''
         :param message: str
@@ -42,7 +41,7 @@ class Progress:
         '''
         self.current += count
 
-    # @TODO: ask web team to rename subtask->message
+    #@TODO: ask web team to rename subtask->message
     def report_progress(self):
         '''
         Logs a message with level INFO on logger. Message contain type of progress, subtask message, currtnt and total number of iterations
@@ -80,7 +79,7 @@ class Progress:
         self.iters_done(count)
         self.report_if_needed()
 
-    # @TODO: to upload dtl archive
+    #@TODO: to upload dtl archive
     def set_current_value(self, value):
         '''
         Increments the current iteration counter by this value minus the current value of the counter and logs a message depending on current number of iterations
@@ -93,7 +92,7 @@ def report_agent_rpc_ready():
     '''
     Logs a message with level INFO on logger
     '''
-    logger.info('Ready to get events', extra={'event_type': EventType.TASK_DEPLOYED})
+    logger.info('Ready to get events', extra={ 'event_type': EventType.TASK_DEPLOYED })
 
 
 def report_import_finished():

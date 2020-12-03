@@ -1,25 +1,27 @@
 # coding: utf-8
 
+import os
 import concurrent.futures
 import json
-import threading
 import traceback
 from copy import deepcopy
 from queue import Queue
+import threading
 
 from supervisely_lib.annotation.annotation import Annotation
-from supervisely_lib.api.api import Api
 from supervisely_lib.function_wrapper import function_wrapper, function_wrapper_nofail
 from supervisely_lib.imaging.image import drop_image_alpha_channel
 from supervisely_lib.nn.hosted.inference_modes import InferenceModeFactory, InfModeFullImage, \
-    MODE, get_effective_inference_mode_config
+    MODE, NAME, get_effective_inference_mode_config
 from supervisely_lib.project.project_meta import ProjectMeta
-from supervisely_lib.task.progress import report_agent_rpc_ready
 from supervisely_lib.worker_api.agent_api import AgentAPI
 from supervisely_lib.worker_api.agent_rpc import decode_image, download_image_from_remote, download_data_from_remote, \
     send_from_memory_generator
 from supervisely_lib.worker_api.interfaces import SingleImageInferenceInterface
 from supervisely_lib.worker_proto import worker_api_pb2 as api_proto
+from supervisely_lib.task.progress import report_agent_rpc_ready
+from supervisely_lib.api.api import Api
+
 
 REQUEST_TYPE = 'request_type'
 GET_OUT_META = 'get_out_meta'
@@ -246,8 +248,7 @@ class InactiveRPCServicer(AgentRPCServicer):
     def __init__(self, logger, model_applier: SingleImageInferenceInterface, conn_config, cache):
         self.logger = logger
         self.model_applier = model_applier
-        self._default_inference_mode_config = InfModeFullImage.make_default_config(
-            model_result_suffix=MODEL_RESULT_SUFFIX)
+        self._default_inference_mode_config = InfModeFullImage.make_default_config(model_result_suffix=MODEL_RESULT_SUFFIX)
         self.logger.info('Created InactiveRPCServicer for internal usage', extra=conn_config)
 
     def run_inf_loop(self):

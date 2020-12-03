@@ -3,15 +3,16 @@
 from collections import namedtuple
 
 import numpy as np
+
 from supervisely_lib.annotation.label import Label, PixelwiseScoresLabel
-from supervisely_lib.annotation.tag import Tag
 from supervisely_lib.geometry.bitmap import Bitmap
+from supervisely_lib.geometry.rectangle import Rectangle
 from supervisely_lib.geometry.multichannel_bitmap import MultichannelBitmap
 from supervisely_lib.geometry.point_location import PointLocation
-from supervisely_lib.geometry.rectangle import Rectangle
+from supervisely_lib.annotation.tag import Tag
 
 
-def segmentation_array_to_sly_bitmaps(idx_to_class: dict, pred: np.ndarray, origin: PointLocation = None) -> list:
+def segmentation_array_to_sly_bitmaps(idx_to_class: dict, pred: np.ndarray, origin: PointLocation=None) -> list:
     """
     Converts array with segmentation results to Labels with Bitmap geometry according to idx_to_class mapping.
 
@@ -70,16 +71,17 @@ def detection_preds_to_sly_rects(idx_to_class, network_prediction: DetectionNetw
     for box, class_id, score in zip(np.squeeze(network_prediction.boxes)[thr_mask],
                                     np.squeeze(network_prediction.classes)[thr_mask],
                                     np.squeeze(network_prediction.scores)[thr_mask]):
-        xmin = round(float(box[1] * img_shape[1]))
-        ymin = round(float(box[0] * img_shape[0]))
-        xmax = round(float(box[3] * img_shape[1]))
-        ymax = round(float(box[2] * img_shape[0]))
 
-        rect = Rectangle(top=ymin, left=xmin, bottom=ymax, right=xmax)
-        class_obj = idx_to_class[int(class_id)]
-        label = Label(geometry=rect, obj_class=class_obj)
+            xmin = round(float(box[1] * img_shape[1]))
+            ymin = round(float(box[0] * img_shape[0]))
+            xmax = round(float(box[3] * img_shape[1]))
+            ymax = round(float(box[2] * img_shape[0]))
 
-        score_tag = Tag(score_tag_meta, value=round(float(score), 4))
-        label = label.add_tag(score_tag)
-        labels.append(label)
+            rect = Rectangle(top=ymin, left=xmin, bottom=ymax, right=xmax)
+            class_obj = idx_to_class[int(class_id)]
+            label = Label(geometry=rect, obj_class=class_obj)
+
+            score_tag = Tag(score_tag_meta, value=round(float(score), 4))
+            label = label.add_tag(score_tag)
+            labels.append(label)
     return labels

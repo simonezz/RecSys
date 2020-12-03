@@ -4,7 +4,9 @@ import os
 
 import matplotlib.font_manager as fontman
 from PIL import ImageFont
+
 from supervisely_lib.io.fs import get_file_ext, file_exists
+
 
 FONT_EXTENSION = '.ttf'
 DEFAULT_FONT_FILE_NAME = 'DejaVuSansMono.ttf'

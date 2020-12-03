@@ -1,7 +1,7 @@
 # coding: utf-8
 
-from supervisely_lib.api.entity_annotation.tag_api import TagApi
 from supervisely_lib.api.module_api import ApiField
+from supervisely_lib.api.entity_annotation.tag_api import TagApi
 
 
 class VideoTagApi(TagApi):

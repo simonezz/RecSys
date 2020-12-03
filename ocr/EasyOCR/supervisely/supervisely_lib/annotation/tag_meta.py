@@ -1,12 +1,11 @@
 # coding: utf-8
 
-from copy import deepcopy
 from typing import List
-
-from supervisely_lib._utils import take_with_default
-from supervisely_lib.collection.key_indexed_collection import KeyObject
+from copy import deepcopy
 from supervisely_lib.imaging.color import random_rgb, rgb2hex, hex2rgb, _validate_color
 from supervisely_lib.io.json import JsonSerializable
+from supervisely_lib.collection.key_indexed_collection import KeyObject
+from supervisely_lib._utils import take_with_default
 
 
 class TagValueType:
@@ -23,8 +22,7 @@ class TagMetaJsonFields:
     COLOR = 'color'
 
 
-SUPPORTED_TAG_VALUE_TYPES = [TagValueType.NONE, TagValueType.ANY_NUMBER, TagValueType.ANY_STRING,
-                             TagValueType.ONEOF_STRING]
+SUPPORTED_TAG_VALUE_TYPES = [TagValueType.NONE, TagValueType.ANY_NUMBER, TagValueType.ANY_STRING, TagValueType.ONEOF_STRING]
 
 
 class TagMeta(KeyObject, JsonSerializable):
@@ -32,8 +30,7 @@ class TagMeta(KeyObject, JsonSerializable):
     This is a class for creating and using TagMeta objects. It include tag name, value type, and possible values for
     tags with enum values.
     '''
-
-    def __init__(self, name: str, value_type: str, possible_values: List[str] = None, color: List[int] = None):
+    def __init__(self, name: str, value_type: str, possible_values: List[str] = None, color: List[int]=None):
         """
         :param name: str
         :param value_type: str (one of TagValueType fields)
@@ -42,8 +39,7 @@ class TagMeta(KeyObject, JsonSerializable):
         """
 
         if value_type not in SUPPORTED_TAG_VALUE_TYPES:
-            raise ValueError(
-                "value_type = {!r} is unknown, should be one of {}".format(value_type, SUPPORTED_TAG_VALUE_TYPES))
+            raise ValueError("value_type = {!r} is unknown, should be one of {}".format(value_type, SUPPORTED_TAG_VALUE_TYPES))
 
         self._name = name
         self._value_type = value_type
@@ -126,9 +122,7 @@ class TagMeta(KeyObject, JsonSerializable):
             else:
                 return self.clone(possible_values=[*self.possible_values, value])
         else:
-            raise ValueError(
-                "Tag {!r} has type {!r}. Possible value can be added only to oneof_string".format(self.name,
-                                                                                                  self.value_type))
+            raise ValueError("Tag {!r} has type {!r}. Possible value can be added only to oneof_string".format(self.name, self.value_type))
 
     def is_valid_value(self, value):
         '''

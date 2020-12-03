@@ -1,9 +1,10 @@
 # coding: utf-8
 
+import os
 import json
 import urllib.parse
-
 from supervisely_lib.api.module_api import ApiField, ModuleApiBase
+
 from supervisely_lib.collection.str_enum import StrEnum
 
 
@@ -71,3 +72,4 @@ class ReportApi(ModuleApiBase):
 
     def url(self, id):
         return urllib.parse.urljoin(self._api.server_address, 'reports/{}'.format(id))
+

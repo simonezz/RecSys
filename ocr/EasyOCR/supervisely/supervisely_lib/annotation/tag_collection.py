@@ -1,7 +1,7 @@
 # coding: utf-8
 
-from supervisely_lib.annotation.tag import Tag
 from supervisely_lib.collection.key_indexed_collection import MultiKeyIndexedCollection
+from supervisely_lib.annotation.tag import Tag
 
 
 class TagCollection(MultiKeyIndexedCollection):

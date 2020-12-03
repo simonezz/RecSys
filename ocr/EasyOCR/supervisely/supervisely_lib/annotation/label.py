@@ -1,16 +1,16 @@
 # coding: utf-8
 
-from supervisely_lib._utils import take_with_default
-from supervisely_lib.annotation.json_geometries_map import GET_GEOMETRY_FROM_STR
-from supervisely_lib.annotation.obj_class import ObjClass
-from supervisely_lib.annotation.tag import Tag
 from supervisely_lib.annotation.tag_collection import TagCollection
+from supervisely_lib.annotation.obj_class import ObjClass
 from supervisely_lib.geometry.any_geometry import AnyGeometry
-from supervisely_lib.geometry.constants import GEOMETRY_TYPE, GEOMETRY_SHAPE
+from supervisely_lib.annotation.tag import Tag
 from supervisely_lib.geometry.geometry import Geometry
 from supervisely_lib.geometry.multichannel_bitmap import MultichannelBitmap
 from supervisely_lib.imaging import image as sly_image
 from supervisely_lib.project.project_meta import ProjectMeta
+from supervisely_lib._utils import take_with_default
+from supervisely_lib.annotation.json_geometries_map import GET_GEOMETRY_FROM_STR
+from supervisely_lib.geometry.constants import GEOMETRY_TYPE, GEOMETRY_SHAPE
 
 
 class LabelJsonFields:
@@ -30,7 +30,6 @@ class LabelBase:
         tags: TagCollection object
         description(str): description of the label
     '''
-
     def __init__(self, geometry: Geometry, obj_class: ObjClass, tags: TagCollection = None, description: str = ""):
         '''
         :param geometry: Geometry class of the object(point, rectangle, polygon, bitmap, line)
@@ -63,7 +62,7 @@ class LabelBase:
     @property
     def geometry(self):
         return self._geometry
-
+      
     @property
     def description(self):
         return self._description
@@ -82,7 +81,7 @@ class LabelBase:
             LabelJsonFields.OBJ_CLASS_NAME: self.obj_class.name,
             LabelJsonFields.DESCRIPTION: self.description,
             LabelJsonFields.TAGS: self.tags.to_json(),
-            **self.geometry.to_json(),
+            ** self.geometry.to_json(),
             GEOMETRY_TYPE: self.geometry.geometry_name(),
             GEOMETRY_SHAPE: self.geometry.geometry_name(),
         }
@@ -104,8 +103,7 @@ class LabelBase:
                                f'was not found in the given project meta.')
 
         if obj_class.geometry_type is AnyGeometry:
-            geometry_type_actual = GET_GEOMETRY_FROM_STR(
-                data[GEOMETRY_TYPE] if GEOMETRY_TYPE in data else data[GEOMETRY_SHAPE])
+            geometry_type_actual = GET_GEOMETRY_FROM_STR(data[GEOMETRY_TYPE] if GEOMETRY_TYPE in data else data[GEOMETRY_SHAPE])
             geometry = geometry_type_actual.from_json(data)
         else:
             geometry = obj_class.geometry_type.from_json(data)

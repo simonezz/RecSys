@@ -13,7 +13,6 @@ class CuboidFace:
     '''
     This is a class for creating and using CuboidFace objects for Cuboid class objects
     '''
-
     def __init__(self, a, b, c, d):
         '''
         :param a: int
@@ -72,7 +71,6 @@ class Cuboid(Geometry):
     '''
     This is a class for creating and using Cuboid objects for Labels
     '''
-
     @staticmethod
     def geometry_name():
         return 'cuboid'
@@ -84,8 +82,7 @@ class Cuboid(Geometry):
             faces: iterable of CuboidFace objects.
         """
 
-        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                         created_at=created_at)
+        super().__init__(sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
         points = list(points)
         faces = list(faces)
@@ -146,8 +143,7 @@ class Cuboid(Geometry):
         sly_id = data.get(ID, None)
         class_id = data.get(CLASS_ID, None)
         return cls(points=points, faces=faces,
-                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at,
-                   created_at=created_at)
+                   sly_id=sly_id, class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
     def crop(self, rect):
         '''

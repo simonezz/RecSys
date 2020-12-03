@@ -2,12 +2,12 @@
 
 import os
 import struct
-import time
-import traceback
-
 import requests
-from supervisely_lib.io.network_exceptions import process_requests_exception, process_unhandled_request
+import traceback
+import time
+
 from supervisely_lib.worker_api.retriers import retriers_from_cfg
+from supervisely_lib.io.network_exceptions import process_requests_exception, process_unhandled_request
 
 
 class AgentAPI:
@@ -124,8 +124,7 @@ class AgentAPI:
     def simple_request(self, api_method_name, res_proto_fn, proto_request, addit_headers=None):
         data_to_send = proto_request.SerializeToString()
         retrier = self._get_retrier(api_method_name, '__simple_request')
-        resp = retrier.request(self._send_request, api_method_name, data_to_send, in_stream=False,
-                               addit_headers=addit_headers)
+        resp = retrier.request(self._send_request, api_method_name, data_to_send, in_stream=False, addit_headers=addit_headers)
         if resp is None:
             return None  # swallowed exception
         res_proto = res_proto_fn()

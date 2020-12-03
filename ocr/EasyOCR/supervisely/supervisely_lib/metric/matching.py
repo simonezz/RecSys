@@ -1,11 +1,13 @@
 # coding: utf-8
 from collections import namedtuple
 
-import numpy as np
 from supervisely_lib.annotation.label import Label
-from supervisely_lib.geometry.geometry import Geometry
 from supervisely_lib.geometry.rectangle import Rectangle
+from supervisely_lib.geometry.geometry import Geometry
 from supervisely_lib.metric.common import safe_ratio
+
+import numpy as np
+
 
 LabelsPairWithScore = namedtuple('LabelsPairWithScore', ['label_1', 'label_2', 'score'])
 LabelsMatchResult = namedtuple('LabelsMatchResult', ['matches', 'unmatched_labels_1', 'unmatched_labels_2'])

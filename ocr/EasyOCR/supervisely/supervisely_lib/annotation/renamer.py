@@ -1,6 +1,7 @@
 # coding: utf-8
 from copy import copy
 
+
 MATCH_ALL = '__all__'
 
 
@@ -14,7 +15,7 @@ class Renamer:
     '''
     ADD_SUFFIX = 'add_suffix'
     SAVE_CLASSES = 'save_classes'  # Deprecated. Use SAVE_NAMES in new code.
-    SAVE_NAMES = 'save_names'  # New field with more generic name.
+    SAVE_NAMES = 'save_names'      # New field with more generic name.
 
     def __init__(self, add_suffix='', save_names=None):
         '''

@@ -1,10 +1,10 @@
 # coding: utf-8
 
+from supervisely_lib.sly_logger import logger
 from supervisely_lib.annotation.annotation import Annotation
 from supervisely_lib.metric.common import log_head, log_line, CONFUSION_MATRIX, UNMATCHED_GT, UNMATCHED_PREDICTIONS
 from supervisely_lib.metric.matching import filter_labels_by_name, match_labels_by_iou
 from supervisely_lib.metric.metric_base import MetricsBase
-from supervisely_lib.sly_logger import logger
 
 
 class ConfusionMatrixMetric(MetricsBase):

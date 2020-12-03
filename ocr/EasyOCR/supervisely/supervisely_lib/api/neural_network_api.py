@@ -1,15 +1,15 @@
 # coding: utf-8
 
-import json
 import os
 import tarfile
-
-import numpy as np
 from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
-from supervisely_lib._utils import rand_str
+import numpy as np
+import json
+
 from supervisely_lib.api.module_api import ApiField, CloneableModuleApi, RemoveableModuleApi
-from supervisely_lib.imaging import image as sly_image
+from supervisely_lib._utils import rand_str
 from supervisely_lib.io.fs import ensure_base_path, silent_remove
+from supervisely_lib.imaging import image as sly_image
 from supervisely_lib.project.project_meta import ProjectMeta
 
 
@@ -39,8 +39,7 @@ class NeuralNetworkApi(CloneableModuleApi, RemoveableModuleApi):
         return 'ModelInfo'
 
     def get_list(self, workspace_id, filters=None):
-        return self.get_list_all_pages('models.list',
-                                       {ApiField.WORKSPACE_ID: workspace_id, ApiField.FILTER: filters or []})
+        return self.get_list_all_pages('models.list',  {ApiField.WORKSPACE_ID: workspace_id, ApiField.FILTER: filters or []})
 
     def get_info_by_id(self, id):
         return self._get_info_by_id(id, 'models.info')
@@ -54,7 +53,7 @@ class NeuralNetworkApi(CloneableModuleApi, RemoveableModuleApi):
         response = self.download(model.id)
         ensure_base_path(tar_path)
         with open(tar_path, 'wb') as fd:
-            for chunk in response.iter_content(chunk_size=1024 * 1024):
+            for chunk in response.iter_content(chunk_size=1024*1024):
                 fd.write(chunk)
                 if progress_cb is not None:
                     read_mb = len(chunk) / 1024.0 / 1024.0
@@ -75,14 +74,12 @@ class NeuralNetworkApi(CloneableModuleApi, RemoveableModuleApi):
 
     def upload(self, hash, archive_path, progress_cb=None):
         encoder = MultipartEncoder({'hash': hash,
-                                    'weights': (
-                                    os.path.basename(archive_path), open(archive_path, 'rb'), 'application/x-tar')})
+                                    'weights': (os.path.basename(archive_path), open(archive_path, 'rb'), 'application/x-tar')})
 
         def callback(monitor_instance):
             read_mb = monitor_instance.bytes_read / 1024.0 / 1024.0
             if progress_cb is not None:
                 progress_cb(read_mb)
-
         monitor = MultipartEncoderMonitor(encoder, callback)
         self._api.post('models.upload', monitor)
 

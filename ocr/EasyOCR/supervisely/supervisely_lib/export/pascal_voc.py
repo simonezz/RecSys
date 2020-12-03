@@ -1,14 +1,14 @@
 # coding: utf-8
 
 import os
+import pascal_voc_writer
 from collections import defaultdict
 
-import pascal_voc_writer
+from supervisely_lib.io import fs as fs_utils
+from supervisely_lib.imaging import image as image_utils
+from supervisely_lib.project.project import Project
 from supervisely_lib.annotation.annotation import Annotation
 from supervisely_lib.geometry.rectangle import Rectangle
-from supervisely_lib.imaging import image as image_utils
-from supervisely_lib.io import fs as fs_utils
-from supervisely_lib.project.project import Project
 
 OUT_IMG_EXT = '.jpg'
 XML_EXT = '.xml'
@@ -27,6 +27,7 @@ def save_images_lists(path, tags_to_lists):
 
 
 def save_project_as_pascal_voc_detection(save_path, project: Project):
+
     # Create root pascal 'datasets' folders
     for dataset in project.datasets:
         pascal_dataset_path = os.path.join(save_path, dataset.name)
@@ -50,6 +51,7 @@ def save_project_as_pascal_voc_detection(save_path, project: Project):
             pascal_img_path = os.path.join(images_dir, no_ext_name + OUT_IMG_EXT)
             pascal_ann_path = os.path.join(anns_dir, no_ext_name + XML_EXT)
 
+
             if item_name.endswith(OUT_IMG_EXT):
                 fs_utils.copy_file(img_path, pascal_img_path)
             else:
@@ -60,7 +62,7 @@ def save_project_as_pascal_voc_detection(save_path, project: Project):
 
             # Read tags for images lists generation
             for tag in ann.img_tags:
-                samples_by_tags[tag.name].append((no_ext_name, len(ann.labels)))
+                samples_by_tags[tag.name].append((no_ext_name ,len(ann.labels)))
 
             writer = pascal_voc_writer.Writer(path=pascal_img_path,
                                               width=ann.img_size[1],
@@ -70,10 +72,10 @@ def save_project_as_pascal_voc_detection(save_path, project: Project):
                 obj_class = label.obj_class
                 rect: Rectangle = label.geometry.to_bbox()
                 writer.addObject(name=obj_class.name,
-                                 xmin=rect.left,
-                                 ymin=rect.top,
-                                 xmax=rect.right,
-                                 ymax=rect.bottom)
+                                 xmin = rect.left,
+                                 ymin = rect.top,
+                                 xmax = rect.right,
+                                 ymax = rect.bottom)
             writer.save(pascal_ann_path)
 
         save_images_lists(lists_dir, samples_by_tags)

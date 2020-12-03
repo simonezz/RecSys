@@ -1,16 +1,17 @@
 # coding: utf-8
 
 import io
-import json
 import re
 import urllib.parse
+import json
 
 from requests_toolbelt import MultipartDecoder, MultipartEncoder
-from supervisely_lib._utils import batched, generate_free_name
+
 from supervisely_lib.api.module_api import ApiField, RemoveableBulkModuleApi
 from supervisely_lib.imaging import image as sly_image
 from supervisely_lib.io.fs import ensure_base_path, get_file_hash, get_file_ext, get_file_name
 from supervisely_lib.sly_logger import logger
+from supervisely_lib._utils import batched, generate_free_name
 
 
 class ImageApi(RemoveableBulkModuleApi):
@@ -41,7 +42,7 @@ class ImageApi(RemoveableBulkModuleApi):
         :param filters: list
         :return: list all the images for a given dataset
         '''
-        return self.get_list_all_pages('images.list', {ApiField.DATASET_ID: dataset_id, ApiField.FILTER: filters or []})
+        return self.get_list_all_pages('images.list',  {ApiField.DATASET_ID: dataset_id, ApiField.FILTER: filters or []})
 
     def get_info_by_id(self, id):
         '''
@@ -96,7 +97,7 @@ class ImageApi(RemoveableBulkModuleApi):
         response = self._download(id, is_stream=True)
         ensure_base_path(path)
         with open(path, 'wb') as fd:
-            for chunk in response.iter_content(chunk_size=1024 * 1024):
+            for chunk in response.iter_content(chunk_size=1024*1024):
                 fd.write(chunk)
 
     def _download_batch(self, dataset_id, ids):
@@ -130,14 +131,14 @@ class ImageApi(RemoveableBulkModuleApi):
             raise RuntimeError("Can not match \"ids\" and \"paths\" lists, len(ids) != len(paths)")
 
         id_to_path = {id: path for id, path in zip(ids, paths)}
-        # debug_ids = []
+        #debug_ids = []
         for img_id, resp_part in self._download_batch(dataset_id, ids):
-            # debug_ids.append(img_id)
+            #debug_ids.append(img_id)
             with open(id_to_path[img_id], 'wb') as w:
                 w.write(resp_part.content)
             if progress_cb is not None:
                 progress_cb(1)
-        # if ids != debug_ids:
+        #if ids != debug_ids:
         #    raise RuntimeError("images.bulk.download: imageIds order is broken")
 
     def download_bytes(self, dataset_id, ids, progress_cb=None):
@@ -283,7 +284,6 @@ class ImageApi(RemoveableBulkModuleApi):
         :param metas: list of dicts
         :return: list of images
         '''
-
         def path_to_bytes_stream(path):
             return open(path, 'rb')
 
@@ -314,7 +314,6 @@ class ImageApi(RemoveableBulkModuleApi):
         :param metas:
         :return: list of images
         '''
-
         def img_to_bytes_stream(item):
             img, name = item[0], item[1]
             img_bytes = sly_image.write_bytes(img, get_file_ext(name))
@@ -342,7 +341,7 @@ class ImageApi(RemoveableBulkModuleApi):
         metas = None if meta is None else [meta]
         return self.upload_links(dataset_id, [name], [link], metas=metas)[0]
 
-    def upload_links(self, dataset_id, names, links, progress_cb=None, metas=None):
+    def upload_links(self, dataset_id, names, links, progress_cb=None,  metas=None):
         '''
         Upload images from given links with given names to dataset
         :param dataset_id: int
@@ -352,8 +351,7 @@ class ImageApi(RemoveableBulkModuleApi):
         :param metas:
         :return: list of images
         '''
-        return self._upload_bulk_add(lambda item: (ApiField.LINK, item), dataset_id, names, links, progress_cb,
-                                     metas=metas)
+        return self._upload_bulk_add(lambda item: (ApiField.LINK, item), dataset_id, names, links, progress_cb, metas=metas)
 
     def upload_hash(self, dataset_id, name, hash, meta=None):
         '''
@@ -377,8 +375,7 @@ class ImageApi(RemoveableBulkModuleApi):
         :param metas:
         :return: list of images
         '''
-        return self._upload_bulk_add(lambda item: (ApiField.HASH, item), dataset_id, names, hashes, progress_cb,
-                                     metas=metas)
+        return self._upload_bulk_add(lambda item: (ApiField.HASH, item), dataset_id, names, hashes, progress_cb, metas=metas)
 
     def upload_id(self, dataset_id, name, id, meta=None):
         '''
@@ -425,7 +422,7 @@ class ImageApi(RemoveableBulkModuleApi):
             images = []
             for name, item, meta in batch:
                 item_tuple = func_item_to_kv(item)
-                # @TODO: 'title' -> ApiField.NAME
+                #@TODO: 'title' -> ApiField.NAME
                 image_data = {'title': name, item_tuple[0]: item_tuple[1]}
                 if len(meta) != 0 and type(meta) == dict:
                     image_data[ApiField.META] = meta
@@ -438,15 +435,15 @@ class ImageApi(RemoveableBulkModuleApi):
             for info_json in response.json():
                 info_json_copy = info_json.copy()
                 info_json_copy[ApiField.EXT] = info_json[ApiField.MIME].split('/')[1]
-                # results.append(self.InfoType(*[info_json_copy[field_name] for field_name in self.info_sequence()]))
+                #results.append(self.InfoType(*[info_json_copy[field_name] for field_name in self.info_sequence()]))
                 results.append(self._convert_json_info(info_json_copy))
 
-        # name_to_res = {img_info.name: img_info for img_info in results}
-        # ordered_results = [name_to_res[name] for name in names]
+        #name_to_res = {img_info.name: img_info for img_info in results}
+        #ordered_results = [name_to_res[name] for name in names]
 
-        return results  # ordered_results
+        return results #ordered_results
 
-    # @TODO: reimplement
+    #@TODO: reimplement
     def _convert_json_info(self, info: dict, skip_missing=True):
         if info is None:
             return None

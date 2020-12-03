@@ -1,7 +1,7 @@
 # coding: utf-8
 
-from supervisely_lib.api.module_api import ApiField
 from supervisely_lib.api.module_api import ModuleApi
+from supervisely_lib.api.module_api import ApiField
 from supervisely_lib.collection.key_indexed_collection import KeyIndexedCollection
 from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 
@@ -26,7 +26,7 @@ class TagApi(ModuleApi):
         return 'TagInfo'
 
     def get_list(self, project_id, filters=None):
-        return self.get_list_all_pages('tags.list', {ApiField.PROJECT_ID: project_id, "filter": filters or []})
+        return self.get_list_all_pages('tags.list',  {ApiField.PROJECT_ID: project_id, "filter": filters or []})
 
     def get_name_to_id_map(self, project_id):
         tags_info = self.get_list(project_id)
@@ -91,7 +91,8 @@ class TagApi(ModuleApi):
     def append_to_objects_json(self, entity_id, tags_json):
         if len(tags_json) == 0:
             return []
-        response = self._api.post('annotation-objects.tags.bulk.add',
-                                  {ApiField.ENTITY_ID: entity_id, ApiField.TAGS: tags_json})
+        response = self._api.post('annotation-objects.tags.bulk.add', {ApiField.ENTITY_ID: entity_id, ApiField.TAGS: tags_json})
         ids = [obj[ApiField.ID] for obj in response.json()]
         return ids
+
+

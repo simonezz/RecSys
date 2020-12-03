@@ -4,8 +4,9 @@ import math
 
 import cv2
 import numpy as np
-from supervisely_lib.geometry.point_location import PointLocation
+
 from supervisely_lib.geometry.rectangle import Rectangle
+from supervisely_lib.geometry.point_location import PointLocation
 
 
 # to rotate image & objects wrt source img center
@@ -117,3 +118,4 @@ class ImageRotator:
             interp = cv2.INTER_LANCZOS4
         res = cv2.warpAffine(src=img, M=self.opencv_affine_matrix, dsize=tuple(self.new_imsize[::-1]), flags=interp)
         return res
+

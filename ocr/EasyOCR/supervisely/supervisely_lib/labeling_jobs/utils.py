@@ -1,10 +1,9 @@
 # coding: utf-8
 
+import pandas as pd
 import urllib.parse
 
-import pandas as pd
 from supervisely_lib.api.labeling_job_api import LabelingJobApi
-
 Status = LabelingJobApi.Status
 import supervisely_lib.labeling_jobs.constants as constants
 from supervisely_lib.api.module_api import ApiField
@@ -137,10 +136,10 @@ def is_zero_reviewed_desc():
 
 def get_job_url(server_address, job):
     result = urllib.parse.urljoin(server_address, 'app/images/{}/{}/{}/{}?jobId={}'.format(job.team_id,
-                                                                                           job.workspace_id,
-                                                                                           job.project_id,
-                                                                                           job.dataset_id,
-                                                                                           job.id))
+                                                                                          job.workspace_id,
+                                                                                          job.project_id,
+                                                                                          job.dataset_id,
+                                                                                          job.id))
 
     return result
 
@@ -177,8 +176,7 @@ def jobs_stats(server_address, jobs, stats):
                                col_items_accepted,
                                col_items_rejected,
                                col_created_at)),
-                      columns=['ID', 'NAME', 'STATUS', 'TOTAL', 'LABELED', 'REVIEWED', 'ACCEPTED', 'REJECTED',
-                               'CREATED_AT'])
+                      columns=['ID', 'NAME', 'STATUS', 'TOTAL', 'LABELED', 'REVIEWED', 'ACCEPTED', 'REJECTED', 'CREATED_AT'])
 
     df['CREATED_AT'] = pd.to_datetime(df['CREATED_AT']).dt.strftime('%d/%m/%Y %H:%M')
     return df
@@ -292,9 +290,8 @@ def images_summary(jobs):
         names_items.append(name)
         descriptions_items.append(desc)
 
-    df = pd.DataFrame(
-        list(zip(list(range(len(names_items))), names_items, values_items, percentages_items, descriptions_items)),
-        columns=['#', 'ITEM STATUS', 'QUANTITY', 'PERCENTAGE', 'DESCRIPTION'])
+    df = pd.DataFrame(list(zip(list(range(len(names_items))), names_items, values_items, percentages_items, descriptions_items)),
+                      columns=['#', 'ITEM STATUS', 'QUANTITY', 'PERCENTAGE', 'DESCRIPTION'])
     return df
 
 
@@ -322,9 +319,8 @@ def classes_summary(stats):
     col_image_count = []
     col_object_count = []
     for class_id, value in class_id_stats.items():
-        col_name.append(
-            '<b style="display: inline-block; border-radius: 50%; background: {}; width: 8px; height: 8px"></b> {}'
-            .format(value[ApiField.COLOR], value[ApiField.NAME]))
+        col_name.append('<b style="display: inline-block; border-radius: 50%; background: {}; width: 8px; height: 8px"></b> {}'
+                        .format(value[ApiField.COLOR], value[ApiField.NAME]))
         col_shape.append(value[ApiField.SHAPE])
         col_image_count.append(value[ApiField.IMAGES_COUNT])
         col_object_count.append(value[ApiField.LABELS_COUNT])
@@ -358,9 +354,8 @@ def tags_summary(stats):
     col_image_count = []
     col_object_count = []
     for tag_id, value in tag_id_stats.items():
-        col_name.append(
-            '<b style="display: inline-block; border-radius: 50%; background: {}; width: 8px; height: 8px"></b> {}'
-            .format(value[ApiField.COLOR], value[ApiField.NAME]))
+        col_name.append('<b style="display: inline-block; border-radius: 50%; background: {}; width: 8px; height: 8px"></b> {}'
+                        .format(value[ApiField.COLOR], value[ApiField.NAME]))
         col_image_count.append(value[ApiField.IMAGES_COUNT])
         col_object_count.append(value[ApiField.LABELS_COUNT])
 

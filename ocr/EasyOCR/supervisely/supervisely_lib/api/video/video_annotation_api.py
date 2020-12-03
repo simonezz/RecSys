@@ -1,9 +1,10 @@
 # coding: utf-8
 
-from supervisely_lib.api.entity_annotation.entity_annotation_api import EntityAnnotationAPI
 from supervisely_lib.api.module_api import ApiField
 from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 from supervisely_lib.video_annotation.video_annotation import VideoAnnotation
+
+from supervisely_lib.api.entity_annotation.entity_annotation_api import EntityAnnotationAPI
 
 
 class VideoAnnotationAPI(EntityAnnotationAPI):

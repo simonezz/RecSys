@@ -1,7 +1,7 @@
 # coding: utf-8
 from collections import namedtuple
-
 import pandas as pd
+
 from supervisely_lib.api.module_api import ApiField, ModuleApiBase, _get_single_item
 
 
@@ -12,7 +12,7 @@ class UserApi(ModuleApiBase):
     def info_sequence():
         return [ApiField.ID,
                 ApiField.LOGIN,
-                # ApiField.ROLE_ID,
+                #ApiField.ROLE_ID,
                 ApiField.NAME,
                 ApiField.EMAIL,
                 ApiField.LOGINS,

@@ -4,6 +4,7 @@ from collections import defaultdict
 from threading import Lock
 
 import numpy as np
+
 from supervisely_lib import logger
 from supervisely_lib.annotation.annotation import Annotation
 from supervisely_lib.imaging import image as sly_image

@@ -1,16 +1,20 @@
 # coding: utf-8
 
 import uuid
+from bidict import bidict
+
+from supervisely_lib.api.module_api import ApiField
 
 from supervisely_lib._utils import take_with_default
-from supervisely_lib.annotation.json_geometries_map import GET_GEOMETRY_FROM_STR
-from supervisely_lib.api.module_api import ApiField
 from supervisely_lib.geometry.any_geometry import AnyGeometry
-from supervisely_lib.geometry.constants import LABELER_LOGIN, UPDATED_AT, CREATED_AT, CLASS_ID
 from supervisely_lib.geometry.rectangle import Rectangle
-from supervisely_lib.video_annotation.constants import ID, KEY, OBJECT_ID, OBJECT_KEY
-from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 from supervisely_lib.video_annotation.video_object_collection import VideoObjectCollection
+from supervisely_lib.video_annotation.constants import ID, KEY, OBJECT_ID, OBJECT_KEY, META
+from supervisely_lib.api.module_api import ApiField
+from supervisely_lib.annotation.json_geometries_map import GET_GEOMETRY_FROM_STR
+from supervisely_lib.video_annotation.key_id_map import KeyIdMap
+
+from supervisely_lib.geometry.constants import LABELER_LOGIN, UPDATED_AT, CREATED_AT, CLASS_ID
 
 
 class OutOfImageBoundsExtension(Exception):
@@ -18,8 +22,7 @@ class OutOfImageBoundsExtension(Exception):
 
 
 class VideoFigure:
-    def __init__(self, video_object, geometry, frame_index, key=None, class_id=None, labeler_login=None,
-                 updated_at=None, created_at=None):
+    def __init__(self, video_object, geometry, frame_index, key=None, class_id=None, labeler_login=None, updated_at=None, created_at=None):
         self._video_object = video_object
         self._set_geometry_inplace(geometry)
         self._frame_index = frame_index
@@ -136,9 +139,7 @@ class VideoFigure:
 
         object = objects.get(object_key)
         if object is None:
-            raise RuntimeError(
-                "Figure can not be deserialized: corresponding object {!r} not found in ObjectsCollection".format(
-                    object_key.hex))
+            raise RuntimeError("Figure can not be deserialized: corresponding object {!r} not found in ObjectsCollection".format(object_key.hex))
 
         shape_str = data[ApiField.GEOMETRY_TYPE]
         geometry_json = data[ApiField.GEOMETRY]

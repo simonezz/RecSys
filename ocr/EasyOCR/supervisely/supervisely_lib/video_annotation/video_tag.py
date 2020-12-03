@@ -1,9 +1,8 @@
 # coding: utf-8
 
 import uuid
-
-from supervisely_lib._utils import take_with_default
 from supervisely_lib.annotation.tag import Tag, TagJsonFields
+from supervisely_lib._utils import take_with_default
 from supervisely_lib.video_annotation.constants import KEY, ID, FRAME_RANGE
 from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 
@@ -12,9 +11,7 @@ class VideoTag(Tag):
     '''
     This is a class for creating and using VideoTag objects for videos
     '''
-
-    def __init__(self, meta, value=None, frame_range=None, key=None, sly_id=None, labeler_login=None, updated_at=None,
-                 created_at=None):
+    def __init__(self, meta, value=None, frame_range=None, key=None, sly_id=None, labeler_login=None, updated_at=None, created_at=None):
         '''
         :param meta: Tag metadata: it include tag name, value type, and possible values for tags with enum values.
         When creating a new tag, the value is automatically cross-checked against the metadata to make sure the value
@@ -24,14 +21,12 @@ class VideoTag(Tag):
         :param frame_range: tuple or list of integers
         :param key: uuid class object
         '''
-        super(VideoTag, self).__init__(meta, value=value, sly_id=sly_id, labeler_login=labeler_login,
-                                       updated_at=updated_at, created_at=created_at)
-
+        super(VideoTag, self).__init__(meta, value=value, sly_id=sly_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
+        
         self._frame_range = None
         if frame_range is not None:
             if not isinstance(frame_range, (tuple, list)):
-                raise TypeError(
-                    '{!r} has to be a tuple or a list. Given type "{}".'.format(FRAME_RANGE, type(frame_range)))
+                raise TypeError('{!r} has to be a tuple or a list. Given type "{}".'.format(FRAME_RANGE, type(frame_range)))
             else:
                 self._frame_range = list(frame_range)
 
@@ -82,8 +77,7 @@ class VideoTag(Tag):
             key_id_map.add_tag(key, data.get(ID, None))
 
         return cls(meta=temp.meta, value=temp.value, frame_range=frame_range, key=key,
-                   sly_id=temp.sly_id, labeler_login=temp.labeler_login, updated_at=temp.updated_at,
-                   created_at=temp.created_at)
+                   sly_id=temp.sly_id, labeler_login=temp.labeler_login, updated_at=temp.updated_at, created_at=temp.created_at)
 
     def get_compact_str(self):
         '''
@@ -101,7 +95,7 @@ class VideoTag(Tag):
                self.frame_range == other.frame_range
 
     def clone(self, meta=None, value=None, frame_range=None, key=None,
-              sly_id=None, labeler_login=None, updated_at=None, created_at=None):
+                    sly_id=None, labeler_login=None, updated_at=None, created_at=None):
         '''
         :param meta: Tag metadata
         :param value: There are 3 possible value types of value: ANY_NUMBER for numeric values,
@@ -121,9 +115,9 @@ class VideoTag(Tag):
 
     def __str__(self):
         return '{:<7s}{:<10}{:<7s} {:<13}{:<7s} {:<10} {:<12}'.format('Name:', self._meta.name,
-                                                                      'Value type:', self._meta.value_type,
-                                                                      'Value:', str(self.value),
-                                                                      'FrameRange', str(self.frame_range))
+                                                               'Value type:', self._meta.value_type,
+                                                               'Value:', str(self.value),
+                                                               'FrameRange', str(self.frame_range))
 
     @classmethod
     def get_header_ptable(cls):

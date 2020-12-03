@@ -1,10 +1,11 @@
 # coding: utf-8
 
 import numpy as np
-from supervisely_lib.annotation.json_geometries_map import GET_GEOMETRY_FROM_STR
-from supervisely_lib.geometry.bitmap import Bitmap
+
 from supervisely_lib.geometry.point_location import PointLocation
 from supervisely_lib.geometry.rectangle import Rectangle
+from supervisely_lib.geometry.bitmap import Bitmap
+from supervisely_lib.annotation.json_geometries_map import GET_GEOMETRY_FROM_STR
 
 
 def geometry_to_bitmap(geometry, radius: int = 0, crop_image_shape: tuple = None) -> list:
@@ -48,7 +49,7 @@ def get_effective_nonoverlapping_masks(geometries, img_size=None):
             common_bbox = Rectangle.from_geometries_list(geometries)
             img_size = (common_bbox.bottom + 1, common_bbox.right + 1)
         else:
-            img_size = (0, 0)
+            img_size = (0,0)
     canvas = np.full(shape=img_size, fill_value=len(geometries), dtype=np.int32)
 
     for idx, geometry in enumerate(geometries):

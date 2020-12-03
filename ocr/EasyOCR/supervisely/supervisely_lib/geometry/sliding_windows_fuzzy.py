@@ -1,8 +1,9 @@
 # coding: utf-8
 
-from supervisely_lib.collection.str_enum import StrEnum
 from supervisely_lib.geometry.rectangle import Rectangle
+from supervisely_lib.geometry.validation import is_2d_int_coords_valid
 from supervisely_lib.geometry.sliding_windows import SlidingWindows
+from supervisely_lib.collection.str_enum import StrEnum
 
 
 class SlidingWindowBorderStrategy(StrEnum):
@@ -55,7 +56,7 @@ class SlidingWindowsFuzzy(SlidingWindows):
             for wind_left in range(0, hw_limit[1] + self.stride[1], self.stride[1]):
                 wind_bottom = min(wind_top + self.stride[0], source_shape[0])
                 wind_right = min(wind_left + self.stride[1], source_shape[1])
-                roi = Rectangle(wind_top, wind_left, wind_bottom - 1, wind_right - 1)
+                roi = Rectangle(wind_top, wind_left, wind_bottom-1, wind_right-1)
                 if not source_rect.contains(roi):
                     raise RuntimeError('Sliding window: result crop bounds are invalid.')
                 yield roi

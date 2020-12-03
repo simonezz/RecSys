@@ -1,18 +1,19 @@
 # coding: utf-8
 import base64
-import io
-import zlib
 from enum import Enum
-
+import zlib
+import io
 import cv2
 import numpy as np
+
 from PIL import Image
 from skimage import morphology as skimage_morphology
+
 from supervisely_lib.geometry.bitmap_base import BitmapBase, resize_origin_and_bitmap
-from supervisely_lib.geometry.constants import BITMAP
 from supervisely_lib.geometry.point_location import PointLocation, row_col_list_to_points
 from supervisely_lib.geometry.polygon import Polygon
 from supervisely_lib.geometry.rectangle import Rectangle
+from supervisely_lib.geometry.constants import BITMAP
 
 
 class SkeletonizeMethod(Enum):
@@ -36,7 +37,6 @@ class Bitmap(BitmapBase):
     '''
     This is a class for creating and using Bitmaps for Labels.
     '''
-
     @staticmethod
     def geometry_name():
         return 'bitmap'

@@ -1,10 +1,10 @@
 # coding: utf-8
 
-import os
 from collections import namedtuple
+import os
+import json
 from enum import Enum
 
-from supervisely_lib._utils import batched
 from supervisely_lib.annotation.annotation import Annotation, ANN_EXT
 from supervisely_lib.collection.key_indexed_collection import KeyIndexedCollection, KeyObject
 from supervisely_lib.imaging import image as sly_image
@@ -12,6 +12,8 @@ from supervisely_lib.io.fs import list_files, list_files_recursively, mkdir, cop
 from supervisely_lib.io.json import dump_json_file, load_json_file
 from supervisely_lib.project.project_meta import ProjectMeta
 from supervisely_lib.task.progress import Progress
+from supervisely_lib._utils import batched
+from supervisely_lib.io.fs import file_exists
 
 # @TODO: rename img_path to item_path
 ItemPaths = namedtuple('ItemPaths', ['img_path', 'ann_path'])
@@ -49,7 +51,7 @@ class Dataset(KeyObject):
             raise TypeError("Argument \'mode\' has type {!r}. Correct type is OpenMode".format(type(mode)))
 
         self._directory = directory
-        self._item_to_ann = {}  # item file name -> annotation file name
+        self._item_to_ann = {} # item file name -> annotation file name
 
         project_dir, ds_name = os.path.split(directory.rstrip('/'))
         self._project_dir = project_dir
@@ -379,7 +381,6 @@ class Project:
     meta information.
     '''
     dataset_class = Dataset
-
     class DatasetDict(KeyIndexedCollection):
         item_type = Dataset
 
@@ -533,9 +534,9 @@ class Project:
         :param project_dir: str
         :return: str, str
         '''
-        # alternative implementation
-        # temp_parent_dir = os.path.dirname(parent_dir)
-        # temp_name = os.path.basename(parent_dir)
+        #alternative implementation
+        #temp_parent_dir = os.path.dirname(parent_dir)
+        #temp_name = os.path.basename(parent_dir)
 
         parent_dir, pr_name = os.path.split(project_dir.rstrip('/'))
         if not pr_name:

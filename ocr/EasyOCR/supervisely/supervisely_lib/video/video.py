@@ -1,14 +1,15 @@
 # coding: utf-8
 
 import os
-
 import skvideo.io
 from supervisely_lib import logger as default_logger
-from supervisely_lib import rand_str
 from supervisely_lib.io.fs import get_file_name, get_file_ext
+from supervisely_lib import rand_str
+
 
 # Do NOT use directly for video extension validation. Use is_valid_ext() /  has_valid_ext() below instead.
 ALLOWED_VIDEO_EXTENSIONS = ['.avi', '.mp4', '.3gp', '.flv', '.webm', '.wmv', '.mov', '.mkv']
+
 
 _SUPPORTED_CONTAINERS = {'mp4', 'webm', 'ogg', 'ogv'}
 _SUPPORTED_CODECS = {'h264', 'vp8', 'vp9'}
@@ -143,9 +144,7 @@ def warn_video_requires_processing(file_name, logger=None):
     '''
     if logger is None:
         logger = default_logger
-    logger.warning(
-        "Video Stream {!r} is skipped: requires transcoding. Transcoding is supported only in Enterprise Edition (EE)".format(
-            file_name))
+    logger.warning("Video Stream {!r} is skipped: requires transcoding. Transcoding is supported only in Enterprise Edition (EE)".format(file_name))
 
 
 def gen_video_stream_name(file_name, stream_index):

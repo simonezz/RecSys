@@ -1,20 +1,21 @@
 # coding: utf-8
-import json
 from copy import deepcopy
+import json
 
 from supervisely_lib import logger
 from supervisely_lib.annotation.obj_class_collection import ObjClassCollection
 from supervisely_lib.annotation.tag_meta_collection import TagMetaCollection
 from supervisely_lib.imaging.image import read as sly_image_read
 from supervisely_lib.io.json import load_json_file
-from supervisely_lib.nn.config import update_recursively
 from supervisely_lib.nn.hosted.constants import MODEL, SETTINGS, INPUT_SIZE, HEIGHT, WIDTH
 from supervisely_lib.nn.hosted.legacy.inference_config import maybe_convert_from_v1_inference_task_config, \
-    maybe_convert_from_deploy_task_config
+                                                              maybe_convert_from_deploy_task_config
+from supervisely_lib.nn.config import update_recursively
 from supervisely_lib.project.project_meta import ProjectMeta
 from supervisely_lib.task.paths import TaskPaths
 from supervisely_lib.task.progress import Progress
 from supervisely_lib.worker_api.interfaces import SingleImageInferenceInterface
+
 
 GPU_DEVICE = 'gpu_device'
 

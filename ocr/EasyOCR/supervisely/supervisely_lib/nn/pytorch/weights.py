@@ -13,7 +13,6 @@ class WeightsRW:
         model_dir: Path to the folder for storing weights.
         model_file: Name of weights file(default: model.pt).
     """
-
     def __init__(self, model_dir, model_file=None):
         self._weights_fpath = os.path.join(model_dir, model_file or 'model.pt')
 
@@ -68,8 +67,7 @@ class WeightsRW:
         model_keys = set(model.state_dict().keys())
         snapshot_extra_keys = snapshot_keys - model_keys
         if len(snapshot_extra_keys) > 0:
-            raise KeyError(
-                'Parameters found in the snapshot file, but not in the model: {}'.format(snapshot_extra_keys))
+            raise KeyError('Parameters found in the snapshot file, but not in the model: {}'.format(snapshot_extra_keys))
         model_extra_keys = model_keys - snapshot_keys
         if len(model_extra_keys) > 0:
             raise KeyError('Model parameters missing from the snapshot file: {}'.format(model_extra_keys))

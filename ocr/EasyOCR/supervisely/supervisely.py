@@ -1,15 +1,21 @@
-import argparse
-import json  # Add Python JSON module for pretty-printing.
 import os
 import sys
-from copy import deepcopy
-
-import cv2
+import numpy as np
+import obj_template
 import supervisely_lib as sly  # Supervisely Python SDK
+import json                    # Add Python JSON module for pretty-printing.
+import argparse
+import pprint
+import cv2
+from copy import deepcopy
 from matplotlib import pyplot as plt
+from easyocr import coordinates as coord
+from utils import general_utils as utils
+from utils import imgproc_utils as img_utils
+from easyocr import craft_file_utils as file_utils
 from system import system_ocr
 
-from utils import general_utils as utils
+
 
 _this_folder_ = os.path.dirname(os.path.abspath(__file__))
 _this_basename_ = os.path.splitext(os.path.basename(__file__))[0]
@@ -20,7 +26,6 @@ def display_images(images, figsize=None):
     for i, img in enumerate(images, start=1):
         plt.subplot(1, len(images), i)
         plt.imshow(img)
-
 
 def extract_ocr_results_from_dict(dict):
     bboxes = []
@@ -44,7 +49,6 @@ def extract_ocr_results_from_dict(dict):
         texts.append(text)
     return bboxes, texts
 
-
 def convert_to_white_area_by_bboxes(img, bboxes):
     raw_img = deepcopy(img)
     if len(bboxes) == 0:
@@ -56,7 +60,6 @@ def convert_to_white_area_by_bboxes(img, bboxes):
             update_img = cv2.rectangle(raw_img, left_top, right_bottom, white, -1)
     return update_img
 
-
 def remove_empty_ocr_result(bboxes, texts, blocklist=['', ' ']):
     for i in reversed(range(len(texts))):
         text = texts[i]
@@ -65,9 +68,7 @@ def remove_empty_ocr_result(bboxes, texts, blocklist=['', ' ']):
             del bboxes[i]
     return bboxes, texts
 
-
-def update_obj_data(obj_data, id, classId, description, geometryType, labelerLogin, createdAt, updatedAt, tags,
-                    classTitle, points):
+def update_obj_data(obj_data, id, classId, description, geometryType, labelerLogin, createdAt, updatedAt, tags, classTitle, points):
     obj_data['id'] = id
     obj_data['classId'] = classId
     obj_data['description'] = description
@@ -80,7 +81,6 @@ def update_obj_data(obj_data, id, classId, description, geometryType, labelerLog
     obj_data['classId'] = classId
     obj_data['points'] = points
     return obj_data
-
 
 def main(args):
     ini = utils.get_ini_parameters(args.ini_fname)
@@ -137,8 +137,7 @@ def main(args):
                 bboxes, texts, scores = system_ocr.split_result(ocr_results)
 
                 rst_img, rst_bboxes = sys_ocr.adjust_reuslt_by_save_mode(mode=sys_ocr.save_mode, img=img,
-                                                                         derot_img=derot_img,
-                                                                         derot_angle=sys_ocr.derot_angle, bboxes=bboxes)
+                                                                         derot_img=derot_img, derot_angle=sys_ocr.derot_angle, bboxes=bboxes)
 
                 # 3) 인식 결과에서 빈영역 제거
                 remove_bboxes, remove_texts = remove_empty_ocr_result(rst_bboxes, texts, blocklist=['', ' '])
@@ -159,11 +158,10 @@ def main(args):
                     obj_data = {}
                     update_obj = update_obj_data(obj_data,
                                                  id=id, classId=classId, description=text, geometryType=geometryType,
-                                                 labelerLogin='freewheelin', createdAt=createdAt, updatedAt=updatedAt,
-                                                 classTitle=classTitle,
+                                                 labelerLogin='freewheelin', createdAt=createdAt, updatedAt=updatedAt, classTitle=classTitle,
                                                  tags=[],
                                                  points={
-                                                     'exterior': [bbox[0], bbox[2]],
+                                                     'exterior' : [bbox[0], bbox[2]],
                                                      'interior': [[]],
                                                  })
                     json_data['objects'].append(update_obj)
@@ -178,14 +176,13 @@ def main(args):
                     with open(rst_ann_fpath, 'w', encoding='utf-8') as f:
                         json.dump(json_data, f, ensure_ascii=False, indent=4)
 
-                    logger.info(" # Json saved : {}/{}".format(file_idx + 1, len(dataset)))
+                    logger.info(" # Json saved : {}/{}".format(file_idx+1, len(dataset)))
 
             logger.info(" # Json update complete !!!")
     else:
         print(" @ Error: op_mode, {}, is incorrect.".format(args.op_mode))
 
     return True
-
 
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
@@ -203,10 +200,11 @@ def parse_arguments(argv):
 
 
 SELF_TEST_ = True
-OP_MODE = 'UPDATE_JSON'  # UPDATE_JSON / CHECK_JSON
+OP_MODE = 'UPDATE_JSON' # UPDATE_JSON / CHECK_JSON
 INI_FNAME = _this_basename_ + ".ini"
 DATASET_PATH = "../Input/시중교재_new/"
 OUT_PATH = "../Output/시중교재_korean/"
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:

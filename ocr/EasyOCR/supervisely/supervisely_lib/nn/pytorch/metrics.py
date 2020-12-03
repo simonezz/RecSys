@@ -11,8 +11,7 @@ class MultiClassAccuracy:
         squeeze_targets: Whether to squeeze targets array along 1st dimension.
 
     """
-
-    def __init__(self, ignore_index: int = None, squeeze_targets: bool = True):
+    def __init__(self, ignore_index: int=None, squeeze_targets: bool=True):
         self._ignore_index = ignore_index
         self._squeeze_targets = squeeze_targets
 

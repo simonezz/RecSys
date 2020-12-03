@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from supervisely_lib.api.module_api import ApiField
 from supervisely_lib.collection.key_indexed_collection import KeyIndexedCollection
 from supervisely_lib.video_annotation.frame import Frame
+from supervisely_lib.api.module_api import ApiField
 
 
 class FrameCollection(KeyIndexedCollection):
@@ -59,3 +59,4 @@ class FrameCollection(KeyIndexedCollection):
                 figure_json[ApiField.META] = {ApiField.FRAME: frame.index}
                 figures_json.append(figure_json)
         return figures_json, keys
+

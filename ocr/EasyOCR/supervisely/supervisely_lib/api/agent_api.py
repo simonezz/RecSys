@@ -1,7 +1,6 @@
 # coding: utf-8
 
 from enum import Enum
-
 from supervisely_lib.api.module_api import ApiField, ModuleApi, ModuleWithStatus
 
 
@@ -44,7 +43,7 @@ class AgentApi(ModuleApi, ModuleWithStatus):
         :param filters: list
         :return: list of all agents with given team id
         '''
-        return self.get_list_all_pages('agents.list', {'teamId': team_id, "filter": filters or []})
+        return self.get_list_all_pages('agents.list',  {'teamId': team_id, "filter": filters or []})
 
     def get_info_by_id(self, id):
         '''

@@ -1,21 +1,22 @@
 # coding: utf-8
 
-import json
 import os
 import os.path
+import json
 from copy import deepcopy
 
 from supervisely_lib import logger
-from supervisely_lib.geometry.rectangle import Rectangle
 from supervisely_lib.io import fs as sly_fs
-from supervisely_lib.io.json import dump_json_file
 from supervisely_lib.nn.config import update_recursively
 from supervisely_lib.nn.dataset import samples_by_tags
 from supervisely_lib.nn.hosted import class_indexing
 from supervisely_lib.nn.hosted.constants import SETTINGS, INPUT_SIZE, HEIGHT, WIDTH
-from supervisely_lib.project.project import read_single_project
-from supervisely_lib.task.paths import TaskPaths
 from supervisely_lib.task.progress import report_checkpoint_saved
+from supervisely_lib.project.project import read_single_project
+from supervisely_lib.geometry.rectangle import Rectangle
+from supervisely_lib.task.paths import TaskPaths
+from supervisely_lib.io.json import dump_json_file
+
 
 BATCH_SIZE = 'batch_size'
 LR = 'lr'
@@ -65,7 +66,6 @@ class SuperviselyModelTrainer:
     Args:
         default_config: Dict object containing default training config.
     """
-
     def __init__(self, default_config):
         logger.info('Will init all required to train.')
 
@@ -164,10 +164,8 @@ class SuperviselyModelTrainer:
     def _construct_samples_dct(self):
         logger.info('Will collect samples (image/annotation pairs).')
         self.name_to_tag = self.config[DATASET_TAGS]
-        self._deprecated_samples_by_tag = samples_by_tags(required_tags=list(self.name_to_tag.values()),
-                                                          project=self.project)
-        self._samples_by_data_purpose = {purpose: self._deprecated_samples_by_tag[tag] for purpose, tag in
-                                         self.config[DATASET_TAGS].items()}
+        self._deprecated_samples_by_tag = samples_by_tags(required_tags=list(self.name_to_tag.values()), project=self.project)
+        self._samples_by_data_purpose = {purpose: self._deprecated_samples_by_tag[tag] for purpose, tag in self.config[DATASET_TAGS].items()}
 
     def _construct_data_loaders(self):
         # Pipeline-specific code to set up data loading should go here.

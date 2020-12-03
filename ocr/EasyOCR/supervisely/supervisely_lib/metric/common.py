@@ -1,7 +1,10 @@
 # coding: utf-8
 
 from supervisely_lib.project.project import Project
+from supervisely_lib.annotation.tag_meta_collection import TagMetaCollection
+from supervisely_lib.annotation.tag_meta import TagValueType
 from supervisely_lib.sly_logger import logger
+
 
 CLASSES_MAPPING = 'classes_mapping'
 TAGS_MAPPING = 'tags_mapping'

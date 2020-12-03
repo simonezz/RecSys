@@ -1,15 +1,14 @@
 # coding: utf-8
 from enum import IntEnum
-
 from supervisely_lib.api.module_api import ApiField, ModuleApiBase
 
 
 class RoleApi(ModuleApiBase):
     class DefaultRole(IntEnum):
-        ADMIN = 1
+        ADMIN =     1
         DEVELOPER = 2
         ANNOTATOR = 3
-        VIEWER = 4
+        VIEWER =    4
 
     @staticmethod
     def info_sequence():

@@ -48,3 +48,5 @@ class StrEnum(Enum):
     @classmethod
     def values(cls):
         return [value.value for value in cls]
+
+

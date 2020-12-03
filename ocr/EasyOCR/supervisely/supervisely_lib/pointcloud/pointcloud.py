@@ -2,6 +2,7 @@
 
 import os
 
+
 # Do NOT use directly for extension validation. Use is_valid_ext() /  has_valid_ext() below instead.
 ALLOWED_POINTCLOUD_EXTENSIONS = ['.pcd']
 
@@ -42,11 +43,10 @@ def validate_ext(ext: str):
     :param ext: str
     '''
     if not is_valid_ext(ext):
-        raise UnsupportedPointcloudFormat(
-            'Unsupported pointcloud extension: {}. Only the following extensions are supported: {}.'
-            .format(ext, ALLOWED_POINTCLOUD_EXTENSIONS))
+        raise UnsupportedPointcloudFormat('Unsupported pointcloud extension: {}. Only the following extensions are supported: {}.'
+                                          .format(ext, ALLOWED_POINTCLOUD_EXTENSIONS))
 
 
 def validate_format(path):
-    # @TODO: later
+    #@TODO: later
     validate_ext(path)

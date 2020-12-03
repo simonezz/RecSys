@@ -1,8 +1,8 @@
 # coding: utf-8
 
 from supervisely_lib.api.module_api import ApiField, ModuleApi
-from supervisely_lib.imaging.image import read_bytes
 from supervisely_lib.io.fs import ensure_base_path
+from supervisely_lib.imaging.image import read_bytes
 
 
 class VideoFrameAPI(ModuleApi):
@@ -35,5 +35,5 @@ class VideoFrameAPI(ModuleApi):
         response = self._download(video_id, frame_index)
         ensure_base_path(path)
         with open(path, 'wb') as fd:
-            for chunk in response.iter_content(chunk_size=1024 * 1024):
+            for chunk in response.iter_content(chunk_size=1024*1024):
                 fd.write(chunk)

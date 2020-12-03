@@ -1,26 +1,25 @@
 # coding: utf-8
 
 import uuid
+from bidict import bidict
 
-from supervisely_lib._utils import take_with_default
 from supervisely_lib.annotation.label import LabelJsonFields
 from supervisely_lib.annotation.obj_class import ObjClass
-from supervisely_lib.collection.key_indexed_collection import KeyObject
-from supervisely_lib.geometry.constants import LABELER_LOGIN, UPDATED_AT, CREATED_AT, CLASS_ID
 from supervisely_lib.project.project_meta import ProjectMeta
-from supervisely_lib.video_annotation.constants import KEY, ID
-from supervisely_lib.video_annotation.key_id_map import KeyIdMap
-from supervisely_lib.video_annotation.video_tag import VideoTag
+from supervisely_lib._utils import take_with_default
+from supervisely_lib.video_annotation.constants import KEY, ID, OBJECTS_MAP
 from supervisely_lib.video_annotation.video_tag_collection import VideoTagCollection
+from supervisely_lib.video_annotation.video_tag import VideoTag
+from supervisely_lib.collection.key_indexed_collection import KeyObject
+from supervisely_lib.video_annotation.key_id_map import KeyIdMap
+from supervisely_lib.geometry.constants import LABELER_LOGIN, UPDATED_AT, CREATED_AT, CLASS_ID
 
 
 class VideoObject(KeyObject):
     '''
     This is a class for creating and using VideoObject objects for videos
     '''
-
-    def __init__(self, obj_class: ObjClass, tags: VideoTagCollection = None, key=None, class_id=None,
-                 labeler_login=None, updated_at=None, created_at=None):
+    def __init__(self, obj_class: ObjClass, tags: VideoTagCollection = None, key=None, class_id=None, labeler_login=None, updated_at=None, created_at=None):
         '''
         :param obj_class: ObjClass class object
         :param tags: VideoTagCollection
@@ -119,8 +118,7 @@ class VideoObject(KeyObject):
                    tags=VideoTagCollection.from_json(data[LabelJsonFields.TAGS], project_meta.tag_metas),
                    class_id=class_id, labeler_login=labeler_login, updated_at=updated_at, created_at=created_at)
 
-    def clone(self, obj_class: ObjClass = None, tags: VideoTagCollection = None, key=None, class_id=None,
-              labeler_login=None, updated_at=None, created_at=None):
+    def clone(self, obj_class: ObjClass=None, tags: VideoTagCollection = None, key=None, class_id=None, labeler_login=None, updated_at=None, created_at=None):
         '''
         :param obj_class: ObjClass
         :param tags: VideoTagCollection
@@ -134,3 +132,4 @@ class VideoObject(KeyObject):
                               labeler_login=take_with_default(labeler_login, self.labeler_login),
                               updated_at=take_with_default(updated_at, self.updated_at),
                               created_at=take_with_default(created_at, self.created_at))
+

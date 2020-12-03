@@ -1,10 +1,9 @@
 # coding: utf-8
 
 from typing import List
-
-from supervisely_lib.annotation.obj_class import ObjClass
 from supervisely_lib.collection.key_indexed_collection import KeyIndexedCollection
 from supervisely_lib.io.json import JsonSerializable
+from supervisely_lib.annotation.obj_class import ObjClass
 
 
 class ObjClassCollection(KeyIndexedCollection, JsonSerializable):

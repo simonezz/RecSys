@@ -4,6 +4,7 @@ import json
 from supervisely_lib import Bitmap, logger, ObjClassCollection, ObjClass
 from supervisely_lib.io import fs
 
+
 BACKGROUND = 'background'
 NEUTRAL = 'neutral'
 
@@ -36,7 +37,7 @@ def create_segmentation_classes(in_project_classes, special_classes_config, bkg_
     special_class_ids = {}
     bkg_title = special_classes_config.get(BACKGROUND, None)
     if bkg_title is not None:
-        extra_classes = {bkg_title: [34, 34, 34]}  # Default background color
+        extra_classes = {bkg_title: [34, 34, 34]} # Default background color
         special_class_ids[bkg_title] = bkg_input_idx
 
     exclude_titles = []

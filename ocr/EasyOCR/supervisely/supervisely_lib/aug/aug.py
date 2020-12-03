@@ -1,12 +1,12 @@
 # coding: utf-8
 import random
-
 import numpy as np
-from supervisely_lib._utils import take_with_default
+
+from supervisely_lib.imaging import image as sly_image
 from supervisely_lib.annotation.annotation import Annotation
 from supervisely_lib.geometry.image_rotator import ImageRotator
 from supervisely_lib.geometry.rectangle import Rectangle
-from supervisely_lib.imaging import image as sly_image
+from supervisely_lib._utils import take_with_default
 
 
 def _validate_image_annotation_shape(img: np.ndarray, ann: Annotation) -> None:
@@ -157,8 +157,7 @@ def batch_random_crops_fraction(
 
 
 def flip_add_random_crops(
-        img: np.ndarray, ann: Annotation, crops_per_image: int, height_fraction_range: tuple,
-        width_fraction_range: tuple) -> list:
+        img: np.ndarray, ann: Annotation, crops_per_image: int, height_fraction_range: tuple, width_fraction_range: tuple) -> list:
     full_size_items = [(img, ann), fliplr(img, ann)]
     crops = batch_random_crops_fraction(full_size_items, crops_per_image, height_fraction_range, width_fraction_range)
     return full_size_items + crops
@@ -288,7 +287,7 @@ class RotationModes:
     CROP = 'crop'
 
 
-def rotate(img: np.ndarray, ann: Annotation, degrees: float, mode: str = RotationModes.KEEP) -> \
+def rotate(img: np.ndarray, ann: Annotation, degrees: float, mode: str=RotationModes.KEEP) ->\
         (np.ndarray, Annotation):  # @TODO: add "preserve_size" mode
     """
     Rotates the image by random angle.

@@ -2,11 +2,12 @@
 
 from copy import deepcopy
 
+from supervisely_lib.sly_logger import logger
 from supervisely_lib.annotation.tag_meta import TagValueType
+from supervisely_lib.metric.metric_base import MetricsBase
 from supervisely_lib.metric.common import log_line, safe_ratio, sum_counters, TRUE_POSITIVE, TRUE_NEGATIVE, \
     FALSE_POSITIVE, FALSE_NEGATIVE, ACCURACY, PRECISION, RECALL, F1_MEASURE
-from supervisely_lib.metric.metric_base import MetricsBase
-from supervisely_lib.sly_logger import logger
+
 
 RAW_COUNTERS = [TRUE_POSITIVE, TRUE_NEGATIVE, FALSE_POSITIVE, FALSE_NEGATIVE]
 
@@ -117,3 +118,4 @@ class ClassificationMetrics(MetricsBase):
         log_line()
 
         log_line(c='*')
+

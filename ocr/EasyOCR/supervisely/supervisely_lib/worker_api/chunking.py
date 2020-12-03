@@ -1,7 +1,6 @@
 # coding: utf-8
 
 import math
-
 import supervisely_lib as sly
 
 

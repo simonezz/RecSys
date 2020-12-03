@@ -28,7 +28,7 @@ class PluginApi(ModuleApi):
         :param filters: list
         :return: list of plugins from the given team
         '''
-        return self.get_list_all_pages('plugins.list', {ApiField.TEAM_ID: team_id, ApiField.FILTER: filters or []})
+        return self.get_list_all_pages('plugins.list',  {ApiField.TEAM_ID: team_id, ApiField.FILTER: filters or []})
 
     def get_info_by_id(self, team_id, plugin_id):
         '''

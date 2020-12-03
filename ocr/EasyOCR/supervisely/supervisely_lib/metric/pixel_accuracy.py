@@ -1,9 +1,10 @@
 # coding: utf-8
 
 import numpy as np
+
+from supervisely_lib.metric.metric_base import MetricsBase
 from supervisely_lib.metric.common import render_labels_for_classes, safe_ratio, TRUE_POSITIVE, TRUE_NEGATIVE, \
     FALSE_POSITIVE, FALSE_NEGATIVE, PRECISION, RECALL, ACCURACY, TOTAL
-from supervisely_lib.metric.metric_base import MetricsBase
 
 
 class PixelAccuracyMetric(MetricsBase):

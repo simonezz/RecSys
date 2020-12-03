@@ -12,7 +12,6 @@ from supervisely_lib.geometry.rectangle import Rectangle
 from supervisely_lib.metric.map_metric import MAPMetric, AP
 from supervisely_lib.project.project_meta import ProjectMeta
 
-
 class PointTest(unittest.TestCase):
     def setUp(self):
         self._obj_class_gt = ObjClass(name='a', geometry_type=Rectangle)
@@ -92,7 +91,7 @@ class PointTest(unittest.TestCase):
         # Recalls 0.7, 0.8, 0.9, 1.0 -> max precision 0.
         # Recalls 0.6, 0.5, 0.4      -> max precision 2/10
         # Recalls 0.3, 0.2, 0.1, 0.0 -> max precision 1/2
-        expected_map = (4 * 0.0 + 3 * (2 / 10) + 4 * 1 / 2) / 11
+        expected_map = (4 * 0.0 + 3 * (2/10) + 4 * 1/2) / 11
         self.assertEqual(self._metric_calculator.get_total_metrics()[AP], expected_map)
 
 
