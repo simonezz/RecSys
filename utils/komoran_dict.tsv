@@ -907,7 +907,10 @@
 짝수	NNP
 짝수점	NNP
 짝순열	NNP
-차	NNP
+이차	NNP
+일차	NNP
+삼차	NNP
+사차	NNP
 차수	NNP
 차원	NNP
 차집합	NNP
@@ -1015,7 +1018,6 @@
 푼	NNP
 리	NNP
 함수	NNP
-함수의 그래프	NNP
 함숫값	NNP
 합	NNP
 합동	NNP

@@ -18,6 +18,7 @@ from tqdm import tqdm
 import re
 from urllib.request import Request, urlopen
 import olefile
+import easyocr
 
 
 # data 불러옴
@@ -41,7 +42,7 @@ def preprocess_from_url(content, input_shape):
 
 
 # batch별로 데이터 elasticsearch에 넣음
-def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
+def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran, reader):
     batch_size = 100
 
     part_df.set_index("ID", inplace=True)
@@ -60,7 +61,7 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
         try:
             img_res = requests.get(img_url)  # png
             img_list.append(preprocess_from_url(img_res.content, input_shape))
-            try:
+            try: # hwp 있을 때
                 tmp = Request(hwp_url)  # hwp
                 tmp = urlopen(tmp).read()
 
@@ -71,8 +72,10 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
 
                 txt = " ".join(list(bodyText_dic.values()))
 
-            except:  # hwp 존재하지 않으면 ocr 사용
+            except:  # hwp 없을 때 -> ocr 사용
 
+                # img = tf.io.decode_png(img_res.content, channels=3, name="jpeg_reader")
+                # result = reader.readtext(img.numpy())
                 @TODO
 
                 : ocr코드
@@ -84,11 +87,10 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
             id_list.append(i)
 
         except:  # png가 존재하지 않으면
-            print(f'ID : {i} 의 url이 유효하지 않습니다.')
+            print(f'ID : {i} 의 url {img_url}이 유효하지 않습니다.')
             pass
 
     list_ds = tf.data.Dataset.from_tensor_slices(img_list)
-    # ds = list_ds.map(lambda x: preprocess_from_url(x, input_shape), num_parallel_calls=-1)
 
     dataset = list_ds.batch(batch_size).prefetch(-1)
 
@@ -130,9 +132,10 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME, komoran):
     # komoran = customize_komoran_model('../utils/komoran_dict.tsv')
 
     # for k in tqdm(range(33521)):
+    reader = easyocr.Reader(['ko', 'en'], gpu=False)
 
     for k in tqdm(range(nloop)):
-        bulk_batchwise(es, df.loc[k * bs:min((k + 1) * bs, df.shape[0])], INDEX_NAME, model, input_shape, komoran)
+        bulk_batchwise(es, df.loc[k * bs:min((k + 1) * bs, df.shape[0])], INDEX_NAME, model, input_shape, komoran, reader)
 
     es.indices.refresh(index=INDEX_NAME)
     print(es.cat.indices(v=True))
@@ -157,6 +160,8 @@ if __name__ == "__main__":
 
     komoran = Komoran(DEFAULT_MODEL['FULL'])
     komoran.set_user_dic('../utils/komoran_dict.tsv')
+
+    # reader = easyocr.Reader(['ko', 'en'], gpu=False)
 
     bulk_all(df, INDEX_FILE, INDEX_NAME, komoran)
 
