@@ -1,0 +1,3 @@
+[submodule "ocr/EasyOCR"]
+	path = ocr/EasyOCR
+	url = https://github.com/mathFLAT/EasyOCR.git
