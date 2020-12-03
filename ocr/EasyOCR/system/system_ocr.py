@@ -1,20 +1,18 @@
+import argparse
 import os
 import sys
 import time
-import argparse
-import easyocr
-import cv2
-import requests
-import numpy as np
 from enum import Enum
-from PIL import Image
+
+import cv2
+import easyocr
+import numpy as np
+import requests
+from easyocr import craft_file_utils as file_utils
+from easyocr.utils import group_text_box_by_ths
 from utility import general_utils as utils
 from utility import imgproc_utils as img_utils
-from easyocr import craft_file_utils as file_utils
-from easyocr.utils import reformat_input, group_text_box_by_ths
-from easyocr import mathpix_api as mathpix
 from utility import mysql_handler as mysql
-
 
 _this_folder_ = os.path.dirname(os.path.abspath(__file__))
 _this_basename_ = os.path.splitext(os.path.basename(__file__))[0]
@@ -377,7 +375,7 @@ def main(args):
         print("DB column names : {}".format(db_colum_names))
 
         # set db filter cond.
-        cond_list = ["{0}<={1}".format('unitCode', '212072'), ]
+        cond_list = ["{0}={1}".format('unitCode', '212072'), ]
 
         filter_string = db.create_filter_string(cond_list=cond_list)
         print(filter_string)
@@ -399,12 +397,14 @@ def main(args):
                                             col_names=['ID', 'BookNameCode'])  # 시중문제
             img_urls = [f"https://mathflat.s3.ap-northeast-2.amazonaws.com/math_problems/book/{p_url[1]}/{p_url[0]}.png"
                         for p_url in db_data]  # 시중문제 볼 때 옵션
-            
+
         print("DB data size : {}".format(len(db_data)))
 
         img_base_url = os.path.join(this.s3_url, 'mathflat')
         img_ext = 'p.png'
-        img_urls = [img_base_url + p_url[0].replace('/math_problems/', '/math_problems/{}/'.format(this.s3_resol)) + img_ext for p_url in db_data]
+        img_urls = [
+            img_base_url + p_url[0].replace('/math_problems/', '/math_problems/{}/'.format(this.s3_resol)) + img_ext for
+            p_url in db_data]
         # img_fnames = sorted(img_fnames, key=lambda x: int(x.replace(".jpg", "").split('_')[-1]))
         this.logger.info(" [SYS-OCR] # Total file number to be processed: {:d}.".format(len(img_urls)))
 
