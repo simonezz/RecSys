@@ -1,11 +1,10 @@
 import argparse
 import math
 import os
+import re
 import sys
 import time
 
-import pandas as pd
-import pymysql
 import tensorflow as tf
 import tensorflow.keras.layers as layers
 from elasticsearch import Elasticsearch
@@ -26,21 +25,35 @@ from easyocr.utils import group_text_box_by_ths
 from utility import general_utils as utils
 from utility import mysql_handler as mysql
 from system.system_ocr import SysOCR
+from PyKomoran import *
 
 _this_folder_ = os.path.dirname(os.path.abspath(__file__))
 _this_basename_ = os.path.splitext(os.path.basename(__file__))[0]
 
 
 # data 불러옴
-def get_all_info(prob_db, unitCode):
-    curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
+# def get_all_info(prob_db, unitCode):
+#     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
+#
+#     sql = f"SELECT ID, unitCode, problemLevel, problemURL, DateTime_Add FROM iclass.Table_middle_problems where DateTime_Add >= str_to_date({DateTime},'%Y%m%d')"
+#
+#     curs.execute(sql)
+#     df = pd.DataFrame(curs.fetchall())
+#
+#     return df
 
-    sql = f"SELECT ID, unitCode, problemLevel, problemURL, DateTime_Add FROM iclass.Table_middle_problems where DateTime_Add >= str_to_date({DateTime},'%Y%m%d')"
-
-    curs.execute(sql)
-    df = pd.DataFrame(curs.fetchall())
-
-    return df
+def split_result(result):
+    bboxes, texts, scores = [], [], []
+    for zipped in result:
+        if len(zipped) == 2:
+            bboxes.append(zipped[0])
+            texts.append(zipped[1])
+            scores = None
+        else:
+            bboxes.append(zipped[0])
+            texts.append(zipped[1])
+            scores.append(zipped[2])
+    return bboxes, texts, scores
 
 
 def preprocess_from_url(content, input_shape):
@@ -52,88 +65,93 @@ def preprocess_from_url(content, input_shape):
 
 
 # batch별로 데이터 elasticsearch에 넣음
-def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
-    batch_size = 100
-
-    part_df.set_index("ID", inplace=True)
-
-    id_list = []
-    img_list = []
-    for i in list(part_df.index):
-
-        url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i, 'problemURL'] + "p.png"
-        url = url.replace("/math_problems/", "/math_problems/d/")
-        try:
-            res = requests.get(url)
-
-            img_list.append(preprocess_from_url(res.content, input_shape))
-            id_list.append(i)
-        except:
-            print(f'ID : {i} 의 url이 유효하지 않습니다.')
-            pass
-
-    list_ds = tf.data.Dataset.from_tensor_slices(img_list)
-    dataset = list_ds.batch(batch_size).prefetch(-1)
-
-    for batch in dataset:
-        fvecs = model.predict(batch)
-
-    bulk(es, [{'_index': INDEX_NAME,
-               '_id': id_list[i], 'fvec': list(normalize(fvecs[i:i + 1])[0].tolist()),
-               'unitCode': part_df.loc[id_list[i], 'unitCode'], 'problemLevel': part_df.loc[id_list[i], 'problemLevel']}
-              for i in range(len(id_list))])
-
-    return
-
-
-# 모든 데이터를 넣음
-def bulk_all(df, INDEX_FILE, INDEX_NAME):
-    es = Elasticsearch(hosts=['localhost:9200'])
-    dim = 1280
-    bs = 10
-    nloop = math.ceil(df.shape[0] / bs)
-
-    input_shape = (224, 224, 3)
-    base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
-                                             include_top=False,
-                                             weights='imagenet')
-    base.trainable = False
-
-    model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
-
-    for k in tqdm(range(nloop)):
-        bulk_batchwise(es, df.loc[k * bs:min((k + 1) * bs, df.shape[0])], INDEX_NAME, model, input_shape)
-
-    es.indices.refresh(index=INDEX_NAME)
-    print(es.cat.indices(v=True))
+# def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
+#     batch_size = 100
+#
+#     part_df.set_index("ID", inplace=True)
+#
+#     id_list = []
+#     img_list = []
+#     for i in list(part_df.index):
+#
+#         url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i, 'problemURL'] + "p.png"
+#         url = url.replace("/math_problems/", "/math_problems/d/")
+#         try:
+#             res = requests.get(url)
+#
+#             img_list.append(preprocess_from_url(res.content, input_shape))
+#             id_list.append(i)
+#         except:
+#             print(f'ID : {i} 의 url이 유효하지 않습니다.')
+#             pass
+#
+#     list_ds = tf.data.Dataset.from_tensor_slices(img_list)
+#     dataset = list_ds.batch(batch_size).prefetch(-1)
+#
+#     for batch in dataset:
+#         fvecs = model.predict(batch)
+#
+#     bulk(es, [{'_index': INDEX_NAME,
+#                '_id': id_list[i], 'fvec': list(normalize(fvecs[i:i + 1])[0].tolist()),
+#                'unitCode': part_df.loc[id_list[i], 'unitCode'], 'problemLevel': part_df.loc[id_list[i], 'problemLevel']}
+#               for i in range(len(id_list))])
+#
+#     return
 
 
-def put_data(date_time):
-    prob_db = pymysql.connect(
-        user='real',
-        passwd='vmfl515!dnlf',
-        host='sorinegi-cluster.cluster-ro-ce1us4oyptfa.ap-northeast-2.rds.amazonaws.com',
-        db='iclass',
-        charset='utf8'
-    )
-
-    # print(f'{date_time}이후로 추가된 문제를 가져옵니다.')
-
-    print(f'{unitCode}의 문제들을 가져옵니다.')
-    df = get_all_info(prob_db, unitCode)
-
-    INDEX_FILE = '../test2/system/mapping_whole_img.json'
-    INDEX_NAME = 'ocr_test'
-
-    bulk_start = time.time()
-
-    bulk_all(df, INDEX_FILE, INDEX_NAME)
-
-    print(f'총 데이터 {df.shape[0]}개 bulk 소요시간은 {time.time() - bulk_start}')
-    print("Success!")
+# # 모든 데이터를 넣음
+# def bulk_all(df, INDEX_FILE, INDEX_NAME):
+#     es = Elasticsearch(hosts=['localhost:9200'])
+#     dim = 1280
+#     bs = 10
+#     nloop = math.ceil(df.shape[0] / bs)
+#
+#     input_shape = (224, 224, 3)
+#     base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
+#                                              include_top=False,
+#                                              weights='imagenet')
+#     base.trainable = False
+#
+#     model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
+#
+#     for k in tqdm(range(nloop)):
+#         bulk_batchwise(es, df.loc[k * bs:min((k + 1) * bs, df.shape[0])], INDEX_NAME, model, input_shape)
+#
+#     es.indices.refresh(index=INDEX_NAME)
+#     print(es.cat.indices(v=True))
+#
+#
+# def put_data(date_time):
+#     prob_db = pymysql.connect(
+#         user='real',
+#         passwd='vmfl515!dnlf',
+#         host='sorinegi-cluster.cluster-ro-ce1us4oyptfa.ap-northeast-2.rds.amazonaws.com',
+#         db='iclass',
+#         charset='utf8'
+#     )
+#
+#     # print(f'{date_time}이후로 추가된 문제를 가져옵니다.')
+#
+#     print(f'{unitCode}의 문제들을 가져옵니다.')
+#     df = get_all_info(prob_db, unitCode)
+#
+#     INDEX_FILE = '../test2/system/mapping_whole_img.json'
+#     INDEX_NAME = 'ocr_test'
+#
+#     bulk_start = time.time()
+#
+#     bulk_all(df, INDEX_FILE, INDEX_NAME)
+#
+#     print(f'총 데이터 {df.shape[0]}개 bulk 소요시간은 {time.time() - bulk_start}')
+#     print("Success!")
 
 
 def main(args):
+    komoran = Komoran(DEFAULT_MODEL['FULL'])
+    komoran.set_user_dic('../utils/komoran_dict.tsv')
+
+    word_classes = ['NNP', 'NNG', 'VV', 'EC', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP', 'JX']
+
     this = SysOCR(ini=utils.get_ini_parameters(args.ini_fname))
     this.logger = utils.setup_logger_with_ini(this.ini['LOGGER'],
                                               logging_=args.logging_, console_=args.console_logging_)
@@ -142,7 +160,26 @@ def main(args):
 
     dim = 1280
     bs = 50
-    nloop = math.ceil(df.shape[0] / bs)
+
+    es = Elasticsearch(hosts=["localhost:9200"])
+
+    # Index 생성
+    es.indices.delete(index=args.index_name, ignore=[404])  # Delete if already exists
+
+    # mappings 정의
+    with open(args.index_file) as index_file:
+        source = index_file.read().strip()
+        es.indices.create(index=args.index_name, body=source)  # Create ES index
+    print("Elasticsearch Index :", args.index_name, "created!")
+
+    input_shape = (224, 224, 3)
+
+    base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
+                                             include_top=False,
+                                             weights='imagenet')
+    base.trainable = False
+
+    model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
 
     this.logger.info(" [SYS-OCR] # {} in {} mode started!".format(_this_basename_, args.op_mode))
 
@@ -193,7 +230,7 @@ def main(args):
 
     elif args.op_mode == 'standalone-s3':
         utils.folder_exists(args.out_path, create_=True)
-        utils.folder_exists(DEBUG_PATH, create_=True)
+        # utils.folder_exists(DEBUG_PATH, create_=True)
 
         # Set db handler
         db = mysql.MysqlHandler(this.mysql_user_name,
@@ -203,8 +240,8 @@ def main(args):
                                 database=this.mysql_db_name,
                                 logger=None,
                                 show_=True)
-        db_colum_names = db.select_column_names(this.mysql_table_name)
-        print("DB column names : {}".format(db_colum_names))
+        db_column_names = db.select_column_names(this.mysql_table_name)
+        print("DB column names : {}".format(db_column_names))
 
         # set db filter cond.
         cond_list = ["{0}={1}".format('unitCode', '332000036'), ]
@@ -215,78 +252,119 @@ def main(args):
         # 데이터 정보 가져옴
 
         if this.mysql_table_name == "Table_middle_problems":  # 문제은행
+
             db_data = db.select_with_filter(this.mysql_table_name, filter_string=filter_string,
-                                            col_names=['ID', 'problemURL', 'unitCode', 'problemLevel'])  # 문제은행
+                                            col_names=['ID', 'problemURL', 'unitCode', 'problemLevel'])
 
-            img_ext = 'p.png'
+            db_data.set_index("ID", inplace=True)  # 문제은행
 
-            img_urls = [
-                img_base_url + p_url[1].replace('/math_problems/', '/math_problems/{}/'.format(this.s3_resol)) + img_ext
-                for p_url in db_data]
-            img_urls = img_base_url + p_url.replace('/math_problems/',
-                                                    '/math_problems/{}/'.format(this.s3_resol)) + img_ext
+            for ID in list(db_data.index):
+                db_data.loc[ID, 'problemURL'] = ("https://s3.ap-northeast-2.amazonaws.com/mathflat" + db_data.loc[
+                    ID, 'problemURL'] + "p.png").replace("/math_problems/", "/math_problems/ng/")
+
 
         else:  # 시중문제
             db_data = db.select_with_filter(this.mysql_table_name, filter_string=filter_string,
-                                            col_names=['ID', 'BookNameCode'])  # 시중문제
-            img_urls = [f"https://mathflat.s3.ap-northeast-2.amazonaws.com/math_problems/book/{p_url[1]}/{p_url[0]}.png"
-                        for p_url in db_data]  # 시중문제 볼 때 옵션
+                                            col_names=['ID', 'BookNameCode'], dictionary=True)  # 시중문제
 
-        img_ids = [p_url[0] for p_url in db_data]  # 문제 아이디 리스트
+            db_data.set_index("ID", inplace=True)  # 문제은행
+
+            for ID in list(db_data.index):
+                db_data.loc[
+                    ID, 'problemURL'] = f"https://mathflat.s3.ap-northeast-2.amazonaws.com/math_problems/book/{db_data.loc[ID, 'BookNameCode']}/{ID}.png"
 
         print("DB data size : {}".format(len(db_data)))
 
+        nloop = math.ceil(db_data.shape[0] / bs)
+
         # img_fnames = sorted(img_fnames, key=lambda x: int(x.replace(".jpg", "").split('_')[-1]))
-        this.logger.info(" [SYS-OCR] # Total file number to be processed: {:d}.".format(len(img_urls)))
+        this.logger.info(" [SYS-OCR] # Total file number to be processed: {:d}.".format(len(db_data)))
 
         for loop in tqdm(range(nloop)):  # batch size 만큼씩 집어넣음
-            batch_img_urls = img_urls[loop * bs: min((loop + 1) * bs, len(img_urls))]
 
-        for idx, img_url in enumerate(img_urls):
-            this.logger.info(" [SYS-OCR] # Processing {} ({:d}/{:d})".format(img_url, (idx + 1), len(img_urls)))
-            # dir_name, core_name, ext = utils.split_fname(img_url)
-            core_name = img_ids[idx]  # 저장 이름을 아이디로 바꿈
+            this.logger.info(f"{loop + 1}th/{nloop} loop start")
 
-            rst_path = args.out_path
-            this.time_arr = [time.time()]
+            img_list = []
+            id_list = []
+            text_list = []
 
-            res = requests.get(img_url, stream=True).raw
-            img = np.asarray(bytearray(res.read()), dtype="uint8")
-            img = cv2.imdecode(img, cv2.IMREAD_COLOR)
+            # this.logger.info(" [SYS-OCR] # Processing {}th/{} loop ".format((loop),(nloop)))
 
-            # Run OCR
-            # img = utils.imread(img_url, color_fmt='RGB')
-            if img is None:  # or idx <= 34:
-                continue
+            for ID in list((db_data.iloc[loop * bs: min((loop + 1) * bs, db_data.shape[0])]).index):
 
-            ocr_results, derot_img = this.run(img, rst_path, core_name)
-            this.logger.info(" # OCR results : {}".format(ocr_results))
+                # batch_img_urls = img_urls[loop * bs: min((loop + 1) * bs, len(img_urls))]
+                # batch_img_ids = [p_url[0] for p_url in db_data[loop * bs: min((loop + 1) * bs, len(img_urls))]]
+                #
 
-            # # Group text boxes by height, width_ths
-            group_ocr_results = group_text_box_by_ths(ocr_results, ycenter_ths=this.detect_ycenter_ths,
-                                                      height_ths=this.detect_ycenter_ths, width_ths=1.5)
+                #
+                # for idx, img_url in enumerate(batch_img_urls):
 
-            bboxes, texts, scores = split_result(group_ocr_results)
+                this.logger.info(" [SYS-OCR] # Processing {} (ID : {})".format(db_data.loc[ID, 'problemURL'], (ID)))
+                # dir_name, core_name, ext = utils.split_fname(img_url)
+                core_name = str(ID)  # 저장 이름을 아이디로 바꿈
 
-            # # rst_fname = "".join(['res_', core_name, ext])
-            # rst_fname = core_name
-            #
-            # rst_img, rst_bboxes = this.adjust_reuslt_by_save_mode(mode=this.coord_mode, img=img,
-            #                                                       derot_img=derot_img, derot_angle=this.derot_angle,
-            #                                                       bboxes=bboxes)
-            # if this.save_rst_:
-            #     file_utils.saveResult(rst_fname, rst_img, rst_bboxes, dirname=rst_path, texts=texts),
-            #     # mode=SaveImageMode[this.background_mode].name)
-            #     # ,scores=scores)
-            # this.logger.info(" # Saved image at {}".format(os.path.join(rst_path, rst_fname)))
+                rst_path = args.out_path
+                this.time_arr = [time.time()]
+                try:
+                    res = requests.get(db_data.loc[ID, 'problemURL'], stream=True).raw
+                    img = np.asarray(bytearray(res.read()), dtype="uint8")
+                    img = cv2.imdecode(img, cv2.IMREAD_COLOR)
 
-            this.time_arr.append(time.time())
+                    img_list.append(preprocess_input(tf.image.resize(img, input_shape[:2])))
+                    id_list.append(ID)
 
-            time_arr_str = ["{:5.3f}".format(this.time_arr[i + 1] - this.time_arr[i])
-                            for i in range(len(this.time_arr) - 1)]
-            this.logger.info(" [SYS-OCR] # Done {:d}/{:d}-th frame : {}".format(idx + 1, len(img_urls), time_arr_str))
+                except:
+                    continue  # png파일이 존재하지 않음
 
-    this.logger.info(" # {} in {} mode finished.".format(_this_basename_, args.op_mode))
+                # Run OCR
+                # img = utils.imread(img_url, color_fmt='RGB')
+                #     if img is None:  # or idx <= 34:
+                #         continue
+
+                ocr_results, derot_img = this.run(img, rst_path, core_name)
+                this.logger.info(" # OCR results : {}".format(ocr_results))
+
+                # # Group text boxes by height, width_ths
+                group_ocr_results = group_text_box_by_ths(ocr_results, ycenter_ths=this.detect_ycenter_ths,
+                                                          height_ths=this.detect_ycenter_ths, width_ths=1.5)
+
+                bboxes, texts, scores = split_result(group_ocr_results)
+                # text_list.append(texts)
+                text_list.append(
+                    ' '.join(komoran.get_morphes_by_tags(re.sub('[^ 가-힣]', '', " ".join(texts)), word_classes)))
+
+                # # rst_fname = "".join(['res_', core_name, ext])
+                # rst_fname = core_name
+                #
+                # rst_img, rst_bboxes = this.adjust_reuslt_by_save_mode(mode=this.coord_mode, img=img,
+                #                                                       derot_img=derot_img, derot_angle=this.derot_angle,
+                #                                                       bboxes=bboxes)
+                # if this.save_rst_:
+                #     file_utils.saveResult(rst_fname, rst_img, rst_bboxes, dirname=rst_path, texts=texts),
+                #     # mode=SaveImageMode[this.background_mode].name)
+                #     # ,scores=scores)
+                # this.logger.info(" # Saved image at {}".format(os.path.join(rst_path, rst_fname)))
+                this.time_arr.append(time.time())
+
+                time_arr_str = ["{:5.3f}".format(this.time_arr[i + 1] - this.time_arr[i])
+                                for i in range(len(this.time_arr) - 1)]
+                # this.logger.info(" [SYS-OCR] # Done {:d}/{:d}-th frame : {}".format(idx + 1, len(img_urls), time_arr_str))
+
+                this.logger.info(" # {} in {} mode finished.".format(_this_basename_, args.op_mode))
+
+            fvecs = model.predict(tf.convert_to_tensor(img_list))
+
+            bulk(es, [{'_index': args.index_name,
+                       '_id': id_list[i], 'fvec': list(normalize(fvecs[i:i + 1])[0].tolist()),
+                       'unitCode': db_data.loc[id_list[i], 'unitCode'],
+                       'problemLevel': db_data.loc[id_list[i], 'problemLevel'],
+                       'ocr_text': text_list[i]}
+                      for i in range(len(id_list))])
+            this.logger.info("{} data bulked to index {}".format(len(id_list), (args.index_name)))
+
+    es.indices.refresh(args.index_name)
+
+    print(es.cat.indices(v=True))
 
     return True
 
@@ -298,10 +376,13 @@ def parse_arguments(argv):
                         help="operation mode")
     parser.add_argument("--ini_fname", required=True, help="System code ini filename")
     # parser.add_argument("--img_path", required=True, type=str, help="input file")
-    # parser.add_argument("--out_path", default=".", help="Output folder")
+    parser.add_argument("--out_path", default=".", help="Output folder")
 
     parser.add_argument("--logging_", default=False, action='store_true', help="Activate logging")
     parser.add_argument("--console_logging_", default=False, action='store_true', help="Activate logging")
+
+    parser.add_argument("--index_name", default=False)
+    parser.add_argument("--index_file", default=False)
 
     args = parser.parse_args(argv)
 
@@ -320,8 +401,9 @@ INI_FNAME = "../ocr/EasyOCR/system/system_ocr.ini"
 # IMG_PATH = "../Input/test/crop_problem.png"
 # OUT_PATH = "../Output/test/"
 # IMG_PATH = "../Input/test/라이트쎈 중2-1 부록_15.jpg"
-# OUT_PATH = "../Output/test/"
-
+OUT_PATH = "../Output/test/"
+INDEX_NAME = "ocr_test"
+INDEX_FILE = '../test2/system/mapping_whole_img_text.json'
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
@@ -329,9 +411,13 @@ if __name__ == "__main__":
             sys.argv.extend(["--op_mode", OP_MODE])
             sys.argv.extend(["--ini_fname", INI_FNAME])
             # sys.argv.extend(["--img_path", IMG_PATH])
-            # sys.argv.extend(["--out_path", OUT_PATH])
+            sys.argv.extend(["--out_path", OUT_PATH])
             sys.argv.extend(["--logging_"])
             sys.argv.extend(["--console_logging_"])
+
+            sys.argv.extend(["--index_name", INDEX_NAME])
+            sys.argv.extend(["--index_file", INDEX_FILE])
+
         else:
             sys.argv.extend(["--help"])
 

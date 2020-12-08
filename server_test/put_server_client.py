@@ -1,5 +1,6 @@
 import argparse
 import socket
+import sys
 import threading
 
 import put_server
@@ -20,7 +21,7 @@ def server(client_list):
     print("Starting server...")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind((socket.gethostname(), 5000))
+    s.bind((socket.gethostname(), 5001))
     s.listen(5)
     while True:
         (conn, address) = s.accept()
@@ -34,19 +35,24 @@ def client(date_time):
     s.connect((socket.gethostname(), 5001))
     s.send(date_time.encode())
 
-def parse_arguments():
+
+def parse_arguments(argv):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', dest='client', action='store_true')
-    parser.add_argument('-d', dest='date_time', type=str)
-    result = parser.parse_args()
-    return result
+    # parser.add_argument('-c', dest='client', action='store_true')
+    # parser.add_argument('-d', dest='date_time', type=str)
+    parser.add_argument("--mode", default=False, choices=['client', 'server'])
+    parser.add_argument("--datetime", required=True)
+
+    args = parser.parse_args(argv)
+
+    return args
 
 
-def main():
+def main(args):
     client_list = dict()
-    args = parse_arguments()
-    if args.client:
-        client(args.date_time)
+    # args = parse_arguments()
+    if args.mode == "client":
+        client(args.datetime)
     else:
         try:
             server(client_list)
@@ -54,5 +60,15 @@ def main():
             print("Keyboard interrupt")
 
 
+SELF_TEST_ = True
+SERVER_MODE = "client"
+DATETIME = "20201123"
+
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) == 1:
+        if SELF_TEST_:
+            sys.argv.extend(["--mode", SERVER_MODE])
+            sys.argv.extend(["--datetime", DATETIME])
+        else:
+            print("INPUTS NEEDED")
+    main(parse_arguments(sys.argv[1:]))

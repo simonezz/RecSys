@@ -41,7 +41,7 @@ def preprocess_from_url(content, input_shape):
 
 # batch별로 데이터 elasticsearch에 넣음
 def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
-    batch_size = 100
+    # batch_size = 100
 
     part_df.set_index("ID", inplace=True)
 
@@ -59,13 +59,13 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape):
         except:
             print(f'ID : {i} 의 url이 유효하지 않습니다.')
             pass
-
-    list_ds = tf.data.Dataset.from_tensor_slices(img_list)
-    dataset = list_ds.batch(batch_size).prefetch(-1)
-
-    for batch in dataset:
-        fvecs = model.predict(batch)
-
+    #
+    # list_ds = tf.data.Dataset.from_tensor_slices(img_list)
+    # dataset = list_ds.batch(batch_size).prefetch(-1)
+    #
+    # for batch in dataset:
+    #     fvecs = model.predict(batch)
+    fvecs = model.predict(tf.convert_to_tensor(img_list))
     bulk(es, [{'_index': INDEX_NAME,
                '_id': id_list[i], 'fvec': list(normalize(fvecs[i:i + 1])[0].tolist()),
                'unitCode': part_df.loc[id_list[i], 'unitCode'], 'problemLevel': part_df.loc[id_list[i], 'problemLevel']}
@@ -116,3 +116,7 @@ def put_data(date_time):
 
     print(f'총 데이터 {df.shape[0]}개 bulk 소요시간은 {time.time() - bulk_start}')
     print("Success!")
+
+
+if __name__ == "__main__":
+    put_data("20201202")

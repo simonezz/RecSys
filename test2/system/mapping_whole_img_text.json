@@ -19,7 +19,7 @@
         "type": "dense_vector",
         "dims": 1280
       },
-      "planText": {
+      "ocr_text": {
         "type": "text"
       }
     }

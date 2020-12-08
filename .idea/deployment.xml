@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="ubuntu@3.35.136.190:22" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="master@freewheelin.iptime.org:22 password" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
       <paths name="master@freewheelin.iptime.org:22">
         <serverdata>
@@ -12,7 +12,7 @@
       <paths name="master@freewheelin.iptime.org:22 password">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/master/source/project/Recommender_SH/pycharm_project" local="$PROJECT_DIR$" />
+            <mapping deploy="/home/master/source/project/Recommender_SH/Recommender-System" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
