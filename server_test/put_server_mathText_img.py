@@ -76,7 +76,8 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran, reader)
                 #
                 # txt = " ".join(list(bodyText_dic.values()))
                 img_list.append(preprocess_from_url(img_res.content, input_shape))
-                text_list.append(' '.join(komoran.get_morphes_by_tags(re.sub('[^ 가-힣]', '', txt), word_classes)))
+                text_list.append(
+                    ' '.join(komoran.get_morphes_by_tags(re.sub('[^ a-zA-Z0-9가-힣]', ' ', txt), word_classes)))
 
                 id_list.append(i)
 
