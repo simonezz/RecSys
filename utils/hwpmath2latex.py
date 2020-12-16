@@ -28,6 +28,7 @@ def hwp_parser(url):
     output = proc.communicate()[0]  ## this will capture the output of script called in the parent script.
     # print(output.decode('utf-8')) # 한글 텍스트 추출
     # print(hmlEquation2latex(output.decode('utf-8')).split("\n"))출 # hwp형태 수식을 latex으로 변환
+    print(" ".join((hmlEquation2latex(output.decode('utf-8')).split("\n")[1:])))
     return " ".join((hmlEquation2latex(output.decode('utf-8')).split("\n")[1:]))
 
 

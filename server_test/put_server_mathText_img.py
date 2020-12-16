@@ -16,7 +16,6 @@ from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.models import Model
 from tqdm import tqdm
 import re
-import easyocr
 from hwpmath2latex import hwp_parser
 
 
@@ -65,7 +64,7 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran, reader)
 
             try:  # hwp 있을 때
 
-                txt = hwp_parser(hwp_url)
+                txt = r"{}".format(hwp_parser(hwp_url))
                 # tmp = Request(hwp_url)  # hwp
                 # tmp = urlopen(tmp).read()
                 #
@@ -111,13 +110,11 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran, reader)
 def bulk_all(df, INDEX_FILE, INDEX_NAME, komoran):
     es = Elasticsearch(hosts=['localhost:9200'])
     bs = 20
-    Index
-    생성
+    # Index 생성
     es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
 
 
-mappings
-정의
+#mappings 정의
 with open(INDEX_FILE) as index_file:
     source = index_file.read().strip()
     es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
@@ -135,7 +132,7 @@ model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.ou
 # komoran = customize_komoran_model('../utils/komoran_dict.tsv')
 
 # for k in tqdm(range(33521)):
-reader = easyocr.Reader(['ko', 'en'], gpu=False)
+# reader = easyocr.Reader(['ko', 'en'], gpu=False)
 
 for k in tqdm(range(nloop)):
     bulk_batchwise(es, df.loc[k * bs:min((k + 1) * bs, df.shape[0])], INDEX_NAME, model, input_shape, komoran, reader)
@@ -151,7 +148,8 @@ if __name__ == "__main__":
         db='iclass',
         charset='utf8'
     )
-    df = get_all_info(prob_db)  # 전체 data 업로드
+    unitCode = 311102103
+    df = get_all_info(prob_db, unitCode)  # 전체 data 업로드
 
     INDEX_FILE = '../test2/system/mapping_whole_img_text.json'
     INDEX_NAME = 'mathTest'

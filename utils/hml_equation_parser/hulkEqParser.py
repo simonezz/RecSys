@@ -6,7 +6,7 @@ from typing import List
 from hulkReplaceMethod import replaceAllMatrix, replaceAllBar, replaceRootOf, replaceAllBrace, replaceFrac2
 
 with codecs.open(os.path.join(os.path.dirname(__file__),
-                              "convertMap2.json"),
+                              "convertMap.json"),
                  "r", "utf8") as f:
     convertMap = json.load(f)
 
