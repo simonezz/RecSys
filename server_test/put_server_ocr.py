@@ -31,17 +31,6 @@ _this_folder_ = os.path.dirname(os.path.abspath(__file__))
 _this_basename_ = os.path.splitext(os.path.basename(__file__))[0]
 
 
-# data 불러옴
-# def get_all_info(prob_db, unitCode):
-#     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
-#
-#     sql = f"SELECT ID, unitCode, problemLevel, problemURL, DateTime_Add FROM iclass.Table_middle_problems where DateTime_Add >= str_to_date({DateTime},'%Y%m%d')"
-#
-#     curs.execute(sql)
-#     df = pd.DataFrame(curs.fetchall())
-#
-#     return df
-
 def split_result(result):
     bboxes, texts, scores = [], [], []
     for zipped in result:
@@ -55,6 +44,7 @@ def split_result(result):
             scores.append(zipped[2])
     return bboxes, texts, scores
 
+# Preprocess the images for putting into MobileNetv2.
 
 def preprocess_from_url(content, input_shape):
     img = tf.io.decode_png(content, channels=3, name="jpeg_reader")
@@ -65,43 +55,46 @@ def preprocess_from_url(content, input_shape):
 
 
 def main(args):
-    komoran = Komoran(DEFAULT_MODEL['FULL'])
-    komoran.set_user_dic('../utils/komoran_dict.tsv')
+    komoran = Komoran(DEFAULT_MODEL['FULL'])  # Load the default komoran model.
+    komoran.set_user_dic('../utils/komoran_dict.tsv')  # Set the user dictionary for tokenizing the math data.
 
-    word_classes = ['NNP', 'NNG', 'VV', 'EC', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP', 'JX']
+    word_classes = ['NNP', 'NNG', 'VV', 'EC', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP',
+                    'JX']  # word classes which are gonna be used.
 
-    this = SysOCR(ini=utils.get_ini_parameters(args.ini_fname))
+    this = SysOCR(ini=utils.get_ini_parameters(args.ini_fname))  # Object for logger.
     this.logger = utils.setup_logger_with_ini(this.ini['LOGGER'],
                                               logging_=args.logging_, console_=args.console_logging_)
     this.init_logger(logger=this.logger)
     this.init_functions()
 
-    dim = 1280
+    # Batch size for bulk.
     bs = 50
 
+    # Elasticsearch
     es = Elasticsearch(hosts=["localhost:9200"])
 
     # Index 생성
-    es.indices.delete(index=args.index_name, ignore=[404])  # Delete if already exists
+    # es.indices.delete(index=args.index_name, ignore=[404])  # Delete if already exists
 
-    # mappings 정의
-    with open(args.index_file) as index_file:
-        source = index_file.read().strip()
-        es.indices.create(index=args.index_name, body=source)  # Create ES index
-    print("Elasticsearch Index :", args.index_name, "created!")
+    # mappings 정의( # of primary shards, replica shards / properties)
+    # with open(args.index_file) as index_file:
+    #     source = index_file.read().strip()
+    #     es.indices.create(index=args.index_name, body=source)  # Create ES index
+    # print("Elasticsearch Index :", args.index_name, "created!")
 
+    # Input shape of MobileNet v2.
     input_shape = (224, 224, 3)
 
+    # MobileNet v2
     base = tf.keras.applications.MobileNetV2(input_shape=input_shape,
                                              include_top=False,
                                              weights='imagenet')
     base.trainable = False
-
     model = Model(inputs=base.input, outputs=layers.GlobalAveragePooling2D()(base.output))
 
     this.logger.info(" [SYS-OCR] # {} in {} mode started!".format(_this_basename_, args.op_mode))
 
-    if args.op_mode == 'standalone':
+    if args.op_mode == 'standalone':  # Get Images from HDD.
         utils.folder_exists(args.out_path, create_=True)
         utils.folder_exists(DEBUG_PATH, create_=True)
         if os.path.isdir(args.img_path):
@@ -146,7 +139,8 @@ def main(args):
             this.logger.info(" [SYS-OCR] # Done {:d}/{:d}-th frame : {}".format(idx + 1, len(img_fnames), time_arr_str))
 
 
-    elif args.op_mode == 'standalone-s3':
+    elif args.op_mode == 'standalone-s3':  # Get Images from AWS S3.
+
         utils.folder_exists(args.out_path, create_=True)
         # utils.folder_exists(DEBUG_PATH, create_=True)
 
@@ -164,26 +158,27 @@ def main(args):
         # set db filter cond.
         cond_list = ["{0}={1}".format('unitCode', '332000036'), ]
 
-        filter_string = db.create_filter_string()
+        filter_string = db.create_filter_string(cond_list)
         # print(filter_string)
 
-        # 데이터 정보 가져옴
 
+        # 데이터 정보 가져옴
         if this.mysql_table_name == "Table_middle_problems":  # 문제은행
 
             db_data = db.select_with_filter(this.mysql_table_name, filter_string=filter_string,
                                             col_names=['ID', 'problemURL', 'unitCode', 'problemLevel'])
 
-            db_data.set_index("ID", inplace=True)  # 문제은행
+            db_data.set_index("ID", inplace=True)
 
         else:  # 시중문제
             db_data = db.select_with_filter(this.mysql_table_name, filter_string=filter_string,
                                             col_names=['ID', 'BookNameCode'], dictionary=True)  # 시중문제
 
-            db_data.set_index("ID", inplace=True)  # 문제은행
+            db_data.set_index("ID", inplace=True)
 
         print("DB data size : {}".format(len(db_data)))
 
+        # Total # of loop
         nloop = math.ceil(db_data.shape[0] / bs)
 
         this.logger.info(" [SYS-OCR] # Total file number to be processed: {:d}.".format(len(db_data)))
@@ -196,11 +191,13 @@ def main(args):
             id_list = []
             text_list = []
 
+
             for ID in (list((db_data.iloc[loop * bs: min((loop + 1) * bs, db_data.shape[0])]).index)):
 
                 if this.mysql_table_name == "Table_middle_problems":  # 문제은행
                     prob_url = ("https://s3.ap-northeast-2.amazonaws.com/mathflat" + db_data.loc[
                         ID, 'problemURL'] + "p.png").replace("/math_problems/", "/math_problems/ng/")
+
                 else:  # 시중문제
                     prob_url = f"https://mathflat.s3.ap-northeast-2.amazonaws.com/math_problems/book/{db_data.loc[ID, 'BookNameCode']}/{ID}.png"
 
@@ -210,6 +207,8 @@ def main(args):
 
                 rst_path = args.out_path
                 this.time_arr = [time.time()]
+
+                # Img pixels from S3.
                 try:
                     res = requests.get(prob_url, stream=True).raw
                     img = np.asarray(bytearray(res.read()), dtype="uint8")
@@ -219,12 +218,13 @@ def main(args):
                     id_list.append(ID)
 
                 except:
-                    continue  # png파일이 존재하지 않음
+                    continue  # png 파일이 존재하지 않은 문제는 제외시킴
 
                 # Run OCR
                 # img = utils.imread(img_url, color_fmt='RGB')
                 #     if img is None:  # or idx <= 34:
                 #         continue
+                start_time = time.time()
 
                 ocr_results, derot_img = this.run(img, rst_path, core_name)
                 # this.logger.info(" # OCR results : {}".format(ocr_results))
@@ -234,7 +234,11 @@ def main(args):
                                                           height_ths=this.detect_ycenter_ths, width_ths=1.5)
 
                 bboxes, texts, scores = split_result(group_ocr_results)
-                # text_list.append(texts)
+
+                print("소요시간 : ", time.time() - start_time, "s")
+                # Refine OCR results and tokenize using the customized komoran.
+                this.logger.info(" # OCR results of {} : {}".format((prob_url), (texts)))
+
                 text_list.append(
                     ' '.join(komoran.get_morphes_by_tags(re.sub('[^ 가-힣]', '', " ".join(texts)), word_classes)))
 
@@ -249,24 +253,28 @@ def main(args):
                 #     # mode=SaveImageMode[this.background_mode].name)
                 #     # ,scores=scores)
                 # this.logger.info(" # Saved image at {}".format(os.path.join(rst_path, rst_fname)))
-                this.time_arr.append(time.time())
-
-                time_arr_str = ["{:5.3f}".format(this.time_arr[i + 1] - this.time_arr[i])
-                                for i in range(len(this.time_arr) - 1)]
+                # this.time_arr.append(time.time())
+                #
+                # time_arr_str = ["{:5.3f}".format(this.time_arr[i + 1] - this.time_arr[i])
+                #                 for i in range(len(this.time_arr) - 1)]
                 # this.logger.info(" [SYS-OCR] # Done {:d}/{:d}-th frame : {}".format(idx + 1, len(img_urls), time_arr_str))
 
                 # this.logger.info(" # {} in {} mode finished.".format(_this_basename_, args.op_mode))
 
+            # Put images into MobileNetv2 for getting feature vectors.
             fvecs = model.predict(tf.convert_to_tensor(img_list))
 
+            # Bulk data into Elasticsearch.
             bulk(es, [{'_index': args.index_name,
                        '_id': id_list[i], 'fvec': list(normalize(fvecs[i:i + 1])[0].tolist()),
                        'unitCode': db_data.loc[id_list[i], 'unitCode'],
                        'problemLevel': db_data.loc[id_list[i], 'problemLevel'],
                        'ocr_text': text_list[i]}
                       for i in range(len(id_list))])
+
             this.logger.info("{} data bulked to index {}".format(len(id_list), (args.index_name)))
 
+    # Refresh Elasticsearch.
     es.indices.refresh(args.index_name)
 
     print(es.cat.indices(v=True))

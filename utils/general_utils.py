@@ -1,27 +1,27 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-""" # Updated in 20/09/01 """
-
-import logging
+""" # Updated in 20/10/29 """
 import configparser
 import datetime
-import random
-import operator
 import glob
-import unicodedata
-import os
-import sys
 import json
-import numpy as np
-import cv2
+import logging
+import operator
+import os
+import random
+import sys
 import traceback
-
+import unicodedata
 from copy import deepcopy
-from PIL import Image
-from operator import itemgetter
-from matplotlib import pyplot as plt
 from logging import handlers as log_handlers
+from operator import itemgetter
+
+import coloredlogs
+import cv2
+import numpy as np
+from PIL import Image
+from matplotlib import pyplot as plt
 
 '''
 try:
@@ -77,6 +77,7 @@ META_EXTENSION = ['json']
 IMG_EXTENSIONS = IMAGE_EXTENSIONS
 LATEX_EXTENSIONS = ['tex']
 TEXT_EXTENSIONS = ['txt']
+CSV_EXTENSIONS = ['csv']
 
 COLOR_ARRAY_RGBCMY = [RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW]
 DEV_NULL = open(os.devnull, 'w')

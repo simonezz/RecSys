@@ -17,11 +17,12 @@ def handle_client(client_list, conn, address):
     conn.close()
 
 
-def server(client_list):
+def server(client_list, port):
     print("Starting server...")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind((socket.gethostname(), 5001))
+    s.bind((socket.gethostname(), port))
+    print(f"Starting server at port {port}", )
     s.listen(5)
     while True:
         (conn, address) = s.accept()
@@ -30,9 +31,9 @@ def server(client_list):
         t.start()
 
 
-def client(date_time):
+def client(date_time, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((socket.gethostname(), 5001))
+    s.connect((socket.gethostname(), port))
     s.send(date_time.encode())
 
 
@@ -41,8 +42,8 @@ def parse_arguments(argv):
     # parser.add_argument('-c', dest='client', action='store_true')
     # parser.add_argument('-d', dest='date_time', type=str)
     parser.add_argument("--mode", default=False, choices=['client', 'server'])
-    parser.add_argument("--datetime", required=True)
-
+    parser.add_argument("--datetime")
+    parser.add_argument("--port")
     args = parser.parse_args(argv)
 
     return args
@@ -52,23 +53,25 @@ def main(args):
     client_list = dict()
     # args = parse_arguments()
     if args.mode == "client":
-        client(args.datetime)
+        client(args.datetime, int(args.port))
     else:
         try:
-            server(client_list)
+            server(client_list, int(args.port))
         except KeyboardInterrupt:
             print("Keyboard interrupt")
 
 
 SELF_TEST_ = True
 SERVER_MODE = "client"
-DATETIME = "20201123"
+DATETIME = "20201208"
+PORT = 5002
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         if SELF_TEST_:
             sys.argv.extend(["--mode", SERVER_MODE])
             sys.argv.extend(["--datetime", DATETIME])
+            sys.argv.extend(["--port", PORT])
         else:
             print("INPUTS NEEDED")
     main(parse_arguments(sys.argv[1:]))

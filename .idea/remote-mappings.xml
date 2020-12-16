@@ -11,6 +11,13 @@
           </settings>
         </remote-mappings>
         <remote-mappings server-id="python@sftp://master@freewheelin.iptime.org:22/home/master/anaconda3/envs/py37/bin/python3.7" />
+        <remote-mappings server-id="python@sftp://master@100.100.10.132:22/home/master/anaconda3/envs/py37/bin/python3.7">
+          <settings>
+            <list>
+              <mapping local-root="$PROJECT_DIR$" remote-root="/home/master/source/project/Recommender_SH/Recommender-System" />
+            </list>
+          </settings>
+        </remote-mappings>
       </list>
     </list>
   </component>
