@@ -176,6 +176,123 @@ def replaceRootOf(eqString: str) -> str:
     return eqString
 
 
+def _findBrackets2(eqString, cursor, direction=0):  # eqString에서 cursor 이후의 '{'와 '}'의 위치 찾음
+
+    # direction = 0이면 cursor 앞에서 bracket 찾고 1이면 cursor 뒤에서 찾음
+
+    if direction == 1:
+        i = cursor + 1
+        if "{" not in eqString[i:]: return False, False
+        while True:
+            if eqString[i] == "{":
+                break
+            i += 1
+
+        if eqString[cursor + 1: i].strip() != "":  # root와 같은 단어와 {사이에 뭔가 있으면 그게 sqrt 안에 들어감(괄호 제대로 안쳐져 있던 경우)
+            return False, False
+        else:
+            startCur = i
+            i += 1
+            while True:
+                if eqString[i] == "}":
+                    break
+                i += 1
+            endCur = i
+
+    else:  # direction=0 일 때
+        i = cursor - 1
+        if "{" not in eqString[:i + 1]: return False, False
+
+        while True:
+            if eqString[i] == "}":
+                break
+            i -= 1
+
+        endCur = i
+
+        if eqString[i + 1:cursor].strip() != "":  # "}"와 root 사이에 뭔가 있으면 그게 sqrt 안에 들어감(괄호 제대로 안쳐져 있던 경우) ex) 1over4
+            return False, False
+        else:
+            i = endCur - 1
+
+            while True:
+                if eqString[i] == "{":
+                    break
+                i -= 1
+            startCur = i
+    return startCur, endCur
+
+
+def replaceRootOf2(eqString: str) -> str:
+    '''
+    `root {1} of {2}` -> `\sqrt[1]{2}`
+    'root {3} -> \sqrt{3}
+
+    '''
+
+    hmlFracString = r"root"
+    latexFracString = r"\sqrt"
+    ofString = r"of"
+
+    while True:
+        cursor = eqString.find(hmlFracString)  # "over"시작 위치
+
+        if cursor == -1:  # 더이상 root 단어가 존재하지 않음
+            break
+
+        ofCursor = eqString.find(ofString)
+
+        # of 없을 때
+        if ofCursor == -1 or ofCursor < cursor or hmlFracString in eqString[cursor:ofCursor]:
+
+            start, end = _findBrackets2(eqString, cursor + 3, direction=1)  # of 뒤의 값을 구함
+
+            if start:  # of 뒤에 brackets으로 묶여있을 때
+                afterRoot = eqString[start:end + 1]
+                i = 0
+
+            else:  # root3과 같이 bracket 없음
+
+                strList = eqString[cursor + 4:].split(" ")
+
+                i = 0
+                while True:
+                    if strList[i] != " ":
+                        afterRoot = strList[i]
+                        break
+                    i += 1
+
+                    #######
+
+            eqString = eqString[0:cursor] + latexFracString + "{" + afterRoot + "}" + " ".join(strList[i + 1:])
+
+        else:  # of 있을 때
+            start, end = _findBrackets2(eqString, ofCursor + 1, direction=1)  # of 뒤의 값을 구함
+
+            if start:  # of 뒤에 brackets으로 묶여있을 때
+                afterOf = eqString[start:end + 1]
+                i = 0
+
+            else:
+                strList = eqString[ofCursor:].split(" ")
+                if strList[0] != ofString:  # of2 와 같이 띄어쓰기가 되어있지 않는 경우
+                    afterOf = strList[0][2:]
+                else:
+                    i = 1
+                    while True:
+                        if strList[i] != " ":
+                            afterOf = strList[i]
+                            break
+                        i += 1
+
+            eqString = eqString[0:cursor] + \
+                       r"\sqrt" + \
+                       r"[" + eqString[cursor + 4: ofCursor] + r"]" + \
+                       r"{" + afterOf + r"}" + \
+                       " ".join(strList[i + 1:])
+    return eqString
+
+
 def replaceFrac(eqString: str) -> str:
     '''
     `{1} over {2}` -> `\frac{1}{2}`
@@ -226,63 +343,68 @@ def replaceFrac2(eqString: str) -> str:
 
         if cursor == -1:
             break
-        try:  # over가 존재함
-            # find numerator
-            numStart, numEnd = _findBrackets(eqString, cursor,
-                                             direction=0)  # numStart는 bracket { 위치, numEnd는 bracket }의 위치 +1
 
-            if eqString[numEnd:cursor].replace(" ",
-                                               "") != "":  # bracket과 "over"사이에 뭔가 있으면 그게 분자임.(분모/분자가 bracket으로 둘러쌓여있지 않은 경우)
+        # find numerator
+        numStart, numEnd = _findBrackets2(eqString, cursor, direction=0)
+        # numStart는 bracket { 위치, numEnd는 bracket }의 위치 +1
 
-                numerator = eqString[numEnd:cursor]
-                beforeFrac = eqString[:numEnd]
-                numerator = " {" + numerator.replace(" ", "") + "} "
-                # numerator = "{"+numerator+"}"
+        strList = eqString[:cursor].split(" ")
+        i = len(strList) - 1
+        if numStart and eqString[numEnd + 1: cursor].strip() != "":  # "}"와 over사이에 있는것이 분자
+            numerator = eqString[numEnd + 1:cursor].strip()
+            beforeFrac = eqString[:numEnd + 1]
+        elif numStart:
+            numerator = eqString[numStart: numEnd + 1]
+            beforeFrac = eqString[:numStart]
+        elif eqString[cursor - 1] != " ":  # 4over3와 같이 분자가 over 앞에 붙어있음
+            strList = eqString[:cursor].split(" ")
+            numerator = strList[-1].strip()  # 분자
+            beforeFrac = " ".strList[:len(strList) - 1]
+        else:  # 4 over 3 과 같은 경우
+
+            i = len(strList) - 1
+            while True:
+
+                if strList[i].strip() != "":
+                    numerator = strList[i]
+                    break
+                i -= 1
+            beforeFrac = " ".strList[:i]
+
+        # find denominator
+        numStart, numEnd = _findBrackets2(eqString, cursor + 3, direction=1)
+        # numStart는 bracket { 위치, numEnd는 bracket }의 위치 +1
+        j = 0
+        if numStart and eqString[cursor + 4: numStart].strip() != "":  # over와 "{"사이에 있는것이 분모
+            denominator = eqString[cursor + 4: numStart].strip()
 
 
-            else:
-                numerator = eqString[numStart:numEnd]
-                beforeFrac = eqString[0:numStart]
+        elif eqString[cursor + 1] != " ":  # 4over3와 같이 분모가 over 뒤에 붙어있음
 
-            afterFrac = eqString[cursor + len(hmlFracString):]
+            deStrList = eqString[cursor + 4:].split(" ")
 
-            after_strlist = afterFrac.split(" ")
+            denominator = deStrList[0].strip()  # 분자
+
+        else:  # 4 over 3 과 같은 경우
+
+            deStrList = eqString[cursor + 4:].split(" ")
+
+            j = 0
 
             while True:
-                try:
-                    after_strlist.remove("")
-                except:
+
+                if deStrList[j] != " ":
+                    denominator = deStrList[j]
+
                     break
 
-            if after_strlist[0] == "{":
-                end_ind = after_strlist.find("}")
-                denominator = after_strlist[:end_ind + 1]
-                after_strlist = after_strlist[end_ind + 1:]
-            else:
-                denominator = after_strlist[0]
-                after_strlist = after_strlist[1:]
-
-            denominator = " {" + denominator + "} "
-
-            eqString = beforeFrac + latexFracString + numerator + denominator + " ".join(after_strlist)
-        # except ValueError:
-        #     return eqString
-        except:  # cursor 앞에 bracket }가 없는 경우
-
-            strList = eqString.split(" ")
-            while True:  # 공백 다 제거
-                try:
-                    strList.remove("")
-                except:
-                    break
-
-            ind = strList.index(hmlFracString)
-
-            strList[ind - 1:ind + 2] = replaceFrac_no_bracket(" ".join(strList[ind - 1:ind + 2]))
-
-            eqString = " ".join(strList)
+                i += 1
+        eqString = beforeFrac + latexFracString + "{" + numerator + "}" + "{" + denominator + "}" + " ".join(
+            deStrList[j + 1:])
+    # 2over3 -> \frac{2}{3}
 
     return eqString
+
 
 
 def replaceAllBrace(eqString: str) -> str:

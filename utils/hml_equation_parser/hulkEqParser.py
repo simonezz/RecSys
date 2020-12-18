@@ -3,7 +3,7 @@ import json
 import os
 from typing import List
 
-from hulkReplaceMethod import replaceAllMatrix, replaceAllBar, replaceRootOf, replaceAllBrace, replaceFrac2
+from hulkReplaceMethod import replaceAllMatrix, replaceAllBar, replaceAllBrace, replaceFrac2, replaceRootOf2
 
 with codecs.open(os.path.join(os.path.dirname(__file__),
                               "convertMap.json"),
@@ -11,59 +11,18 @@ with codecs.open(os.path.join(os.path.dirname(__file__),
     convertMap = json.load(f)
 
 
-def replaceOthers(strList):  # frac, brace 등등 대체
+def replaceOthers(strConverted):  # frac, brace 등등 대체
 
-    strConverted = ' '.join(strList)
+    # strConverted = ' '.join(strList)
 
     strConverted = replaceFrac2(strConverted)
-    strConverted = replaceRootOf(strConverted)
+    strConverted = replaceRootOf2(strConverted)
     strConverted = replaceAllMatrix(strConverted)
     strConverted = replaceAllBar(strConverted)
     strConverted = replaceAllBrace(strConverted)
 
     return strConverted
 
-
-def strip_brackets(string):  # "pi}" 와 같은 건 convertMap.json에서 key값으로 존재하지 않음. pi로 바꾸고 \\pi로 매칭한다음 다시 \\pi}가 되어야함.
-
-    a = 0
-    b = len(string) + 1
-    if "{" in string and "}" in string:
-        a = string.index("{")
-        b = string.index("}")
-        if string[a:b].strip() in convertMap["convertMap"]:
-            return "{" + convertMap["convertMap"][string[a:b].strip()] + "}"
-        elif string[a:b].strip() in convertMap["middleConvertMap"]:
-            return "{" + convertMap["middleConvertMap"][string[a:b].strip()] + "}"
-        else:
-            return string
-
-    elif "{" in string:
-        a = string.index("{")
-        if string[a:b].strip() in convertMap["convertMap"]:
-            return "{" + convertMap["convertMap"][string[a:b].strip()]
-        elif string[a:b].strip() in convertMap["middleConvertMap"]:
-            return "{" + convertMap["middleConvertMap"][string[a:b].strip()]
-        else:
-            return string
-
-    elif "}" in string:
-        b = string.index("}")
-        if string[a:b].strip() in convertMap["convertMap"]:
-            return convertMap["convertMap"][string[a:b].strip()] + "}"
-        elif string[a:b].strip() in convertMap["middleConvertMap"]:
-            return convertMap["middleConvertMap"][string[a:b].strip()] + "}"
-        else:
-            return string
-
-    else:
-        if string.strip() in convertMap["convertMap"]:
-            return convertMap["convertMap"][string.strip()]
-        elif string.strip() in convertMap["middleConvertMap"]:
-            return convertMap["middleConvertMap"][string.strip()]
-        else:
-            return string
-    return string
 
 
 def hmlEquation2latex(hmlEqStr):
@@ -95,29 +54,46 @@ def hmlEquation2latex(hmlEqStr):
                     strList[i] = r'\}'
         return strList
 
-    strConverted = hmlEqStr.replace('`', ' ')
+    strConverted = hmlEqStr.replace("\n", " \n ")
+    strConverted = strConverted.replace('`', ' ')
     strConverted = strConverted.replace('{', ' { ')
     strConverted = strConverted.replace('}', ' } ')
     strConverted = strConverted.replace('&', ' & ')
-    strConverted = strConverted.replace("{ ", "{")
-    strConverted = strConverted.replace(" }", "}")
+    # strConverted = strConverted.replace("{ ", "{")
+    # strConverted = strConverted.replace(" }", "}")
+    strConverted = strConverted.replace("  ", " ")
 
-    strList = strConverted.split(' ')
+    # strList = strConverted.split(' ')
 
-    for key, candidate in enumerate(strList):
-        strList[key] = strip_brackets(candidate)
+    for c in convertMap["convertMap"]:
+        strConverted.replace(c, convertMap['convertMap'][c])
 
-    strList = [string for string in strList if len(string) != 0]
-    strList = replaceBracket(strList)
+    for c in convertMap["middleConvertMap"]:
+        strConverted.replace(c, convertMap['middleConvertMap'][c])
+    #
+    #
+    #
+    # for key, candidate in enumerate(strList):
+    #     if candidate in convertMap["convertMap"]:
+    #         strList[key] = convertMap["convertMap"][candidate]
+    #     elif candidate in convertMap["middleConvertMap"]:
+    #         strList[key] = convertMap["middleConvertMap"][candidate]
 
-    if "=" in strList:  # 좌우변 따로 있는 경우
-        equal_index = strList.index("=")
-        # 좌우변 따로 처리
-        strConverted = replaceOthers(strList[:equal_index]) + " = " + replaceOthers(strList[equal_index + 1:])
+    # strList = [string for string in strList if len(string) != 0]
+    # strList = replaceBracket(strList)
 
-    else:
+    # if "=" in strConverted:
+    #     strConverted = replaceOthers(strConverted)
+    # if "=" in strList:  # 좌우변 따로 있는 경우
+    #     equal_index = strList.index("=")
+    #     # 좌우변 따로 처리
+    #     strConverted = replaceOthers(strList[:equal_index]) + " = " + replaceOthers(strList[equal_index + 1:])
+    #
+    # else:
+    #
+    #     strConverted = replaceOthers(strList)
 
-        strConverted = replaceOthers(strList)
+    strConverted = replaceOthers(strConverted)
 
     strConverted = strConverted.replace("<", "\\langle")
     strConverted = strConverted.replace(">", "\\rangle")
@@ -125,5 +101,18 @@ def hmlEquation2latex(hmlEqStr):
     return strConverted.replace("  ", " ")
 
 
+def main(string):
+    # result = ""
+    # strList = string.split("=")
+    # for s in strList:
+    #     result += hmlEquation2latex(s)
+    print(hmlEquation2latex(string))
+    return hmlEquation2latex(string)
+
+
 if __name__ == "__main__":
-    print(hmlEquation2latex("root 4 of  ab^2  `× root 3 of { a^2 b^3 } `÷ root 4 of { a^3 b^2 } 을 간단히 하면?"))
+    # print(hmlEquation2latex("root 4 of  ab^2  `× root 3 of { a^2 b^3 } `÷ root 4 of { a^3 b^2 } 을 간단히 하면?"))
+    # print(hmlEquation2latex("함수 \nf( x )=cases{ {rootx+3 -2}overx-1 &(x !=1)#~~~~````a &( x=1 )\n이 \nx=1\n에서 연속일 때, 상수 \na\n의 값은?\n① \n1over5\n② \n1over4\n③ \n1over3\n④ \n1over2\n⑤ \n1\n\n\n'"))
+    # main("함수 \nf( x )=cases{ {rootx+3 -2}overx-1 &(x !=1)#~~~~````a &( x=1 )\n이 \nx=1\n에서 연속일 때, 상수 \na\n의 값은?\n① \n1over5\n② \n1over4\n③ \n1over3\n④ \n1over2\n⑤ \n1\n\n\n")
+    # main("1over5")
+    main("함수 \nf( x )={rootx+3 -2}overx-1 ")
