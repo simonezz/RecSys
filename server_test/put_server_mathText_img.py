@@ -2,7 +2,7 @@ import math
 import sys
 import time
 
-sys.path.append('../utils')
+sys.path.append('../')
 
 import pandas as pd
 import pymysql
@@ -15,8 +15,8 @@ from sklearn.preprocessing import normalize
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.models import Model
 from tqdm import tqdm
-from hwpmath2latex import hwp_parser
-from pylatexenc.latex2text import LatexNodes2Text  # latex을 plain text 형식으로 바꿈
+from utils.hwpmath2latex import hwp_parser
+
 
 # data 불러옴
 def get_all_info(prob_db, unitCode=None):
@@ -44,51 +44,36 @@ def preprocess_from_url(content, input_shape):
 # batch별로 데이터 elasticsearch에 넣음
 def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
     batch_size = 100
-    word_classes = ['NNP', 'NNG', 'VV', 'EC', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP', 'JX']
+    word_classes = ['NNP', 'NNG', 'VV', 'EC', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP', 'JX', 'SL']
     part_df.set_index("ID", inplace=True)
 
     id_list = []
     img_list = []
     text_list = []
 
-    for i in list(part_df.index):
+    for i in tqdm(list(part_df.index)[13:]):
         img_url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i, 'problemURL'] + "p.png"
         img_url = img_url.replace("/math_problems/", "/math_problems/ng/")  # ng는 고화질, d는 저화질
 
         hwp_url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i, 'problemURL'] + "p.hwp"
         hwp_url = hwp_url.replace("math_problems", "math_problems/hwp")
-
+        print(i, "::::", hwp_url)
         try:
             img_res = requests.get(img_url)  # png
 
             try:  # hwp 있을 때
 
-                # txt = r"{}".format(hwp_parser(hwp_url))
-                print(hwp_parser(hwp_url))
-                txt = LatexNodes2Text().latex_to_text(hwp_parser(hwp_url))  # hwp수식 -> latex -> plaintext
-                print(txt)
-                # tmp = Request(hwp_url)  # hwp
-                # tmp = urlopen(tmp).read()
-                #
-                # f = olefile.OleFileIO(tmp)
-                #
-                # hwpReader = HwpReader(f)
-                # bodyText_dic = hwpReader.bodyStream()
-                #
-                # txt = " ".join(list(bodyText_dic.values()))
+                txt = hwp_parser(hwp_url)
+
                 img_list.append(preprocess_from_url(img_res.content, input_shape))
 
                 text_list.append(txt)
-                # text_list.append(
-                #     ' '.join(komoran.get_morphes_by_tags(re.sub('[^ a-zA-Z0-9가-힣]', ' ', txt), word_classes)))
 
                 id_list.append(i)
 
             except:  # hwp 없을 때 -> 사용하지 않음
-
+                print("fail")
                 pass
-
-
 
         except:  # png가 존재하지 않으면
             print(f'ID : {i} 의 url {img_url}이 유효하지 않습니다.')

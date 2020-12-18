@@ -16,10 +16,15 @@ def replaceOthers(strConverted):  # frac, brace 등등 대체
     # strConverted = ' '.join(strList)
 
     strConverted = replaceFrac2(strConverted)
+    # print("frac 변환 끝")
     strConverted = replaceRootOf2(strConverted)
+    # print("root 변환 끝")
     strConverted = replaceAllMatrix(strConverted)
+    # print("matrix 변환 끝")
     strConverted = replaceAllBar(strConverted)
+    # print("allBar 변환 끝")
     strConverted = replaceAllBrace(strConverted)
+    # print("allBrace 변환 끝")
 
     return strConverted
 
@@ -59,54 +64,26 @@ def hmlEquation2latex(hmlEqStr):
     strConverted = strConverted.replace('{', ' { ')
     strConverted = strConverted.replace('}', ' } ')
     strConverted = strConverted.replace('&', ' & ')
-    # strConverted = strConverted.replace("{ ", "{")
-    # strConverted = strConverted.replace(" }", "}")
     strConverted = strConverted.replace("  ", " ")
 
-    # strList = strConverted.split(' ')
-
     for c in convertMap["convertMap"]:
-        strConverted.replace(c, convertMap['convertMap'][c])
+        strConverted = strConverted.replace(c, convertMap['convertMap'][c])
 
     for c in convertMap["middleConvertMap"]:
-        strConverted.replace(c, convertMap['middleConvertMap'][c])
-    #
-    #
-    #
-    # for key, candidate in enumerate(strList):
-    #     if candidate in convertMap["convertMap"]:
-    #         strList[key] = convertMap["convertMap"][candidate]
-    #     elif candidate in convertMap["middleConvertMap"]:
-    #         strList[key] = convertMap["middleConvertMap"][candidate]
-
-    # strList = [string for string in strList if len(string) != 0]
-    # strList = replaceBracket(strList)
-
-    # if "=" in strConverted:
-    #     strConverted = replaceOthers(strConverted)
-    # if "=" in strList:  # 좌우변 따로 있는 경우
-    #     equal_index = strList.index("=")
-    #     # 좌우변 따로 처리
-    #     strConverted = replaceOthers(strList[:equal_index]) + " = " + replaceOthers(strList[equal_index + 1:])
-    #
-    # else:
-    #
-    #     strConverted = replaceOthers(strList)
+        strConverted = strConverted.replace(c, convertMap['middleConvertMap'][c])
 
     strConverted = replaceOthers(strConverted)
 
-    strConverted = strConverted.replace("<", "\\langle")
-    strConverted = strConverted.replace(">", "\\rangle")
+    # strConverted = strConverted.replace("<", "\\langle")
+    # strConverted = strConverted.replace(">", "\\rangle")
 
     return strConverted.replace("  ", " ")
 
 
 def main(string):
-    # result = ""
-    # strList = string.split("=")
-    # for s in strList:
-    #     result += hmlEquation2latex(s)
-    print(hmlEquation2latex(string))
+    # print(hmlEquation2latex(string))
+    with open("test1.txt", "w") as f:
+        f.write(hmlEquation2latex(string))
     return hmlEquation2latex(string)
 
 
@@ -115,4 +92,6 @@ if __name__ == "__main__":
     # print(hmlEquation2latex("함수 \nf( x )=cases{ {rootx+3 -2}overx-1 &(x !=1)#~~~~````a &( x=1 )\n이 \nx=1\n에서 연속일 때, 상수 \na\n의 값은?\n① \n1over5\n② \n1over4\n③ \n1over3\n④ \n1over2\n⑤ \n1\n\n\n'"))
     # main("함수 \nf( x )=cases{ {rootx+3 -2}overx-1 &(x !=1)#~~~~````a &( x=1 )\n이 \nx=1\n에서 연속일 때, 상수 \na\n의 값은?\n① \n1over5\n② \n1over4\n③ \n1over3\n④ \n1over2\n⑤ \n1\n\n\n")
     # main("1over5")
-    main("함수 \nf( x )={rootx+3 -2}overx-1 ")
+    # main("함수 \nf( x )={rootx+3 -2}overx-1 ")
+    main(
+        "\n \n \n 함수 \n f(x)= HULKCASE { x+a ~~ & (x< -1) #x ^2 -b & (-1 \\leq x<1)#2x-c & (x \\geq 1) }   \r \n \n 가 실수 전체의 집합에서 연속이고 \n f(0)=-2 \r \n \n 일 때, 상수 \n a \r \n \n , \n b \r \n \n , \n c \r \n \n 의 합 \n a+b+c \r \n \n 의 값을 구하여라. \n \n ")

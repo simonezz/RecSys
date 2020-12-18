@@ -128,13 +128,13 @@ def replaceAllMatrix(eqString: str) -> str:
 
                 if matElem['removeOutterBrackets'] == True:
                     bStart, bEnd = _findOutterBrackets(eqString, cursor)
-                    beforeMat = eqString[0:bStart]
+                    beforeMat = eqString[0:bStart - len(matStr) - 1]
                     afterMat = eqString[bEnd:]
                 else:
                     beforeMat = eqString[0:cursor]
                     afterMat = eqString[eEnd:]
 
-                eqString = beforeMat + matElem['begin'] + \
+                eqString = beforeMat[:cursor] + matElem['begin'] + \
                            elem + matElem['end'] + afterMat
             except ValueError:
                 return eqString
@@ -359,7 +359,7 @@ def replaceFrac2(eqString: str) -> str:
         elif eqString[cursor - 1] != " ":  # 4over3와 같이 분자가 over 앞에 붙어있음
             strList = eqString[:cursor].split(" ")
             numerator = strList[-1].strip()  # 분자
-            beforeFrac = " ".strList[:len(strList) - 1]
+            beforeFrac = " ".join(strList[:len(strList) - 1])
         else:  # 4 over 3 과 같은 경우
 
             i = len(strList) - 1
