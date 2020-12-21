@@ -1,10 +1,10 @@
 import sys
 
-sys.path.append('./hml_equation_parser')
+# sys.path.append('./hml_equation_parser')
 import subprocess
 from subprocess import PIPE
-from hml_equation_parser.hulkEqParser import hmlEquation2latex
-
+from hml_equation_parser import hulkEqParser
+# from .hulkEqParser import hmlEquation2latex as eq2latex
 '''
 hwplib 자바 파일들을 이용해서 hwp파싱
 '''
@@ -16,6 +16,7 @@ hwplib 자바 파일들을 이용해서 hwp파싱
 url = 'https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/9/h/2/1/03018/9_32103018_BUJ2r_-46Y_p.hwp'
 
 
+
 def hwp_parser(url):
     sys.path.append('./hml_equation_parser')
     proc = subprocess.Popen(
@@ -25,7 +26,7 @@ def hwp_parser(url):
 
     txt = output.decode('utf-8')
 
-    txt_list = hmlEquation2latex(" ".join(txt.split("\n")[1:]))
+    txt_list = hulkEqParser.hmlEquation2latex(" ".join(txt.split("\n")[1:]))
 
     for i, t in enumerate(txt_list[:5]):
         try:

@@ -9,6 +9,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="master@100.100.10.132:22 (1)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/master/source/project/Recommender_SH/Recommender-System" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
     </serverData>
     <option name="myAutoUpload" value="ALWAYS" />
   </component>
