@@ -1,8 +1,9 @@
+#-*-coding:utf-8-*-
 import math
 import sys
 import time
 
-sys.path.append('../')
+sys.path.append('../utils')
 
 import pandas as pd
 import pymysql
@@ -15,7 +16,7 @@ from sklearn.preprocessing import normalize
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.models import Model
 from tqdm import tqdm
-from utils.hwpmath2latex import hwp_parser
+from hwpmath2latex import hwp_parser
 
 
 # data 불러옴
@@ -23,7 +24,7 @@ def get_all_info(prob_db, unitCode=None):
     curs = prob_db.cursor(pymysql.cursors.DictCursor)  # to make a dataframe
 
     if unitCode:
-        sql = f"SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15 and unitCode = {unitCode}"
+        sql = f'SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15 and unitCode = {unitCode}'
     else:
         sql = "SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15"
 

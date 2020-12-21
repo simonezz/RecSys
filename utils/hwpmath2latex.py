@@ -33,8 +33,8 @@ def hwp_parser(url):
                 del txt_list[i]
         except:
             pass
-    print(txt_list)
-    print(" ".join(txt_list))
+    # print(txt_list)
+    # print(" ".join(txt_list))
     with open("test1.txt", "w") as f:
         f.write(" ".join(txt_list))
     return " ".join(txt_list)
