@@ -16,7 +16,6 @@ from sklearn.preprocessing import normalize
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.models import Model
 from tqdm import tqdm
-# from hwpmath2latex import hwp_parser
 from utils import hwpmath2latex
 
 
@@ -66,7 +65,7 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
             try:  # hwp 있을 때
 
                 txt = hwpmath2latex.hwp_parser(hwp_url)
-
+                print(txt)
                 img_list.append(preprocess_from_url(img_res.content, input_shape))
 
                 text_list.append(txt)

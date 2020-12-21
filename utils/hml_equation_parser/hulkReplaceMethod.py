@@ -117,7 +117,7 @@ def replaceAllMatrix(eqString: str) -> str:
         return bracketStr
 
     def replaceMatrix(eqString: str, matStr: str, matElem: Dict[str, object]) -> str:
-        cursor = 0
+
         while True:
             cursor = eqString.find(matStr)
             if cursor == -1:
@@ -128,7 +128,10 @@ def replaceAllMatrix(eqString: str) -> str:
 
                 if matElem['removeOutterBrackets'] == True:
                     bStart, bEnd = _findOutterBrackets(eqString, cursor)
-                    beforeMat = eqString[0:bStart - len(matStr) - 1]
+                    if bStart<cursor:
+                        beforeMat = eqString[0:bStart]
+                    else:
+                        beforeMat = eqString[0:bStart - len(matStr) - 1]
                     afterMat = eqString[bEnd:]
                 else:
                     beforeMat = eqString[0:cursor]
@@ -210,16 +213,24 @@ def _findBrackets2(eqString, cursor, direction=0):  # eqString에서 cursor 이�
 
         endCur = i
 
+        tmp = 1
+
         if eqString[i + 1:cursor].strip() != "":  # "}"와 root 사이에 뭔가 있으면 그게 sqrt 안에 들어감(괄호 제대로 안쳐져 있던 경우) ex) 1over4
             return False, False
         else:
             i = endCur - 1
 
             while True:
-                if eqString[i] == "{":
+                if tmp==0:
                     break
+                if eqString[i] == "{":
+                    tmp-=1
+                elif eqString[i] == "}":
+                    tmp+=1
+                else:
+                    pass
                 i -= 1
-            startCur = i
+            startCur = i+1
     return startCur, endCur
 
 
@@ -377,7 +388,10 @@ def replaceFrac2(eqString: str) -> str:
         j = 0
         if numStart and eqString[cursor + 4: numStart].strip() != "":  # over와 "{"사이에 있는것이 분모
             denominator = eqString[cursor + 4: numStart].strip()
-
+            deStrList = eqString[numStart:].split(" ")
+        elif numStart:
+            denominator = eqString[numStart: numEnd + 1]
+            deStrList = eqString[numEnd+1:].split(" ")
 
         elif eqString[cursor + 1] != " ":  # 4over3와 같이 분모가 over 뒤에 붙어있음
 
