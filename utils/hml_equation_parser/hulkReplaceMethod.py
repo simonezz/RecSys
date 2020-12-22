@@ -107,8 +107,8 @@ def replaceAllBar(eqString: str) -> str:
                 bStart, bEnd = _findOutterBrackets(eqString, cursor)
                 elem = eqString[eStart:eEnd]
 
-                beforeBar = eqString[0:bStart]
-                afterBar = eqString[bEnd:]
+                beforeBar = eqString[0:cursor]
+                afterBar = eqString[eEnd:]
 
                 eqString = beforeBar + barElem + elem + afterBar
             except ValueError:
@@ -147,20 +147,23 @@ def replaceAllMatrix(eqString: str) -> str:
                 elem = replaceElementsOfMatrix(eqString[eStart:eEnd+1])
 
                 if matElem['removeOutterBrackets'] == True:
-                    try:
-                        bStart, bEnd = _findOutterBrackets(eqString, cursor+len(matStr)-1)
-                        if bStart<cursor:
-                            beforeMat = eqString[0:bStart]
-                        else:
-                            beforeMat = eqString[0:bStart - len(matStr) - 1]
-                        afterMat = eqString[bEnd:]
-                    except:
-                        beforeMat = eqString[0:cursor]
-                        afterMat = eqString[eEnd:]
+                    # try:
+                    #     # bStart, bEnd = _findOutterBrackets(eqString, cursor+len(matStr)-1)
+                    #     # if bStart<cursor:
+                    #     #     beforeMat = eqString[0:bStart]
+                    #     # else:
+                    #     #     beforeMat = eqString[0:bStart - len(matStr) - 1]
+                    #     # afterMat = eqString[bEnd:]
+                    #
+                    #     beforeMat = eqString[0:cursor]
+                    #     afterMat = eqString[eEnd+1:]
+                    # except:
+                    beforeMat = eqString[0:cursor]
+                    afterMat = eqString[eEnd+1:]
 
                 else:
                     beforeMat = eqString[0:cursor]
-                    afterMat = eqString[eEnd:]
+                    afterMat = eqString[eEnd+1:]
 
                 eqString = beforeMat[:cursor] + matElem['begin'] + \
                            elem + matElem['end'] + afterMat
@@ -223,6 +226,9 @@ def _findBrackets2(eqString, cursor, direction=0):  # eqString에서 cursor 이�
 
             tmp = 1
             while True:
+                if i>=len(eqString):
+                    eqString = eqString + "}"
+                    break
                 if tmp==0:
                     break
                 if eqString[i] == "}":

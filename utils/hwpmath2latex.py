@@ -28,15 +28,21 @@ def hwp_parser(url):
     output = proc.communicate()[0]  ## this will capture the output of script called in the parent script.
 
     txt = output.decode('utf-8')
-    print("original: ", txt)
-    parsing_txt = hulkEqParser.hmlEquation2latex(" ".join(txt.split("\n")[1:]))
+    # print("original: ", txt)
+    # parsing_txt = hulkEqParser.hmlEquation2latex(" ".join(txt.split("\n")[1:]))
+    # parsing_txt = " ".join()
+    result_txt = []
+    for t in list(txt.split("\n"))[1:]:
+        if len(t)>0:
+            result_txt.append(hulkEqParser.hmlEquation2latex(t))
+            print(result_txt)
 
 
     # print(txt_list)
     # print(" ".join(txt_list))
     # with open("test1.txt", "w") as f:
     #     f.write(" ".join(txt_list))
-    return parsing_txt
+    return " ".join(result_txt)
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@ def get_all_info(prob_db, unitCode=None):
     if unitCode:
         sql = f'SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15 and unitCode = {unitCode}'
     else:
-        sql = "SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15 and ID=9221"
+        sql = "SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15 and ID=243956"
 
     curs.execute(sql)
     df = pd.DataFrame(curs.fetchall())
@@ -60,12 +60,12 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
         hwp_url = hwp_url.replace("math_problems", "math_problems/hwp")
 
         try:
-            print(id, "::::", hwp_url)
+            # print(id, "::::", hwp_url)
 
             img_res = requests.get(img_url)  # png
 
             txt = hwpmath2latex.hwp_parser(hwp_url)
-            print(txt)
+            # print(txt)
             txt = txt.strip()
 
             if txt[0]=="[":
@@ -83,7 +83,7 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
             img_list.append(preprocess_from_url(img_res.content, input_shape))
 
 
-            print(txt2)
+            # print(txt2)
 
             text_list.append(txt2)
 
@@ -113,7 +113,7 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
 # 모든 데이터를 넣음
 def bulk_all(df, INDEX_FILE, INDEX_NAME, komoran):
     es = Elasticsearch(hosts=['localhost:9200'])
-    bs = 20
+    bs = 10
     # Index 생성
     # es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
     #
