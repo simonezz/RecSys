@@ -26,11 +26,11 @@ def get_all_info(prob_db, unitCode=None):
     if unitCode:
         sql = f'SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15 and unitCode = {unitCode}'
     else:
-        sql = "SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15"
+        sql = "SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15 and ID=9221"
 
     curs.execute(sql)
     df = pd.DataFrame(curs.fetchall())
-
+    print(f"{df.shape[0]}개의 데이터가 처리될 예정입니다.")
     return df
 
 
@@ -45,43 +45,53 @@ def preprocess_from_url(content, input_shape):
 # batch별로 데이터 elasticsearch에 넣음
 def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
     batch_size = 100
-    word_classes = ['NNP', 'NNG', 'VV', 'EC', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP', 'JX']
+    word_classes = ['NNP', 'NNG', 'VV', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP', 'JX']
     part_df.set_index("ID", inplace=True)
 
     id_list = []
     img_list = []
     text_list = []
 
-    for i in tqdm(list(part_df.index)[13:]):
-        img_url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i, 'problemURL'] + "p.png"
+    for id in (list(part_df.index)):
+        img_url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[id, 'problemURL'] + "p.png"
         img_url = img_url.replace("/math_problems/", "/math_problems/ng/")  # ng는 고화질, d는 저화질
 
-        hwp_url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[i, 'problemURL'] + "p.hwp"
+        hwp_url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[id, 'problemURL'] + "p.hwp"
         hwp_url = hwp_url.replace("math_problems", "math_problems/hwp")
-        print(i, "::::", hwp_url)
+
         try:
+            print(id, "::::", hwp_url)
+
             img_res = requests.get(img_url)  # png
 
-            try:  # hwp 있을 때
+            txt = hwpmath2latex.hwp_parser(hwp_url)
+            print(txt)
+            txt = txt.strip()
 
-                txt = hwpmath2latex.hwp_parser(hwp_url)
+            if txt[0]=="[":
+                i=1
+                while True:
+                    if txt[i]=="]":
+                        txt = txt[i+1:]
+                        break
+                    i+=1
 
-                txt = re.sub('[^A-Za-z가-힣]', " ", txt)
+            txt1 = re.sub('[^A-Za-z가-힣]', " ", txt)
 
-                txt = komoran.get_morphes_by_tags(txt, word_classes=word_classes)
+            txt2 = " ".join(komoran.get_morphes_by_tags(txt1, tag_list=word_classes))
 
-                img_list.append(preprocess_from_url(img_res.content, input_shape))
+            img_list.append(preprocess_from_url(img_res.content, input_shape))
 
-                text_list.append(txt)
 
-                id_list.append(i)
+            print(txt2)
 
-            except:  # hwp 없을 때 -> 사용하지 않음
-                print("fail")
-                pass
+            text_list.append(txt2)
+
+            id_list.append(id)
+
 
         except:  # png가 존재하지 않으면
-            print(f'ID : {i} 의 url {img_url}이 유효하지 않습니다.')
+            print(f'ID : {id} 의 url {img_url} or {hwp_url}이 유효하지 않습니다.')
             pass
 
     list_ds = tf.data.Dataset.from_tensor_slices(img_list)
@@ -105,13 +115,13 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME, komoran):
     es = Elasticsearch(hosts=['localhost:9200'])
     bs = 20
     # Index 생성
-    es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
-
-    # mappings 정의
-    with open(INDEX_FILE) as index_file:
-        source = index_file.read().strip()
-        es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
-    print("Elasticsearch Index :", INDEX_NAME, "created!")
+    # es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
+    #
+    # # mappings 정의
+    # with open(INDEX_FILE) as index_file:
+    #     source = index_file.read().strip()
+    #     es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
+    # print("Elasticsearch Index :", INDEX_NAME, "created!")
     nloop = math.ceil(df.shape[0] / bs)
 
     input_shape = (224, 224, 3)
@@ -141,8 +151,9 @@ if __name__ == "__main__":
         db='iclass',
         charset='utf8'
     )
-    unitCode = 322001012
-    df = get_all_info(prob_db, unitCode)  # 전체 data 업로드
+    unitCode = 331101009
+    # df = get_all_info(prob_db, unitCode)  # 전체 data 업로드
+    df = get_all_info(prob_db)
 
     INDEX_FILE = '../test2/system/mapping_whole_img_text.json'
     INDEX_NAME = 'mathtest'

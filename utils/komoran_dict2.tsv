@@ -1210,7 +1210,6 @@ ggg	NNP
 because	NNP
 xi	NNP
 bigoplus	NNP
-B	NNP
 overset	NNP
 prec	NNP
 swarrow	NNP
@@ -1224,10 +1223,8 @@ risingdotseq	NNP
 nwarrow	NNP
 vmatrix	NNP
 iota	NNP
-T	NNP
 ominus	NNP
 Gamma	NNP
-P	NNP
 top	NNP
 nabla	NNP
 infty	NNP
@@ -1238,7 +1235,6 @@ hookleftarrow	NNP
 simeq	NNP
 Pi	NNP
 Uparrow	NNP
-Z	NNP
 sqrt	NNP
 bigodot	NNP
 triangle	NNP
@@ -1250,7 +1246,6 @@ delta	NNP
 cap	NNP
 emptyset	NNP
 exists	NNP
-A	NNP
 times	NNP
 begin	NNP
 theta	NNP
@@ -1271,7 +1266,6 @@ HULKBAR	NNP
 updownarrow	NNP
 oint	NNP
 lim	NNP
-F	NNP
 bigcirc	NNP
 bigcap	NNP
 sqsupset	NNP
@@ -1286,11 +1280,9 @@ cong	NNP
 upsilon	NNP
 Theta	NNP
 iiint	NNP
-L	NNP
 HULKEQALIGN	NNP
 Xi	NNP
 rfloor	NNP
-M	NNP
 sum	NNP
 HULKVEC	NNP
 biguplus	NNP
@@ -1312,7 +1304,6 @@ beta	NNP
 Psi	NNP
 supset	NNP
 sphericalangle	NNP
-O	NNP
 subseteq	NNP
 owns	NNP
 HULKCHECK	NNP
@@ -1331,7 +1322,6 @@ hookrightarrow	NNP
 geq	NNP
 zeta	NNP
 pmatrix	NNP
-I	NNP
 overbrace	NNP
 in	NNP
 HULKGRAVE	NNP
@@ -1341,16 +1331,12 @@ bmatrix	NNP
 subset	NNP
 Delta	NNP
 uparrow	NNP
-H	NNP
-K	NNP
 bot	NNP
-X	NNP
 neq	NNP
 bullet	NNP
 mapsto	NNP
 dotplus	NNP
 rho	NNP
-E	NNP
 Upsilon	NNP
 ddots	NNP
 overline	NNP
@@ -1359,7 +1345,6 @@ dagger	NNP
 oplus	NNP
 HULKDOT	NNP
 leftarrow	NNP
-C	NNP
 grave	NNP
 div	NNP
 supseteq	NNP

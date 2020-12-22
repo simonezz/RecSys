@@ -16,13 +16,14 @@ hwplib 자바 파일들을 이용해서 hwp파싱
 # url = 'https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/9/h/2/1/03018/9_32103018_BUJ2r_-46Y_p.hwp'
 # url = "https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/9/h/2/1/03103/9_32103103_MUv4N_yM3_p.hwp"
 # url = "https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/9/191023/arn4ch3o4b5lfg2z_p.hwp"
-url = " https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/Mo/MO_200711/h3/200711_Ha_B/3_p.hwp"
+# url = " https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/Mo/MO_200711/h3/200711_Ha_B/3_p.hwp"
 # url = " https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/Mo/MO_201810/h3/201810_Se_A/15_p.hwp"
+url = "https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/9/m/2/1/1/9_21001_LxJ0H_5_p.hwp"
 
 def hwp_parser(url):
     sys.path.append('./hml_equation_parser')
     proc = subprocess.Popen(
-        ['java', '-jar', '/home/master/source/project/Recommender_SH/Recommender-System/utils/hwp.jar', url],
+        ['java', '-jar', '/home/ubuntu/Recommender_SH/utils/hwp.jar', url],
         stdin=PIPE, stdout=PIPE, stderr=PIPE)
     output = proc.communicate()[0]  ## this will capture the output of script called in the parent script.
 
