@@ -17,7 +17,7 @@ from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.models import Model
 from tqdm import tqdm
 from utils import hwpmath2latex
-
+import re
 
 # data 불러옴
 def get_all_info(prob_db, unitCode=None):
@@ -45,7 +45,7 @@ def preprocess_from_url(content, input_shape):
 # batch별로 데이터 elasticsearch에 넣음
 def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
     batch_size = 100
-    word_classes = ['NNP', 'NNG', 'VV', 'EC', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP', 'JX', 'SL']
+    word_classes = ['NNP', 'NNG', 'VV', 'EC', 'JKB', 'MAG', 'MM', 'VA', 'XSV', 'EP', 'JX']
     part_df.set_index("ID", inplace=True)
 
     id_list = []
@@ -65,7 +65,11 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
             try:  # hwp 있을 때
 
                 txt = hwpmath2latex.hwp_parser(hwp_url)
-                print(txt)
+
+                txt = re.sub('[^A-Za-z가-힣]', " ", txt)
+
+                txt = komoran.get_morphes_by_tags(txt, word_classes=word_classes)
+
                 img_list.append(preprocess_from_url(img_res.content, input_shape))
 
                 text_list.append(txt)
@@ -133,7 +137,7 @@ if __name__ == "__main__":
     prob_db = pymysql.connect(
         user='real',
         passwd='vmfl515!dnlf',
-        host='sorinegi-cluster.cluster-ro-ce1us4oyptfa.ap-northeast-2.rds.amazonaws.com',
+        host='for-problem-query-cluster.cluster-ce1us4oyptfa.ap-northeast-2.rds.amazonaws.com',
         db='iclass',
         charset='utf8'
     )
@@ -148,7 +152,7 @@ if __name__ == "__main__":
     from PyKomoran import *
 
     komoran = Komoran(DEFAULT_MODEL['FULL'])
-    komoran.set_user_dic('../utils/komoran_dict.tsv')
+    komoran.set_user_dic('../utils/komoran_dict2.tsv')
 
     # reader = easyocr.Reader(['ko', 'en'], gpu=False)
 

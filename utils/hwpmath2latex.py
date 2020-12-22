@@ -16,8 +16,8 @@ hwplib 자바 파일들을 이용해서 hwp파싱
 # url = 'https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/9/h/2/1/03018/9_32103018_BUJ2r_-46Y_p.hwp'
 # url = "https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/9/h/2/1/03103/9_32103103_MUv4N_yM3_p.hwp"
 # url = "https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/9/191023/arn4ch3o4b5lfg2z_p.hwp"
-
-url = " https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/Mo/MO_201810/h3/201810_Se_A/15_p.hwp"
+url = " https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/Mo/MO_200711/h3/200711_Ha_B/3_p.hwp"
+# url = " https://s3.ap-northeast-2.amazonaws.com/mathflat/math_problems/hwp/Mo/MO_201810/h3/201810_Se_A/15_p.hwp"
 
 def hwp_parser(url):
     sys.path.append('./hml_equation_parser')
@@ -27,7 +27,7 @@ def hwp_parser(url):
     output = proc.communicate()[0]  ## this will capture the output of script called in the parent script.
 
     txt = output.decode('utf-8')
-
+    print("original: ", txt)
     parsing_txt = hulkEqParser.hmlEquation2latex(" ".join(txt.split("\n")[1:]))
 
 
@@ -39,4 +39,4 @@ def hwp_parser(url):
 
 
 if __name__ == "__main__":
-    print(hwp_parser(url))
+    print("after parsing: ", hwp_parser(url))

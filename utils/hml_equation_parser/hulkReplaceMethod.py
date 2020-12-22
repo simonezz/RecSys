@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import re
+
 import codecs
 import json
 import os
@@ -11,6 +15,22 @@ with codecs.open(os.path.join(os.path.dirname(__file__),
 barDict = convertMap["BarConvertMap"]
 matDict = convertMap["MatrixConvertMap"]
 braceDict = convertMap["BraceConvertMap"]
+
+def isHangul(text):
+    #Check the Python Version
+    pyVer3 =  sys.version_info >= (3, 0)
+
+    if pyVer3 : # for Ver 3 or later
+        encText = text
+    else: # for Ver 2.x
+        if type(text) is not unicode:
+            encText = text.decode('utf-8')
+        else:
+            encText = text
+
+    hanCount = len(re.findall(u'[\u3130-\u318F\uAC00-\uD7A3]+', encText))
+    return hanCount > 0
+
 
 
 def _findOutterBrackets(eqString: str, startIdx: int) -> Tuple[int, int]:
@@ -123,16 +143,21 @@ def replaceAllMatrix(eqString: str) -> str:
             if cursor == -1:
                 break
             try:
-                eStart, eEnd = _findBrackets(eqString, cursor, direction=1)
-                elem = replaceElementsOfMatrix(eqString[eStart:eEnd])
+                eStart, eEnd, eqString = _findBrackets2(eqString, cursor+len(matStr)-1, direction=1)
+                elem = replaceElementsOfMatrix(eqString[eStart:eEnd+1])
 
                 if matElem['removeOutterBrackets'] == True:
-                    bStart, bEnd = _findOutterBrackets(eqString, cursor)
-                    if bStart<cursor:
-                        beforeMat = eqString[0:bStart]
-                    else:
-                        beforeMat = eqString[0:bStart - len(matStr) - 1]
-                    afterMat = eqString[bEnd:]
+                    try:
+                        bStart, bEnd = _findOutterBrackets(eqString, cursor+len(matStr)-1)
+                        if bStart<cursor:
+                            beforeMat = eqString[0:bStart]
+                        else:
+                            beforeMat = eqString[0:bStart - len(matStr) - 1]
+                        afterMat = eqString[bEnd:]
+                    except:
+                        beforeMat = eqString[0:cursor]
+                        afterMat = eqString[eEnd:]
+
                 else:
                     beforeMat = eqString[0:cursor]
                     afterMat = eqString[eEnd:]
@@ -186,21 +211,33 @@ def _findBrackets2(eqString, cursor, direction=0):  # eqString에서 cursor 이�
     if direction == 1:
         i = cursor + 1
         if "{" not in eqString[i:]: return False, False
-        while True:
-            if eqString[i] == "{":
-                break
-            i += 1
+        i = eqString[cursor+1:].index("{") + cursor + 1 # "{"의 위치 찾음
 
-        if eqString[cursor + 1: i].strip() != "":  # root와 같은 단어와 {사이에 뭔가 있으면 그게 sqrt 안에 들어감(괄호 제대로 안쳐져 있던 경우)
-            return False, False
+        if eqString[cursor + 1: i].strip() != "":  # root와 같은 단어와 {사이에 뭔가 있으면 그게 sqrt 안에 들어감(괄호 제대로 안쳐져 있던 경우) ex) 3over5 {~~~
+            return False, False, eqString
+
         else:
             startCur = i
-            i += 1
+
+            i = startCur+1
+
+            tmp = 1
             while True:
-                if eqString[i] == "}":
+                if tmp==0:
                     break
+                if eqString[i] == "}":
+                    tmp-=1
+                elif eqString[i] == "{":
+                    tmp+=1
+                else:
+                    if isHangul(eqString[i]) :#한글 나오면 괄호가 안 닫힌 것이므로 괄호 추가
+                        eqString = eqString[:i] + "}" + eqString[i:]
+                        i+=1
+                        break
+                    pass
                 i += 1
-            endCur = i
+
+            endCur = i-1
 
     else:  # direction=0 일 때
         i = cursor - 1
@@ -216,7 +253,7 @@ def _findBrackets2(eqString, cursor, direction=0):  # eqString에서 cursor 이�
         tmp = 1
 
         if eqString[i + 1:cursor].strip() != "":  # "}"와 root 사이에 뭔가 있으면 그게 sqrt 안에 들어감(괄호 제대로 안쳐져 있던 경우) ex) 1over4
-            return False, False
+            return False, False, eqString
         else:
             i = endCur - 1
 
@@ -231,7 +268,7 @@ def _findBrackets2(eqString, cursor, direction=0):  # eqString에서 cursor 이�
                     pass
                 i -= 1
             startCur = i+1
-    return startCur, endCur
+    return startCur, endCur, eqString
 
 
 def replaceRootOf2(eqString: str) -> str:
@@ -256,7 +293,7 @@ def replaceRootOf2(eqString: str) -> str:
         # of 없을 때
         if ofCursor == -1 or ofCursor < cursor or hmlFracString in eqString[cursor:ofCursor]:
 
-            start, end = _findBrackets2(eqString, cursor + 3, direction=1)  # of 뒤의 값을 구함
+            start, end, eqString = _findBrackets2(eqString, cursor + 3, direction=1)  # of 뒤의 값을 구함
 
             if start:  # of 뒤에 brackets으로 묶여있을 때
                 afterRoot = eqString[start:end + 1]
@@ -278,7 +315,7 @@ def replaceRootOf2(eqString: str) -> str:
             eqString = eqString[0:cursor] + latexFracString + "{" + afterRoot + "}" + " ".join(strList[i + 1:])
 
         else:  # of 있을 때
-            start, end = _findBrackets2(eqString, ofCursor + 1, direction=1)  # of 뒤의 값을 구함
+            start, end, eqString = _findBrackets2(eqString, ofCursor + 1, direction=1)  # of 뒤의 값을 구함
 
             if start:  # of 뒤에 brackets으로 묶여있을 때
                 afterOf = eqString[start:end + 1]
@@ -356,7 +393,7 @@ def replaceFrac2(eqString: str) -> str:
             break
 
         # find numerator
-        numStart, numEnd = _findBrackets2(eqString, cursor, direction=0)
+        numStart, numEnd, eqString = _findBrackets2(eqString, cursor, direction=0)
         # numStart는 bracket { 위치, numEnd는 bracket }의 위치 +1
 
         strList = eqString[:cursor].split(" ")
@@ -383,7 +420,7 @@ def replaceFrac2(eqString: str) -> str:
             beforeFrac = " ".strList[:i]
 
         # find denominator
-        numStart, numEnd = _findBrackets2(eqString, cursor + 3, direction=1)
+        numStart, numEnd, eqString = _findBrackets2(eqString, cursor + 3, direction=1)
         # numStart는 bracket { 위치, numEnd는 bracket }의 위치 +1
         j = 0
         if numStart and eqString[cursor + 4: numStart].strip() != "":  # over와 "{"사이에 있는것이 분모
