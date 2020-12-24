@@ -4,6 +4,7 @@ import sys
 import subprocess
 from subprocess import PIPE
 from utils.hml_equation_parser import hulkEqParser
+import time
 
 '''
 hwplib 자바 파일들을 이용해서 hwp파싱
@@ -32,11 +33,12 @@ def hwp_parser(url):
     # parsing_txt = hulkEqParser.hmlEquation2latex(" ".join(txt.split("\n")[1:]))
     # parsing_txt = " ".join()
     result_txt = []
+    # start = time.time()
     for t in list(txt.split("\n"))[1:]:
         if len(t)>0:
             result_txt.append(hulkEqParser.hmlEquation2latex(t))
-            print(result_txt)
-
+            # print(result_txt)
+    # print("hwp->latex 소요시간은: ", time.time()-start)
 
     # print(txt_list)
     # print(" ".join(txt_list))

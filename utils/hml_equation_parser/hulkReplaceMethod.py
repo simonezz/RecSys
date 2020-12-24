@@ -213,7 +213,7 @@ def _findBrackets2(eqString, cursor, direction=0):  # eqString에서 cursor 이�
 
     if direction == 1:
         i = cursor + 1
-        if "{" not in eqString[i:]: return False, False
+        if "{" not in eqString[i:]: return False, False, eqString
         i = eqString[cursor+1:].index("{") + cursor + 1 # "{"의 위치 찾음
 
         if eqString[cursor + 1: i].strip() != "":  # root와 같은 단어와 {사이에 뭔가 있으면 그게 sqrt 안에 들어감(괄호 제대로 안쳐져 있던 경우) ex) 3over5 {~~~
@@ -247,9 +247,11 @@ def _findBrackets2(eqString, cursor, direction=0):  # eqString에서 cursor 이�
 
     else:  # direction=0 일 때
         i = cursor - 1
-        if "{" not in eqString[:i + 1]: return False, False
+        if "{" not in eqString[:i + 1]: return False, False, eqString
 
         while True:
+            if i==0:
+                return False, False, eqString
             if eqString[i] == "}":
                 break
             i -= 1
@@ -264,6 +266,11 @@ def _findBrackets2(eqString, cursor, direction=0):  # eqString에서 cursor 이�
             i = endCur - 1
 
             while True:
+                if i<0 :
+                    eqString = "{" + eqString
+                    i=0
+                    break
+
                 if tmp==0:
                     break
                 if eqString[i] == "{":

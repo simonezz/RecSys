@@ -26,7 +26,7 @@ def get_all_info(prob_db, unitCode=None):
     if unitCode:
         sql = f'SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15 and unitCode = {unitCode}'
     else:
-        sql = "SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15 and ID=243956"
+        sql = "SELECT ID, unitCode, problemLevel, problemURL, problemType FROM iclass.Table_middle_problems WHERE curriculumNumber=15"
 
     curs.execute(sql)
     df = pd.DataFrame(curs.fetchall())
@@ -115,13 +115,13 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME, komoran):
     es = Elasticsearch(hosts=['localhost:9200'])
     bs = 10
     # Index 생성
-    # es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
-    #
-    # # mappings 정의
-    # with open(INDEX_FILE) as index_file:
-    #     source = index_file.read().strip()
-    #     es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
-    # print("Elasticsearch Index :", INDEX_NAME, "created!")
+    es.indices.delete(index=INDEX_NAME, ignore=[404])  # Delete if already exists
+
+    # mappings 정의
+    with open(INDEX_FILE) as index_file:
+        source = index_file.read().strip()
+        es.indices.create(index=INDEX_NAME, body=source)  # Create ES index
+    print("Elasticsearch Index :", INDEX_NAME, "created!")
     nloop = math.ceil(df.shape[0] / bs)
 
     input_shape = (224, 224, 3)
@@ -151,12 +151,12 @@ if __name__ == "__main__":
         db='iclass',
         charset='utf8'
     )
-    unitCode = 331101009
+    # unitCode = 331101009
     # df = get_all_info(prob_db, unitCode)  # 전체 data 업로드
     df = get_all_info(prob_db)
 
     INDEX_FILE = '../test2/system/mapping_whole_img_text.json'
-    INDEX_NAME = 'mathtest'
+    INDEX_NAME = 'mathflat1'
     #
     bulk_start = time.time()
 

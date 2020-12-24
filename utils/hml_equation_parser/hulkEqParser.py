@@ -71,12 +71,13 @@ def hmlEquation2latex(hmlEqStr):
 
     for c in convertMap["middleConvertMap"]:
         strConverted = strConverted.replace(c, convertMap['middleConvertMap'][c])
-    strConverted = strConverted.replace("\\\\", "\\")
+
 
     strConverted = replaceOthers(strConverted)
 
     # strConverted = strConverted.replace("<", "\\langle")
     # strConverted = strConverted.replace(">", "\\rangle")
+    strConverted = strConverted.replace("\\\\", "\\")
 
     return strConverted.replace("  ", " ")
 
