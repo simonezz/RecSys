@@ -11,6 +11,8 @@ with codecs.open(os.path.join(os.path.dirname(__file__),
     convertMap = json.load(f)
 
 
+
+
 def replaceOthers(strConverted):  # frac, brace 등등 대체
 
     # strConverted = ' '.join(strList)
@@ -95,5 +97,4 @@ if __name__ == "__main__":
     # main("함수 \nf( x )=cases{ {rootx+3 -2}overx-1 &(x !=1)#~~~~````a &( x=1 )\n이 \nx=1\n에서 연속일 때, 상수 \na\n의 값은?\n① \n1over5\n② \n1over4\n③ \n1over3\n④ \n1over2\n⑤ \n1\n\n\n")
     # main("1over5")
     # main("함수 \nf( x )={rootx+3 -2}overx-1 ")
-    print(main("f(x)= {cases{{x  ^{2} +2x} over {sqrt {1+2x} - sqrt {1-2x}}&(x != 0)#````````````````````````````````a&(x=0)}}"))
-        # "\n \n \n 함수 \n f(x)= HULKCASE { x+a ~~ & (x< -1) #x ^2 -b & (-1 \\leq x<1)#2x-c & (x \\geq 1) }   \r \n \n 가 실수 전체의 집합에서 연속이고 \n f(0)=-2 \r \n \n 일 때, 상수 \n a \r \n \n , \n b \r \n \n , \n c \r \n \n 의 합 \n a+b+c \r \n \n 의 값을 구하여라. \n \n ")
+    print(main('f(x) = cases\r'))

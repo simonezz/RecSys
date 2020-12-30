@@ -104,11 +104,16 @@ def replaceAllBar(eqString: str) -> str:
                 break
             try:
                 eStart, eEnd = _findBrackets(eqString, cursor, direction=1)
-                bStart, bEnd = _findOutterBrackets(eqString, cursor)
-                elem = eqString[eStart:eEnd]
+                if eStart==-1: # 따로 bracket 없는 경우
+                    elem = "{"+list(eqString[cursor+len(barStr):].split(" "))[0]+"}"
+                    beforeBar = eqString[0:cursor]
+                    afterBar = eqString[cursor+len(barStr)+len(elem)-2:]
+                else:
+                    bStart, bEnd = _findOutterBrackets(eqString, cursor)
+                    elem = eqString[eStart:eEnd]
 
-                beforeBar = eqString[0:cursor]
-                afterBar = eqString[eEnd:]
+                    beforeBar = eqString[0:cursor]
+                    afterBar = eqString[eEnd:]
 
                 eqString = beforeBar + barElem + elem + afterBar
             except ValueError:
@@ -159,8 +164,12 @@ def replaceAllMatrix(eqString: str) -> str:
                     #     afterMat = eqString[eEnd+1:]
                     # except:
                     beforeMat = eqString[0:cursor]
-                    afterMat = eqString[eEnd+1:]
 
+                    if eEnd:
+
+                        afterMat = eqString[eEnd+1:]
+                    else:
+                        afterMat = " ".join((eqString[cursor+len(matStr):].split(" "))[1:])
                 else:
                     beforeMat = eqString[0:cursor]
                     afterMat = eqString[eEnd+1:]
@@ -308,9 +317,11 @@ def replaceRootOf2(eqString: str) -> str:
 
             start, end, eqString = _findBrackets2(eqString, cursor + 3, direction=1)  # of 뒤의 값을 구함
 
-            if start:  # of 뒤에 brackets으로 묶여있을 때
+            if start:  # root 뒤에 brackets으로 묶여있을 때
                 afterRoot = eqString[start:end + 1]
                 i = 0
+
+                eqString = eqString[0:cursor] + latexFracString + "{" + afterRoot + "}" + eqString[end+1:]
 
             else:  # root3과 같이 bracket 없음
 
@@ -325,7 +336,7 @@ def replaceRootOf2(eqString: str) -> str:
 
                     #######
 
-            eqString = eqString[0:cursor] + latexFracString + "{" + afterRoot + "}" + " ".join(strList[i + 1:])
+                eqString = eqString[0:cursor] + latexFracString + "{" + afterRoot + "}" + " ".join(strList[i + 1:])
 
         else:  # of 있을 때
             start, end, eqString = _findBrackets2(eqString, ofCursor + 1, direction=1)  # of 뒤의 값을 구함
@@ -430,7 +441,7 @@ def replaceFrac2(eqString: str) -> str:
                     numerator = strList[i]
                     break
                 i -= 1
-            beforeFrac = " ".strList[:i]
+            beforeFrac = " ".join(strList[:i])
 
         # find denominator
         numStart, numEnd, eqString = _findBrackets2(eqString, cursor + 3, direction=1)
@@ -500,3 +511,4 @@ def replaceAllBrace(eqString: str) -> str:
     for braceKey, braceElem in braceDict.items():
         eqString = replaceBrace(eqString, braceKey, braceElem)
     return eqString
+
