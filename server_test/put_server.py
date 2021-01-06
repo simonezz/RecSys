@@ -108,7 +108,7 @@ def put_data(date_time):
     df = get_all_info(prob_db, date_time)
 
     INDEX_FILE = '../test2/system/mapping_whole_img.json'
-    INDEX_NAME = 'all_problems'
+    INDEX_NAME = 'mathflat1'
 
     bulk_start = time.time()
 
@@ -117,6 +117,6 @@ def put_data(date_time):
     print(f'총 데이터 {df.shape[0]}개 bulk 소요시간은 {time.time() - bulk_start}')
     print("Success!")
 
-
-if __name__ == "__main__":
-    put_data("20201202")
+#
+# if __name__ == "__main__":
+#     put_data("20201202")

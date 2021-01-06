@@ -3,7 +3,7 @@ import socket
 import sys
 import threading
 
-import put_server
+import put_server_mathText_img
 
 
 def handle_client(client_list, conn, address):
@@ -12,7 +12,7 @@ def handle_client(client_list, conn, address):
     date_time = conn.recv(1024)  # 문제 ID 받음
 
     # date_time이후의 문제들을 elasticsearch에 넣음
-    put_server.put_data(date_time.decode('utf-8'))
+    put_server_mathText_img.put_data(date_time.decode('utf-8'))
     conn.shutdown(socket.SHUT_RDWR)
     conn.close()
 
@@ -61,10 +61,10 @@ def main(args):
             print("Keyboard interrupt")
 
 
-SELF_TEST_ = True
-SERVER_MODE = "client"
-DATETIME = "20201208"
-PORT = 5002
+# SELF_TEST_ = True
+# SERVER_MODE = "client"
+# DATETIME = "20201220"
+# PORT = 5002
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
