@@ -144,8 +144,8 @@ def bulk_all(df, INDEX_FILE, INDEX_NAME, komoran):
 if __name__ == "__main__":
     prob_db = pymysql.connect(
         user='real',
-        passwd='vmfl515!dnlf',
-        host='sorinegi-cluster.cluster-ro-ce1us4oyptfa.ap-northeast-2.rds.amazonaws.com',
+        passwd='***',
+        host='****',
         db='iclass',
         charset='utf8'
     )
