@@ -58,12 +58,6 @@ def bulk_batchwise(es, part_df, INDEX_NAME, model, input_shape, komoran):
 
     for id in (list(part_df.index)):
 
-        img_url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[id, 'problemURL'] + "p.png"
-        img_url = img_url.replace("/math_problems/", "/math_problems/ng/")  # ng는 고화질, d는 저화질
-
-        hwp_url = "https://s3.ap-northeast-2.amazonaws.com/mathflat" + part_df.loc[id, 'problemURL'] + "p.hwp"
-        hwp_url = hwp_url.replace("math_problems", "math_problems/hwp")
-
         try:
             # print(id, "::::", hwp_url)
 
@@ -171,8 +165,8 @@ if __name__ == "__main__":
     date_time = "20201218"
     prob_db = pymysql.connect(
         user='real',
-        passwd='vmfl515!dnlf',
-        host='sorinegi-cluster.cluster-ro-ce1us4oyptfa.ap-northeast-2.rds.amazonaws.com',
+        passwd='****',
+        host='****,
         db='iclass',
         charset='utf8'
     )
@@ -198,31 +192,3 @@ if __name__ == "__main__":
     print("Success!")
 
 
-# if __name__ == "__main__":
-#     prob_db = pymysql.connect(
-#         user='real',
-#         passwd='vmfl515!dnlf',
-#         host='for-problem-query-cluster.cluster-ce1us4oyptfa.ap-northeast-2.rds.amazonaws.com',
-#         db='iclass',
-#         charset='utf8'
-#     )
-#     # unitCode = 331101009
-#     # df = get_all_info(prob_db, unitCode)  # 전체 data 업로드
-#     df = get_all_info(prob_db)
-#
-#     INDEX_FILE = '../test2/system/mapping_whole_img_text.json'
-#     INDEX_NAME = 'mathflat1'
-#     #
-#     bulk_start = time.time()
-#
-#     from PyKomoran import *
-#
-#     komoran = Komoran(DEFAULT_MODEL['FULL'])
-#     komoran.set_user_dic('../utils/komoran_dict2.tsv')
-#
-#     # reader = easyocr.Reader(['ko', 'en'], gpu=False)
-#
-#     bulk_all(df, INDEX_FILE, INDEX_NAME, komoran)
-
-    # print("Hide data bulk 소요시간: ", time.time() - bulk_start)
-    # print("201201 Success!")
